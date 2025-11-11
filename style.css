@@ -203,3 +203,79 @@ body {
   0%,100%{ transform:translateY(0) }
   50%{ transform:translateY(-10px) }
 }
+
+/* ===== SKILLS SECTION ===== */
+.skills {
+  padding: 120px 60px;
+  background: #0f0f0f;
+}
+
+.skills h3 {
+  font-size: 2.5rem;
+  color: #00c3ff;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.skill-card {
+  background: #111;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid #1c1c1c;
+  transition: 0.3s;
+}
+
+.skill-card:hover {
+  transform: translateY(-8px);
+  border-color: #00c3ff;
+}
+
+.skill-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.bar {
+  width: 100%;
+  height: 10px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.bar .fill {
+  height: 100%;
+  width: var(--level);
+  background: linear-gradient(90deg, #00c3ff, #7b61ff);
+  border-radius: 10px;
+  animation: growBar 1.4s ease-out forwards;
+}
+
+@keyframes growBar {
+  from { width: 0%; }
+  to { width: var(--level); }
+}
+
+/* Hacer que primero se anime el llenado, y luego el glow */
+.bar .fill[style*="100%"] {
+  animation: growBar 1.4s ease-out forwards, glowPulse 1.8s infinite alternate ease-in-out 1.4s;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 10px #00c3ff, 0 0 20px #7b61ff;
+  }
+  100% {
+    box-shadow: 0 0 25px #00c3ff, 0 0 45px #7b61ff;
+  }
+}
+
