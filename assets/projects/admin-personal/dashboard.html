@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<img src="../img/logo.png" alt="Logo" class="logo-bg">
+
+<script>
+  let inactivityTimeout;
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(() => {
+      alert("Sesión cerrada por inactividad.");
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }, 30 * 60 * 1000); // 30 minutos
+  }
+
+  // Detecta actividad del usuario
+  window.addEventListener("mousemove", resetInactivityTimer);
+  window.addEventListener("keydown", resetInactivityTimer);
+  window.addEventListener("click", resetInactivityTimer);
+  window.addEventListener("scroll", resetInactivityTimer);
+  window.addEventListener("touchstart", resetInactivityTimer);
+
+  // Inicia el temporizador cuando carga la página
+  window.onload = resetInactivityTimer;
+</script>
+
+<body>
+  <h2>Welcome, <span id="username"></span>!</h2>
+  <p>Role: <strong id="userRole"></strong></p>
+
+  <!-- Botones por rol -->
+  <div id="adminSection" style="display: none;">
+    <h3>Admin Panel</h3>
+    <button onclick="goTo('attendance.html')">Register Attendance</button>
+    <button onclick="goTo('reports.html')">View Reports</button>
+    <button onclick="goTo('employees.html')">Manage Employees</button>
+  </div>
+
+  <div id="managerSection" style="display: none;">
+    <h3>Manager Panel</h3>
+    <button onclick="goTo('attendance.html')">Register Attendance</button>
+    <button onclick="goTo('employees.html')">Manage Employees</button>
+  </div>
+
+  <div id="executiveSection" style="display: none;">
+    <h3>Executive Panel</h3>
+    <button onclick="goTo('reports.html')">View Reports</button>
+  </div>
+
+  <br>
+  <button onclick="logout()">Logout</button>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <!-- Firebase config -->
+  <script src="../js/firebase-config.js"></script>
+
+  <!-- Lógica del dashboard -->
+  <script>
+    // Verifica la sesión y el rol
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const email = localStorage.getItem("userEmail");
+        const role = localStorage.getItem("userRole");
+
+        if (!email || !role) {
+          alert("⚠️ Sesión incompleta o usuario no autorizado.");
+          firebase.auth().signOut();
+          window.location.href = "index.html";
+          return;
+        }
+
+        document.getElementById("username").textContent = email;
+        document.getElementById("userRole").textContent = role;
+
+        // Mostrar secciones según el rol
+        if (role === "admin") {
+          document.getElementById("adminSection").style.display = "block";
+        } else if (role === "manager") {
+          document.getElementById("managerSection").style.display = "block";
+        } else if (role === "executive") {
+          document.getElementById("executiveSection").style.display = "block";
+        }
+      } else {
+        alert("⚠️ Please log in first.");
+        window.location.href = "index.html";
+      }
+    });
+
+    // Redirigir a otra página
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    // Cerrar sesión
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        localStorage.clear();
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>

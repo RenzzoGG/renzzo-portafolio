@@ -1,0 +1,115 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+.logo-bg {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 100px;
+  opacity: 0.08;
+  z-index: -1;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.form-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.form-card input,
+.form-card select,
+.form-card button {
+  flex: 1 1 200px;
+  padding: 10px;
+  font-size: 1em;
+}
+
+.form-card button {
+  background: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.form-card button:hover {
+  background: #0056b3;
+}
+
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-section input,
+.filter-section select {
+  padding: 8px;
+  font-size: 1em;
+  flex: 1 1 150px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+thead {
+  background-color: #007BFF;
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.back-button {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  background-color: #343a40; /* gris oscuro */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background-color: #212529; /* aún más oscuro */
+  transform: scale(1.03);
+}
+

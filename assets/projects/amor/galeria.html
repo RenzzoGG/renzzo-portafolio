@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de Recuerdos</title>
+  <link rel="stylesheet" href="./css/style-galeria.css">
+</head>
+<body>
+  <h1 class="titulo">Nuestros Recuerdos 💖</h1>
+
+  <div class="gallery">
+    <!-- Cartas -->
+    <div class="card" data-type="img" data-src="img/foto-1.jpg" data-message="Yo cuando estaba en mi prime :c">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-2.jpg" data-message="Sigue siendo nuestro futuro :3, no creas que me olvide de el porque jamas lo hare">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-3.jpg" data-message="Nosotros juntitos y una de nuestras primeras fotos que recuerdo">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-4.jpg" data-message="💀">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-5.jpg" data-message="🤨🤨🤨">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-6.jpg" data-message="Tu con tus filtros feos pero juntitos :3">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-7.jpg" data-message="ZZZzzzz 😴😴😴">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-8.jpg" data-message="Nosotros en el concierto del Kevin, mi mejor concierto hasta ahora la verdad">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-9.jpg" data-message="😒😒😒 Lady Corajes">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-10.jpg" data-message="Tu sonrisa 👄">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-11.jpg" data-message="Tu frente">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-12.jpg" data-message="pelona">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-13.jpg" data-message="Que setzy 👅👅👅">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-14.jpg" data-message="El amor de mi vida">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="img" data-src="img/foto-15.jpg" data-message="😍😍😍😍">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+
+    <div class="card" data-type="video" data-src="img/video-1.mp4" data-message="Lo imposible se logra">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="video" data-src="img/video-2.mp4" data-message="Nuestra cancion del concierto">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+    <div class="card" data-type="video" data-src="img/video-3.mp4" data-message="Nosotros :3">
+      <div class="card-front"></div>
+      <div class="card-back"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <div class="modal-content">
+      <img id="modal-img" src="" alt="">
+      <video id="modal-video" controls></video>
+      <p id="modal-message"></p>
+    </div>
+  </div>
+
+  <!-- Botón de música -->
+  <button id="music-btn">🎵</button>
+  <audio id="background-music" src="./img/cancion-galeria.mp3" loop></audio>
+
+  <a href="juego.html" class="btn-next">💖 Siguiente 💖</a>
+
+  <script src="./js/galeria.js"></script>
+</body>
+</html>

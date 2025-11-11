@@ -1,0 +1,84 @@
+/* css/register.css */
+.background-logo {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 250px;
+  opacity: 0.70; /* Muy difuminado */
+  pointer-events: none; /* Para que no bloquee clics */
+  user-select: none;     /* Para que no se pueda seleccionar */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+h2 {
+  color: #333;
+}
+
+form {
+  background: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+input {
+  width: 93%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.back-button {
+    padding: 11px 95px;
+    width: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 25px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}
+
+.switch-link {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #555;
+}
+.switch-link a {
+  color: #007BFF;
+  text-decoration: none;
+}
+.switch-link a:hover {
+  text-decoration: underline;
+}

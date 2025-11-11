@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Great Vibes', cursive;
+  background: linear-gradient(to bottom, #ffe6f0, #ffd1e6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  text-align: center;
+  padding: 1rem;
+  max-width: 90%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.titulo {
+  font-size: 2rem;
+  color: #d63384;
+  margin-bottom: 1rem;
+  animation: popIn 1s ease;
+}
+
+.mensaje {
+  font-size: 1.4rem;
+  color: #a60061;
+  line-height: 1.6;
+  text-align: justify;
+  white-space: pre-wrap;
+}
+
+/* GIFs */
+.gifs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.gifs img {
+  width: 120px;
+  height: 120px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  animation: fadeInGif 1s forwards;
+  animation-delay: 0.5s;
+}
+
+.gifs img:nth-child(2) { animation-delay: 0.8s; }
+.gifs img:nth-child(3) { animation-delay: 1.1s; }
+
+@keyframes fadeInGif {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Animaciones */
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Corazones flotando */
+.heart {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: red;
+  clip-path: polygon(50% 0%, 61% 11%, 75% 11%, 84% 22%, 84% 34%, 75% 50%, 50% 75%, 25% 50%, 16% 34%, 16% 22%, 25% 11%, 39% 11%);
+  animation: floatUp 3s ease forwards;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-200px) scale(1.5); }
+}
+
+/* Botón de música */
+.musica-btn {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  background-color: #ff5aa5;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.musica-btn:hover {
+  transform: scale(1.2);
+  background-color: #ff3a84;
+}
+
+/* Adaptación iPhone 14 */
+@media screen and (max-width: 430px) {
+  .titulo {
+    font-size: 1.8rem;
+  }
+  .mensaje {
+    font-size: 1.2rem;
+  }
+  .gifs img {
+    width: 100px;
+    height: 100px;
+  }
+}
