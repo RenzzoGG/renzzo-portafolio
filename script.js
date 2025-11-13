@@ -89,5 +89,130 @@ function revealOnScroll() {
   });
 }
 
+
 window.addEventListener("scroll", revealOnScroll);
+
+// ===== STACK: hover tilt + tooltip =====
+const stackItems = document.querySelectorAll('.stack-item');
+const tooltip = document.getElementById('stackTooltip');
+
+stackItems.forEach((card) => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const cx = rect.width / 2, cy = rect.height / 2;
+    const rotateX = ((y - cy) / cy) * -6; // tilt
+    const rotateY = ((x - cx) / cx) * 6;
+    card.style.transform = `translateY(-6px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+    // spotlight follow
+    card.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
+    card.style.setProperty('--my', `${(y / rect.height) * 100}%`);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+
+  card.addEventListener('mouseenter', () => {
+    if (tooltip) {
+      tooltip.textContent = card.dataset.name || 'Tech';
+      tooltip.style.opacity = '1';
+    }
+  });
+});
+
+// mover tooltip global
+document.addEventListener('mousemove', (e) => {
+  if (!tooltip) return;
+  tooltip.style.left = `${e.clientX}px`;
+  tooltip.style.top = `${e.clientY}px`;
+});
+
+// reveal on scroll incluye .stack
+const revealTargets = document.querySelectorAll('.about, .projects, .contact, .stack');
+function revealOnScrollPlus() {
+  const windowH = window.innerHeight;
+  revealTargets.forEach((el) => {
+    const top = el.getBoundingClientRect().top;
+    if (top < windowH - 100) el.classList.add('reveal-visible');
+  });
+}
+window.addEventListener('scroll', revealOnScrollPlus);
+revealOnScrollPlus(); // revela lo que ya esté a la vista
+
+// ===== SCROLL REVEAL PREMIUM =====
+const reveals = document.querySelectorAll(".reveal");
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      // Quitar para que no desaparezca al subir
+      // revealObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.18, // aparece cuando el 18% está en pantalla
+  rootMargin: "0px 0px -50px 0px"
+});
+
+reveals.forEach(el => revealObserver.observe(el));
+
+const projectCards = document.querySelectorAll(".project-card");
+
+function revealProjects() {
+  const windowHeight = window.innerHeight;
+
+  projectCards.forEach(card => {
+    const top = card.getBoundingClientRect().top;
+    if (top < windowHeight - 80) {
+      card.classList.add("reveal-visible");
+    }
+  });
+}
+
+window.addEventListener("scroll", revealProjects);
+revealProjects();
+
+// ===== EMAILJS CONTACT FORM =====
+emailjs.init("FD8yt-LzhsSqqmbj-"); // Public Key
+
+document.getElementById("contactForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const sendBtn = document.getElementById("sendBtn");
+  const status = document.getElementById("formStatus");
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+
+  const templateParams = {
+    user_name: document.getElementById("name").value,
+    user_email: document.getElementById("email").value,
+    message: document.getElementById("message").value,
+  };
+
+  emailjs.send("service_dze25k6", "template_zxp29u2", templateParams)
+    .then(() => {
+      status.textContent = "Message sent successfully! 🎉";
+      status.style.color = "#00ff9d";
+      sendBtn.textContent = "Sent!";
+      document.getElementById("contactForm").reset();
+
+      setTimeout(() => {
+        status.textContent = "";
+        sendBtn.textContent = "Send Message";
+        sendBtn.disabled = false;
+      }, 3000);
+    })
+    .catch(() => {
+      status.textContent = "Something went wrong. Try again!";
+      status.style.color = "#ff4a4a";
+      sendBtn.textContent = "Send Message";
+      sendBtn.disabled = false;
+    });
+});
+
+
 
