@@ -666,5 +666,12 @@ textarea {
   font-size: 1rem;
 }
 
+.project-actions,
+.project-card .btn,
+.project-card .btn-ghost {
+    position: relative;
+    z-index: 10;
+}
+
 
 
