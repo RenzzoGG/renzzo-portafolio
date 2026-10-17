@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Chrome usa el <title> como nombre sugerido del PDF al guardar -->
+  <title>renzzo-gracia-gomez-cv</title>
+  <meta name="author" content="Renzzo Gracia Gomez">
+  <meta name="description" content="CV of Renzzo Gracia Gomez, Front-End Developer.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap">
+  <link rel="stylesheet" href="cv.css">
+</head>
+<body>
+  <!-- Aviso solo para pantalla; no se imprime -->
+  <p class="screen-note">
+    Print preview of the CV. Press <kbd>Ctrl</kbd> + <kbd>P</kbd> → <strong>Save as PDF</strong>.
+    The dashed line marks the end of page 1.
+  </p>
+
+  <main class="page">
+    <!-- ===== ENCABEZADO ===== -->
+    <header class="cv-header">
+      <h1 class="name">Renzzo Gracia Gomez</h1>
+      <p class="role">Front-End Developer</p>
+      <p class="meta">Hermosillo, Sonora, Mexico · Open to remote work</p>
+      <p class="meta contact">
+        <a href="mailto:renzzo.gomez07@gmail.com">renzzo.gomez07@gmail.com</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="https://renzzogg.com">renzzogg.com</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="https://github.com/RenzzoGG">github.com/RenzzoGG</a>
+        <span class="sep" aria-hidden="true">·</span>
+        <a href="https://platzi.com/p/renzzo.gomez07/">platzi.com/p/renzzo.gomez07</a>
+      </p>
+    </header>
+
+    <!-- ===== SUMMARY ===== -->
+    <section class="cv-section">
+      <h2>Summary</h2>
+      <p>
+        Software Engineering student and front-end developer who turns ideas into fast, responsive websites.
+        I combine solid web fundamentals in HTML, CSS and JavaScript with modern AI-powered tools like
+        Claude Code to deliver clean, working sites quickly, and I handle deployment myself: custom domains,
+        HTTPS and automatic updates included. Currently available for freelance projects.
+      </p>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <section class="cv-section">
+      <h2>Skills</h2>
+      <ul class="skills">
+        <li><strong>Front-end:</strong> HTML5, CSS3 (Grid, Flexbox), Sass, JavaScript, Responsive Design</li>
+        <li><strong>Libraries:</strong> Chart.js, jsPDF, SheetJS</li>
+        <li><strong>Design:</strong> UI design fundamentals, Design systems</li>
+        <li><strong>Tools &amp; workflow:</strong> Git, GitHub, Linux (WSL), AI-assisted development (Claude Code)</li>
+        <li><strong>Deployment:</strong> Railway, Cloudflare (DNS, SSL), Custom domains</li>
+        <li><strong>Currently learning:</strong> Tailwind CSS, React, Node.js, Bootstrap, jQuery</li>
+      </ul>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section class="cv-section">
+      <h2>Projects</h2>
+
+      <article class="item">
+        <h3><span class="item-title">Inventory &amp; Sales Dashboard</span> <span class="item-type">— Web app</span></h3>
+        <p>Product management dashboard with category filters and one-click export to PDF and Excel, wrapped in a clean, modern UI.</p>
+        <p class="item-meta">
+          HTML, CSS, JavaScript, jsPDF, SheetJS
+          <span class="sep" aria-hidden="true">·</span>
+          Live: <a class="url" href="https://renzzogg.com/projects/inventory-dashboard/">renzzogg.com/projects/inventory-dashboard/</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href="https://github.com/RenzzoGG/renzzo-portafolio/tree/main/public/projects/inventory-dashboard">Source</a>
+        </p>
+      </article>
+
+      <article class="item">
+        <h3><span class="item-title">UIFlow Admin Dashboard</span> <span class="item-type">— Web app</span></h3>
+        <p>Single-page admin dashboard with interactive charts, filters and dynamic components.</p>
+        <p class="item-meta">
+          HTML, CSS, JavaScript, Chart.js
+          <span class="sep" aria-hidden="true">·</span>
+          Live: <a class="url" href="https://renzzogg.com/projects/UIFlow/dashboard.html">renzzogg.com/projects/UIFlow/dashboard.html</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href="https://github.com/RenzzoGG/renzzo-portafolio/tree/main/public/projects/UIFlow">Source</a>
+        </p>
+      </article>
+
+      <article class="item">
+        <h3><span class="item-title">UIFlow Landing Page</span> <span class="item-type">— Landing page</span></h3>
+        <p>Landing page for a fictional dashboard-building tool, focused on clear layout and strong visual hierarchy.</p>
+        <p class="item-meta">
+          HTML, CSS, JavaScript
+          <span class="sep" aria-hidden="true">·</span>
+          Live: <a class="url" href="https://renzzogg.com/projects/UIFlow/">renzzogg.com/projects/UIFlow/</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href="https://github.com/RenzzoGG/renzzo-portafolio/tree/main/public/projects/UIFlow">Source</a>
+        </p>
+      </article>
+
+      <article class="item">
+        <h3><span class="item-title">renzzogg.com</span> <span class="item-type">— Personal portfolio</span></h3>
+        <p>Responsive portfolio built with HTML, CSS and JavaScript. Deployed on Railway behind Cloudflare with a custom domain, HTTPS and automatic deploys from GitHub.</p>
+        <p class="item-meta">
+          HTML, CSS, JavaScript, Railway, Cloudflare
+          <span class="sep" aria-hidden="true">·</span>
+          Live: <a class="url" href="https://renzzogg.com">renzzogg.com</a>
+          <span class="sep" aria-hidden="true">·</span>
+          Source: <a class="url" href="https://github.com/RenzzoGG/renzzo-portafolio">github.com/RenzzoGG/renzzo-portafolio</a>
+        </p>
+      </article>
+    </section>
+
+    <!-- ===== EDUCATION ===== -->
+    <section class="cv-section">
+      <h2>Education</h2>
+      <article class="item">
+        <div class="item-row">
+          <h3><span class="item-title">Software Engineering</span> <span class="item-type">— Universidad Tecnológica de Hermosillo</span></h3>
+          <p class="item-date">4th term · in progress</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== CERTIFICATIONS ===== -->
+    <section class="cv-section">
+      <h2>Certifications</h2>
+      <p class="certs">
+        <strong>Platzi:</strong>
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/2467-course/diploma/detalle/">Frontend Developer</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/10266-course/diploma/detalle/">JavaScript Fundamentals</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/7991-course/diploma/detalle/">CSS Architecture</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/">Professional CSS Grid Layout</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/">CSS Grid Basics</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/">Web Design with CSS Grid &amp; Flexbox</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/">Practical CSS Layout</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/6867-course/diploma/detalle/">Sass Fundamentals</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/">Design for Developers</a> ·
+        <a href="https://platzi.com/p/renzzo.gomez07/curso/1420-course/diploma/detalle/">Effective Design Systems</a>
+      </p>
+      <p class="item-meta">
+        Full profile: <a class="url" href="https://platzi.com/p/renzzo.gomez07/">platzi.com/p/renzzo.gomez07</a>
+      </p>
+    </section>
+
+    <!-- ===== LANGUAGES ===== -->
+    <section class="cv-section">
+      <h2>Languages</h2>
+      <p>Spanish (native) · English (intermediate–advanced)</p>
+    </section>
+  </main>
+</body>
+</html>

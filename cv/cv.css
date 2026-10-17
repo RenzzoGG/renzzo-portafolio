@@ -1,0 +1,254 @@
+/* =========================================================
+   CV — Renzzo Gracia Gomez
+   Pensado para imprimir en tamaño Carta (Letter) y guardar como PDF.
+   Si el CV se pasa de una página, ajusta primero las variables
+   de tamaño y espaciado de abajo.
+   ========================================================= */
+
+:root {
+  /* Tamaños y espaciado (ajustables para que quepa en 1 página) */
+  --fs-body: 9.5pt;
+  --fs-small: 8.5pt;
+  --fs-name: 22pt;
+  --fs-role: 11.5pt;
+  --fs-heading: 9.5pt;
+  --lh: 1.38;
+  --section-gap: 11pt;
+  --item-gap: 6pt;
+
+  /* Márgenes de la hoja: deben coincidir con @page */
+  --margin-y: 0.5in;
+  --margin-x: 0.6in;
+
+  /* Colores: blanco con el azul de la página solo como acento */
+  --text: #111827;
+  --muted: #4b5563;
+  --accent: #1d5fd1;
+  --rule: #c9d6ee;
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+@page {
+  size: letter;
+  margin: 0.5in 0.6in;
+}
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  background: #e5e7eb;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh);
+}
+
+h1,
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+strong {
+  font-weight: 600;
+}
+
+/* ===== Hoja en pantalla (vista previa) ===== */
+.screen-note {
+  max-width: 8.5in;
+  margin: 16px auto 0;
+  padding: 0 4px;
+  font-size: 10pt;
+  color: #374151;
+}
+
+.screen-note kbd {
+  padding: 1px 5px;
+  border: 1px solid #9ca3af;
+  border-radius: 4px;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 9pt;
+}
+
+.page {
+  position: relative;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 12px auto 32px;
+  padding: var(--margin-y) var(--margin-x);
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Línea punteada: donde termina el área de contenido de la página 1 */
+.page::after {
+  content: "end of page 1";
+  position: absolute;
+  top: calc(11in - var(--margin-y));
+  left: 0;
+  right: 0;
+  padding: 2px var(--margin-x) 0;
+  border-top: 1px dashed #ef4444;
+  font-family: var(--font-mono);
+  font-size: 7pt;
+  color: #ef4444;
+  text-align: right;
+}
+
+/* ===== Encabezado ===== */
+.cv-header {
+  padding-bottom: 9pt;
+  margin-bottom: var(--section-gap);
+  border-bottom: 2px solid var(--accent);
+}
+
+.name {
+  font-size: var(--fs-name);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.role {
+  margin-top: 2pt;
+  font-size: var(--fs-role);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.meta {
+  margin-top: 3pt;
+  color: var(--muted);
+}
+
+.contact a,
+.url {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+}
+
+.sep {
+  margin-inline: 3pt;
+  color: var(--muted);
+}
+
+/* ===== Secciones ===== */
+.cv-section + .cv-section {
+  margin-top: var(--section-gap);
+}
+
+.cv-section h2 {
+  margin-bottom: 5pt;
+  padding-bottom: 2pt;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--fs-heading);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Skills: una línea por grupo */
+.skills {
+  padding: 0;
+  list-style: none;
+}
+
+.skills li + li {
+  margin-top: 1.5pt;
+}
+
+/* Proyectos y educación */
+.item + .item {
+  margin-top: var(--item-gap);
+}
+
+.item h3 {
+  font-size: var(--fs-body);
+  font-weight: 400;
+}
+
+.item-title {
+  font-weight: 700;
+}
+
+.item-type {
+  color: var(--muted);
+}
+
+.item-meta {
+  margin-top: 1pt;
+  font-size: var(--fs-small);
+  color: var(--muted);
+}
+
+.item-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 12pt;
+}
+
+.item-date {
+  font-size: var(--fs-small);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Certificados: enlaces discretos para no saturar la línea */
+.certs a {
+  color: inherit;
+}
+
+/* Evita que un proyecto o una sección queden partidos entre páginas */
+.item,
+.cv-header {
+  break-inside: avoid;
+}
+
+.cv-section h2 {
+  break-after: avoid;
+}
+
+/* ===== Impresión ===== */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .screen-note,
+  .page::after {
+    display: none;
+  }
+
+  /* Los márgenes los pone @page; la hoja ocupa el área imprimible */
+  .page {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
