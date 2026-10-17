@@ -7,14 +7,14 @@
 
 :root {
   /* Tamaños y espaciado (ajustables para que quepa en 1 página) */
-  --fs-body: 9.5pt;
-  --fs-small: 8.5pt;
-  --fs-name: 22pt;
-  --fs-role: 11.5pt;
-  --fs-heading: 9.5pt;
-  --lh: 1.38;
-  --section-gap: 11pt;
-  --item-gap: 6pt;
+  --fs-body: 10.5pt;
+  --fs-small: 9.5pt;
+  --fs-name: 26pt;
+  --fs-role: 12.5pt;
+  --fs-heading: 10.5pt;
+  --lh: 1.45;
+  --section-gap: 16pt;
+  --item-gap: 8pt;
 
   /* Márgenes de la hoja: deben coincidir con @page */
   --margin-y: 0.5in;
@@ -118,7 +118,7 @@ strong {
 
 /* ===== Encabezado ===== */
 .cv-header {
-  padding-bottom: 9pt;
+  padding-bottom: 12pt;
   margin-bottom: var(--section-gap);
   border-bottom: 2px solid var(--accent);
 }
@@ -159,7 +159,7 @@ strong {
 }
 
 .cv-section h2 {
-  margin-bottom: 5pt;
+  margin-bottom: 7pt;
   padding-bottom: 2pt;
   border-bottom: 1px solid var(--rule);
   font-size: var(--fs-heading);
@@ -176,7 +176,7 @@ strong {
 }
 
 .skills li + li {
-  margin-top: 1.5pt;
+  margin-top: 3pt;
 }
 
 /* Proyectos y educación */
