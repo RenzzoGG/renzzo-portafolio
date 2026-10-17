@@ -25,6 +25,7 @@
   --radius-sm: 8px;
   --header-h: 64px;
   --container: 1100px;
+  --gutter: 20px; /* margen lateral compartido por .container y el menú móvil */
 
   color-scheme: light;
 }
@@ -119,6 +120,11 @@ a {
   font-family: var(--font-mono);
 }
 
+/* Mantiene una frase completa en la misma línea */
+.nowrap {
+  white-space: nowrap;
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -135,7 +141,7 @@ a {
   width: 100%;
   max-width: var(--container);
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: var(--gutter);
 }
 
 .skip-link {
@@ -241,7 +247,7 @@ a {
   right: 0;
   display: flex;
   flex-direction: column;
-  padding: 8px 20px 16px;
+  padding: 8px var(--gutter) 16px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
@@ -416,8 +422,10 @@ html:not(.js) .theme-toggle {
 }
 
 .hero-tagline {
-  max-width: 36ch;
+  max-width: 40ch;
   margin-top: 20px;
+  /* Reparte el texto en líneas de largo parecido para no dejar palabras sueltas */
+  text-wrap: balance;
   font-size: clamp(1.1rem, 2.6vw, 1.35rem);
   color: var(--muted);
 }
@@ -725,8 +733,8 @@ html:not(.js) .theme-toggle {
 
 /* ===== 16. Pantallas más grandes ===== */
 @media (min-width: 640px) {
-  .container {
-    padding-inline: 32px;
+  :root {
+    --gutter: 32px;
   }
 
   .card-grid,
