@@ -44,6 +44,7 @@ Then open <http://localhost:8000>.
 1. Serve the source: `python3 -m http.server 8001 -d cv`, then open <http://localhost:8001>.
 2. Print it from Chrome (`Ctrl + P`) as **Save as PDF**, Letter size, default margins, headers and footers off.
 3. Replace `public/renzzo-gracia-gomez-cv.pdf` with the new file.
+4. In `public/index.html`, increment the `?v=` number in the "Download CV" link (e.g. `?v=2` → `?v=3`) so browsers and Cloudflare fetch the new PDF instead of a cached copy.
 
 ## Deployment
 
