@@ -7,6 +7,27 @@ Reglas de trabajo para este repositorio.
 - Portafolio / CV personal de Renzzo.
 - Desplegado en **Railway** en **renzzogg.com** desde la rama `main`.
 - **Cada push a `main` se publica en vivo** en renzzogg.com vía Railway.
+- Railway (Railpack) detecta la carpeta `public/` y la sirve como sitio estático. **Solo lo que está en `public/` es público.**
+
+## Estructura del repo
+
+```
+public/                          # Sitio publicado
+├── index.html                   # Página del portafolio
+├── css/styles.css
+├── js/main.js
+├── favicon.svg
+├── renzzo-gracia-gomez-cv.pdf   # CV descargable (exportado desde cv/)
+└── projects/                    # Demos de proyectos, cada uno autocontenido
+    ├── inventory-dashboard/
+    └── UIFlow/                  # Landing (index.html) + dashboard (dashboard.html)
+cv/                              # Fuente HTML/CSS del CV (no se publica)
+README.md
+CLAUDE.md
+```
+
+- El sitio viejo (`index.html`, `style.css`, `script.js` y `assets/` en la raíz) **ya no existe**; se borró en la fase de limpieza.
+- El CV se edita en `cv/`, se exporta a PDF con Chrome (Carta, una sola página) y se reemplaza `public/renzzo-gracia-gomez-cv.pdf`.
 
 ## Forma de trabajo
 
@@ -22,7 +43,8 @@ Reglas de trabajo para este repositorio.
 
 - HTML, CSS y JavaScript puro.
 - Sin frameworks ni dependencias de npm, salvo que yo lo apruebe explícitamente.
-- La página nueva **no usará Firebase**.
+- El sitio **no usa Firebase**.
+- El portafolio no carga librerías desde CDN (sí puede usar Google Fonts). Los proyectos de `public/projects/` sí pueden usar CDN, siempre con versión exacta.
 
 ## Reporte al terminar cada tarea
 
