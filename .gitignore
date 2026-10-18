@@ -1,0 +1,25 @@
+# ===== Sistema operativo =====
+# Windows
+desktop.ini
+Thumbs.db
+ehthumbs.db
+# macOS
+.DS_Store
+._*
+
+# ===== Editores =====
+.vscode/
+.idea/
+*.swp
+*~
+
+# ===== Logs =====
+*.log
+npm-debug.log*
+
+# ===== Dependencias (por si en el futuro se usa npm) =====
+node_modules/
+
+# ===== Variables de entorno / claves =====
+.env
+.env.*
