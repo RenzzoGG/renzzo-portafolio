@@ -19,8 +19,11 @@ public/                          # Sitio publicado
 ├── favicon.svg
 ├── renzzo-gracia-gomez-cv.pdf   # CV descargable (exportado desde cv/)
 └── projects/                    # Demos de proyectos, cada uno autocontenido
+    ├── cleaning-landing/        # Build compilado (no editar a mano; se genera desde src/)
     ├── inventory-dashboard/
     └── UIFlow/                  # Landing (index.html) + dashboard (dashboard.html)
+src/                             # Fuentes con paso de build (no se publican)
+└── cleaning-landing/            # Landing con Tailwind CSS (package.json, index.html, styles/, js/, assets/)
 cv/                              # Fuente HTML/CSS del CV (no se publica)
 README.md
 CLAUDE.md
@@ -45,7 +48,19 @@ CLAUDE.md
 - HTML, CSS y JavaScript puro.
 - Sin frameworks ni dependencias de npm, salvo que yo lo apruebe explícitamente.
 - El sitio **no usa Firebase**.
+- **Excepción de npm aprobada:** solo dentro de `src/cleaning-landing/`, para Tailwind CSS (`tailwindcss` y `@tailwindcss/cli`, versión exacta fijada en `package.json`). Nada global ni en la raíz del repo (un `package.json` en la raíz podría hacer que Railpack trate el sitio como app de Node).
 - El portafolio no carga librerías desde CDN (sí puede usar Google Fonts). Los proyectos de `public/projects/` sí pueden usar CDN, siempre con versión exacta.
+
+## Build de la landing con Tailwind (`src/cleaning-landing/`)
+
+- Se edita **solo** `src/cleaning-landing/` (nunca `public/projects/cleaning-landing/` a mano).
+- Comandos, desde `src/cleaning-landing/`:
+  - `npm ci` — instala exactamente lo de `package-lock.json` (primera vez o tras clonar).
+  - `npm run dev` — copia HTML/JS/assets y regenera el CSS al guardar. Ver en otra terminal con `python3 -m http.server 8000 -d public` → `http://localhost:8000/projects/cleaning-landing/`.
+  - `npm run build` — limpia `public/projects/cleaning-landing/`, copia los estáticos y genera `css/styles.css` minificado.
+- Railway **no** ejecuta el build: corre `npm run build` antes de cada commit que toque la landing y commitea el resultado de `public/`.
+- Se commitean `package.json`, `package-lock.json` y el CSS compilado; `node_modules/` está en `.gitignore`.
+- La configuración de Tailwind v4 está en `styles/input.css` (`@theme`, `@source`); no hay `tailwind.config.js`. No construir nombres de clase concatenando strings en JS: el escáner no los detecta.
 
 ## Reporte al terminar cada tarea
 

@@ -7,7 +7,8 @@ Personal portfolio and CV of Renzzo Gracia Gomez, Front-End Developer.
 ## Stack
 
 - HTML, CSS and vanilla JavaScript
-- No frameworks, no build step, no npm dependencies
+- No frameworks; the portfolio itself has no build step or npm dependencies
+- Tailwind CSS (CLI) for the Fernwick cleaning landing page, built from `src/cleaning-landing/`
 - Fonts from Google Fonts (Inter, JetBrains Mono)
 - Light/dark theme, responsive, mobile-first
 
@@ -22,8 +23,11 @@ Personal portfolio and CV of Renzzo Gracia Gomez, Front-End Developer.
 │   ├── favicon.svg
 │   ├── renzzo-gracia-gomez-cv.pdf # Downloadable CV (exported from cv/)
 │   └── projects/                  # Live project demos
+│       ├── cleaning-landing/      # Compiled output of src/cleaning-landing
 │       ├── inventory-dashboard/
 │       └── UIFlow/                # Landing page + admin dashboard
+├── src/
+│   └── cleaning-landing/          # Tailwind source (not published)
 └── cv/                            # Source of the CV (not published)
     ├── index.html
     └── cv.css
@@ -38,6 +42,19 @@ python3 -m http.server 8000 -d public
 ```
 
 Then open <http://localhost:8000>.
+
+## Building the cleaning landing page
+
+The Fernwick Home Cleaning demo uses Tailwind CSS, compiled locally with npm (Node.js 20+).
+
+```bash
+cd src/cleaning-landing
+npm ci           # install the pinned Tailwind version
+npm run dev      # rebuild on save while developing
+npm run build    # write the minified output to public/projects/cleaning-landing/
+```
+
+The compiled files in `public/` are committed, so the deployment itself needs no build step.
 
 ## Updating the CV
 
