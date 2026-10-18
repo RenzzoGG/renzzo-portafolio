@@ -742,6 +742,12 @@ html:not(.js) .theme-toggle {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Con 3 tarjetas, 2 columnas dejarían una sola abajo: mejor 1 columna
+     hasta que quepan las 3 (regla de 960px) */
+  .card-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
   .contact-link {
     grid-template-columns: 72px 120px 1fr;
     gap: 16px;
