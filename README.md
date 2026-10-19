@@ -1,6 +1,6 @@
 # renzzogg.com
 
-Personal portfolio and CV of Renzzo Gracia Gomez, Front-End Developer.
+Personal portfolio and CV of Renzzo Gracia Gomez, Full Stack Developer.
 
 **Live site:** [https://renzzogg.com](https://renzzogg.com)
 
