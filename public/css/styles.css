@@ -343,14 +343,6 @@ html:not(.js) .theme-toggle {
   color: var(--on-accent);
 }
 
-.btn-ghost {
-  color: var(--text);
-}
-
-.btn-ghost:hover {
-  background: var(--surface-2);
-}
-
 .text-link {
   display: inline-flex;
   align-items: center;
