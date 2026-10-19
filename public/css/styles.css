@@ -531,6 +531,8 @@ html:not(.js) .theme-toggle {
 .about-text {
   max-width: 65ch;
   font-size: 1.075rem;
+  /* Reparte mejor las últimas líneas para no dejar una palabra suelta */
+  text-wrap: pretty;
 }
 
 .code-card {
