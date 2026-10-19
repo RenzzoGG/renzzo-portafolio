@@ -748,8 +748,9 @@ html:not(.js) .theme-toggle {
     grid-template-columns: 1fr;
   }
 
+  /* La 1.ª columna cabe "$ download" (10 caracteres mono) */
   .contact-link {
-    grid-template-columns: 72px 120px 1fr;
+    grid-template-columns: 88px 120px 1fr;
     gap: 16px;
   }
 
