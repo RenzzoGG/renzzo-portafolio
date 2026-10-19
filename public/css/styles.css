@@ -711,6 +711,12 @@ html:not(.js) .theme-toggle {
     --gutter: 32px;
   }
 
+  /* About justificado solo con líneas largas; hyphens usa el lang="en" del <html> */
+  .about-text {
+    text-align: justify;
+    hyphens: auto;
+  }
+
   .card-grid,
   .cert-grid {
     grid-template-columns: repeat(2, 1fr);
