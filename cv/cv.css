@@ -169,6 +169,11 @@ strong {
   color: var(--accent);
 }
 
+/* Summary: evita que la última línea quede con una sola palabra */
+.summary {
+  text-wrap: pretty;
+}
+
 /* Skills: una línea por grupo */
 .skills {
   padding: 0;
