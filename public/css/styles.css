@@ -755,6 +755,11 @@ html:not(.js) .theme-toggle {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  /* Services tiene 4 tarjetas: 2x2 (4 en fila las dejaría muy angostas) */
+  .card-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .about-grid {
     grid-template-columns: 1.6fr 1fr;
     align-items: start;
