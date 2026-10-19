@@ -32,6 +32,7 @@ CLAUDE.md
 - El sitio viejo (`index.html`, `style.css`, `script.js` y `assets/` en la raíz) **ya no existe**; se borró en la fase de limpieza.
 - El CV se edita en `cv/`, se exporta a PDF con Chrome (Carta, una sola página) y se reemplaza `public/renzzo-gracia-gomez-cv.pdf`.
 - **Cada vez que se actualice el PDF del CV, incrementa el número de `?v=`** en el enlace "Resume (PDF)" de la sección Contact de `public/index.html` (por ejemplo `?v=2` → `?v=3`). Así navegadores y Cloudflare descargan la versión nueva en lugar de una copia en caché.
+- **Skills solo incluye tecnologías usadas en un proyecto publicado en el portafolio.** Al terminar un proyecto con una tecnología nueva, se agrega a Skills tanto en la página (`public/index.html`) como en el CV (`cv/index.html`).
 
 ## Forma de trabajo
 
