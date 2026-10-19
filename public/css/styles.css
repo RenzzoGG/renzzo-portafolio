@@ -487,14 +487,6 @@ html:not(.js) .theme-toggle {
   color: var(--accent);
 }
 
-.card-heading-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
 .card-title {
   font-size: 1.25rem;
   line-height: 1.3;
@@ -528,18 +520,6 @@ html:not(.js) .theme-toggle {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--accent);
-}
-
-/* "Currently learning": borde punteado para distinguirla */
-.card-learning {
-  background: transparent;
-  border-style: dashed;
-}
-
-.chip-dashed {
-  background: transparent;
-  border-style: dashed;
-  color: var(--muted);
 }
 
 /* ===== 8. About ===== */
@@ -732,6 +712,12 @@ html:not(.js) .theme-toggle {
   .card-grid,
   .cert-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Skills tiene 5 tarjetas: front-end ocupa 2 columnas para que ninguna
+     quede sola en la última fila (2 cols: 2+2+2 · 3 cols: 2+1 / 1+1+1) */
+  .card-wide {
+    grid-column: span 2;
   }
 
   /* Con 3 tarjetas, 2 columnas dejarían una sola abajo: mejor 1 columna
