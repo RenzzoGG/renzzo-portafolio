@@ -17,19 +17,30 @@ public/                          # Sitio publicado
 ├── css/styles.css
 ├── js/main.js
 ├── favicon.svg
-├── renzzo-gracia-gomez-cv.pdf   # CV descargable (exportado desde cv/)
-└── projects/                    # Demos de proyectos, cada uno autocontenido
-    ├── cleaning-landing/        # Build compilado (no editar a mano; se genera desde src/)
-    ├── inventory-dashboard/
-    └── UIFlow/                  # Landing (index.html) + dashboard (dashboard.html)
-src/                             # Fuentes con paso de build (no se publican)
-└── cleaning-landing/            # Landing con Tailwind CSS (package.json, index.html, styles/, js/, assets/)
+└── renzzo-gracia-gomez-cv.pdf   # CV descargable (exportado desde cv/)
 cv/                              # Fuente HTML/CSS del CV (no se publica)
+├── index.html
+└── cv.css
+.gitignore
 README.md
 CLAUDE.md
 ```
 
 - El sitio viejo (`index.html`, `style.css`, `script.js` y `assets/` en la raíz) **ya no existe**; se borró en la fase de limpieza.
+
+## Proyectos (repos separados)
+
+Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos desde la sección Projects de `public/index.html` y desde `cv/index.html`. Si cambia un enlace, actualízalo en ambos.
+
+| Proyecto | Live | Source |
+| --- | --- | --- |
+| Fernwick Home Cleaning | https://fernwick.renzzogg.com | https://github.com/RenzzoGG/fernwick-home-cleaning |
+| Inventory & Sales Dashboard | https://inventory.renzzogg.com | https://github.com/RenzzoGG/inventory-sales-dashboard |
+| UIFlow Admin Dashboard | https://uiflow.renzzogg.com/dashboard.html | https://github.com/RenzzoGG/uiflow |
+| UIFlow Landing Page | https://uiflow.renzzogg.com | https://github.com/RenzzoGG/uiflow |
+
+- Los enlaces Live de las tarjetas abren en nueva pestaña (`target="_blank" rel="noopener noreferrer"`).
+- El build de Tailwind de Fernwick y sus reglas de npm viven en el repo `fernwick-home-cleaning`, no aquí.
 - El CV se edita en `cv/`, se exporta a PDF con Chrome (Carta, una sola página) y se reemplaza `public/renzzo-gracia-gomez-cv.pdf`.
 - **Cada vez que se actualice el PDF del CV, incrementa el número de `?v=`** en el enlace "Resume (PDF)" de la sección Contact de `public/index.html` (por ejemplo `?v=2` → `?v=3`). Así navegadores y Cloudflare descargan la versión nueva en lugar de una copia en caché.
 - **Skills solo incluye tecnologías usadas en un proyecto publicado en el portafolio.** Al terminar un proyecto con una tecnología nueva, se agrega a Skills tanto en la página (`public/index.html`) como en el CV (`cv/index.html`).
@@ -47,21 +58,10 @@ CLAUDE.md
 ## Stack
 
 - HTML, CSS y JavaScript puro.
-- Sin frameworks ni dependencias de npm, salvo que yo lo apruebe explícitamente.
+- Sin frameworks, sin build y sin dependencias de npm, salvo que yo lo apruebe explícitamente. No agregues un `package.json` en este repo (Railpack podría tratar el sitio como app de Node).
 - El sitio **no usa Firebase**.
-- **Excepción de npm aprobada:** solo dentro de `src/cleaning-landing/`, para Tailwind CSS (`tailwindcss` y `@tailwindcss/cli`, versión exacta fijada en `package.json`). Nada global ni en la raíz del repo (un `package.json` en la raíz podría hacer que Railpack trate el sitio como app de Node).
-- El portafolio no carga librerías desde CDN (sí puede usar Google Fonts). Los proyectos de `public/projects/` sí pueden usar CDN, siempre con versión exacta.
-
-## Build de la landing con Tailwind (`src/cleaning-landing/`)
-
-- Se edita **solo** `src/cleaning-landing/` (nunca `public/projects/cleaning-landing/` a mano).
-- Comandos, desde `src/cleaning-landing/`:
-  - `npm ci` — instala exactamente lo de `package-lock.json` (primera vez o tras clonar).
-  - `npm run dev` — copia HTML/JS/assets y regenera el CSS al guardar. Ver en otra terminal con `python3 -m http.server 8000 -d public` → `http://localhost:8000/projects/cleaning-landing/`.
-  - `npm run build` — limpia `public/projects/cleaning-landing/`, copia los estáticos y genera `css/styles.css` minificado.
-- Railway **no** ejecuta el build: corre `npm run build` antes de cada commit que toque la landing y commitea el resultado de `public/`.
-- Se commitean `package.json`, `package-lock.json` y el CSS compilado; `node_modules/` está en `.gitignore`.
-- La configuración de Tailwind v4 está en `styles/input.css` (`@theme`, `@source`); no hay `tailwind.config.js`. No construir nombres de clase concatenando strings en JS: el escáner no los detecta.
+- El portafolio no carga librerías desde CDN (sí puede usar Google Fonts).
+- Vista previa local: `python3 -m http.server 8000 -d public` → `http://localhost:8000`.
 
 ## Reporte al terminar cada tarea
 
