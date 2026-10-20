@@ -43,6 +43,7 @@ Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos
 - El build de Tailwind de Fernwick y sus reglas de npm viven en el repo `fernwick-home-cleaning`, no aquí.
 - El CV se edita en `cv/`, se exporta a PDF con Chrome (Carta, una sola página) y se reemplaza `public/renzzo-gracia-gomez-cv.pdf`.
 - **Cada vez que se actualice el PDF del CV, incrementa el número de `?v=`** en el enlace "Resume (PDF)" de la sección Contact de `public/index.html` (por ejemplo `?v=2` → `?v=3`). Así navegadores y Cloudflare descargan la versión nueva en lugar de una copia en caché.
+- **Lo mismo con el CSS y el JS:** cada vez que cambie `public/css/styles.css` o `public/js/main.js`, incrementa el `?v=` de su enlace en el `<head>` de `public/index.html` (`/css/styles.css?v=2` → `?v=3`, `/js/main.js?v=2` → `?v=3`). Cada archivo lleva su propio número; solo sube el del archivo que cambió.
 - **Skills solo incluye tecnologías usadas en un proyecto publicado en el portafolio.** Al terminar un proyecto con una tecnología nueva, se agrega a Skills tanto en la página (`public/index.html`) como en el CV (`cv/index.html`).
 
 ## Forma de trabajo
