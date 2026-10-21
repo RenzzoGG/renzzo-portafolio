@@ -20,10 +20,13 @@ Personal portfolio and CV of Renzzo Gracia Gomez, Full Stack Developer.
 │   ├── css/styles.css
 │   ├── js/main.js
 │   ├── favicon.svg
+│   ├── og-image.png               # Social preview image (generated from og/)
 │   └── renzzo-gracia-gomez-cv.pdf # Downloadable CV (exported from cv/)
-└── cv/                            # Source of the CV (not published)
-    ├── index.html
-    └── cv.css
+├── cv/                            # Source of the CV (not published)
+│   ├── index.html
+│   └── cv.css
+└── og/                            # Source of the Open Graph image (not published)
+    └── og-image.html
 ```
 
 ## Projects
@@ -53,6 +56,19 @@ Then open <http://localhost:8000>.
 2. Print it from Chrome (`Ctrl + P`) as **Save as PDF**, Letter size, default margins, headers and footers off.
 3. Replace `public/renzzo-gracia-gomez-cv.pdf` with the new file.
 4. In `public/index.html`, increment the `?v=` number in the "Resume (PDF)" link (e.g. `?v=2` → `?v=3`) so browsers and Cloudflare fetch the new PDF instead of a cached copy.
+
+## Open Graph image
+
+`public/og-image.png` (1200×630) is the preview shown when renzzogg.com is shared on LinkedIn, WhatsApp, etc. To regenerate it after editing `og/og-image.html`, take a screenshot with headless Chrome from the repo root (WSL with Chrome installed on Windows):
+
+```bash
+"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless --hide-scrollbars \
+  --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=5000 \
+  --screenshot="$(wslpath -w "$PWD/public")\\og-image.png" \
+  "file:///$(wslpath -w og/og-image.html | sed 's#\\#/#g')"
+```
+
+Social networks cache previews, so after deploying use [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) to refresh it.
 
 ## Deployment
 

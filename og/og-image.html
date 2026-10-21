@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+  Plantilla de la imagen Open Graph (1200×630) de renzzogg.com.
+  No se publica: se captura con Chrome headless y el PNG va a public/og-image.png.
+  Instrucciones en README.md (sección "Imagen Open Graph").
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OG image — renzzogg.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    /* Mismos colores que el tema oscuro de public/css/styles.css */
+    :root {
+      --bg: #0b0f17;
+      --surface: #111827;
+      --border: #243047;
+      --text: #e6edf3;
+      --muted: #9aa7b8;
+      --accent: #4c9bff;
+      --grid-line: rgba(230, 237, 243, 0.05);
+      --font-sans: "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+
+    html, body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+    }
+
+    body {
+      position: relative;
+      background-color: var(--bg);
+      /* Cuadrícula sutil, como el fondo de la página */
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 40px 40px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      padding: 88px 96px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Brillo azul en la esquina */
+    body::before {
+      content: "";
+      position: absolute;
+      top: -260px;
+      right: -200px;
+      width: 720px;
+      height: 720px;
+      background: radial-gradient(circle, rgba(76, 155, 255, 0.22), transparent 65%);
+    }
+
+    /* Barra de acento a la izquierda */
+    body::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: var(--accent);
+    }
+
+    .label {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .name {
+      margin-top: 28px;
+      font-size: 96px;
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    .role {
+      margin-top: 22px;
+      font-size: 44px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+    }
+
+    .url {
+      font-size: 34px;
+      font-weight: 500;
+      padding: 14px 26px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+
+    .url span { color: var(--accent); }
+
+    .tagline {
+      font-size: 24px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <p class="label">// portfolio</p>
+  <h1 class="name">Renzzo Gracia Gomez</h1>
+  <p class="role">Full Stack Developer</p>
+
+  <div class="footer">
+    <p class="url"><span>&gt;</span> renzzogg.com</p>
+    <p class="tagline">web apps, built end to end</p>
+  </div>
+</body>
+</html>
