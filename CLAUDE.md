@@ -37,6 +37,7 @@ Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos
 
 | Proyecto | Live | Source |
 | --- | --- | --- |
+| Pulse Theory | https://pulse.renzzogg.com | https://github.com/RenzzoGG/fitness-coach-landing |
 | Fernwick Home Cleaning | https://fernwick.renzzogg.com | https://github.com/RenzzoGG/fernwick-home-cleaning |
 | Inventory & Sales Dashboard | https://inventory.renzzogg.com | https://github.com/RenzzoGG/inventory-sales-dashboard |
 | UIFlow Admin Dashboard | https://uiflow.renzzogg.com/dashboard.html | https://github.com/RenzzoGG/uiflow |
