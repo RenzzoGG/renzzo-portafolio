@@ -44,7 +44,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
-  <link rel="stylesheet" href="/css/styles.css?v=2">
+  <link rel="stylesheet" href="/css/styles.css?v=3">
   <script src="/js/main.js?v=2" defer></script>
 </head>
 <body>
@@ -149,6 +149,7 @@
               <li class="chip">CSS3 (Grid, Flexbox)</li>
               <li class="chip">Sass</li>
               <li class="chip">Tailwind CSS</li>
+              <li class="chip">Bootstrap</li>
               <li class="chip">JavaScript</li>
               <li class="chip">SVG</li>
               <li class="chip">Responsive Design</li>
@@ -199,8 +200,37 @@
         <p class="section-label" aria-hidden="true">// 03. projects</p>
         <h2 class="section-title" id="projects-title">Projects</h2>
 
-        <div class="card-grid card-grid-3">
-          <!-- PROJECT CARD: copia este bloque <article> completo para agregar un proyecto -->
+        <div class="card-grid">
+          <!-- PROJECT CARD: copia este bloque <article> completo para agregar un proyecto.
+               card-wide = proyecto destacado (2 columnas); con 5 tarjetas las filas quedan completas -->
+          <article class="card project-card card-wide">
+            <h3 class="card-title">Pulse Theory</h3>
+            <p class="project-type mono">Landing page</p>
+            <p class="card-text">
+              Landing page for a fictional online fitness coach, built on a custom Bootstrap 5 build that
+              compiles only the Sass modules it uses: an animated, accessible pricing toggle, a natively
+              validated form, AVIF/WebP images and hashed file names for long-term caching.
+            </p>
+            <p class="project-stats mono">Lighthouse 97–100 mobile · 99–100 desktop · 15 KB CSS (brotli)</p>
+            <ul class="chips" aria-label="Technologies">
+              <li class="chip">HTML</li>
+              <li class="chip">Bootstrap</li>
+              <li class="chip">Sass</li>
+              <li class="chip">JavaScript</li>
+            </ul>
+            <div class="card-links">
+              <a class="text-link" href="https://pulse.renzzogg.com" target="_blank" rel="noopener noreferrer">
+                Live<span class="visually-hidden"> demo of Pulse Theory (opens in new tab)</span>
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </a>
+              <a class="text-link" href="https://github.com/RenzzoGG/fitness-coach-landing" target="_blank" rel="noopener noreferrer">
+                Source<span class="visually-hidden"> code for Pulse Theory on GitHub (opens in new tab)</span>
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </article>
+          <!-- /PROJECT CARD -->
+
           <article class="card project-card">
             <h3 class="card-title">Fernwick Home Cleaning</h3>
             <p class="project-type mono">Landing page</p>
@@ -224,7 +254,6 @@
               </a>
             </div>
           </article>
-          <!-- /PROJECT CARD -->
 
           <article class="card project-card">
             <h3 class="card-title">Inventory &amp; Sales Dashboard</h3>
