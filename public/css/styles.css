@@ -745,9 +745,9 @@ html:not(.js) .theme-toggle {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Skills y Projects tienen 5 tarjetas: la primera (front-end / proyecto
-     destacado) ocupa 2 columnas para que ninguna quede sola en la última
-     fila (2 cols: 2+2+2 · 3 cols: 2+1 / 1+1+1) */
+  /* Projects tiene 5 tarjetas: la primera (proyecto destacado) ocupa 2
+     columnas para que ninguna quede sola en la última fila
+     (2 cols: 2+2+2 · 3 cols: 2+1 / 1+1+1). Skills tiene 6 iguales. */
   .card-wide {
     grid-column: span 2;
   }
