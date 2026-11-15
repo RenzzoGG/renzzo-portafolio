@@ -1,6 +1,6 @@
 # renzzogg.com
 
-Personal portfolio and CV of Renzzo Gracia Gomez, Full Stack Developer.
+Personal portfolio and CV of Renzzo Gracia Gomez, Full-Stack Developer.
 
 **Live site:** [https://renzzogg.com](https://renzzogg.com)
 
@@ -35,6 +35,7 @@ Each project lives in its own repository and is deployed to its own subdomain. T
 
 | Project | Live | Source |
 | --- | --- | --- |
+| Stocktill (featured) | [stocktill.renzzogg.com](https://stocktill.renzzogg.com) | [RenzzoGG/retail-pos-saas](https://github.com/RenzzoGG/retail-pos-saas) |
 | Fernwick Platform | [fernwick-admin.renzzogg.com](https://fernwick-admin.renzzogg.com) | [RenzzoGG/fernwick-platform](https://github.com/RenzzoGG/fernwick-platform) |
 | Pulse Theory | [pulse.renzzogg.com](https://pulse.renzzogg.com) | [RenzzoGG/fitness-coach-landing](https://github.com/RenzzoGG/fitness-coach-landing) |
 | Fernwick Home Cleaning (landing of Fernwick Platform) | [fernwick.renzzogg.com](https://fernwick.renzzogg.com) | [RenzzoGG/fernwick-home-cleaning](https://github.com/RenzzoGG/fernwick-home-cleaning) |

@@ -37,6 +37,7 @@ Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos
 
 | Proyecto | Live | Source |
 | --- | --- | --- |
+| Stocktill (proyecto destacado) | https://stocktill.renzzogg.com | https://github.com/RenzzoGG/retail-pos-saas |
 | Fernwick Platform | https://fernwick-admin.renzzogg.com | https://github.com/RenzzoGG/fernwick-platform |
 | Pulse Theory | https://pulse.renzzogg.com | https://github.com/RenzzoGG/fitness-coach-landing |
 | Fernwick Home Cleaning (landing de Fernwick Platform; comparte tarjeta con ella) | https://fernwick.renzzogg.com | https://github.com/RenzzoGG/fernwick-home-cleaning |
