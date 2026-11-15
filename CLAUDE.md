@@ -55,7 +55,7 @@ Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos
 
 ## Forma de trabajo
 
-- Soy estudiante de Ingeniería de Software y quiero aprender: **explica las decisiones importantes antes de implementarlas** (qué opciones hay, cuál recomiendas y por qué).
+- Soy estudiante de Ingeniería en Sistemas de la Información y Redes Digitales y quiero aprender: **explica las decisiones importantes antes de implementarlas** (qué opciones hay, cuál recomiendas y por qué).
 
 ## Git
 
