@@ -780,6 +780,12 @@ html:not(.js) .theme-toggle {
   color: var(--accent);
 }
 
+/* El stack se pega al fondo para que las tarjetas de una fila queden alineadas */
+.service-stack {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
 /* ===== 13. Contact ===== */
 .contact-list {
   display: grid;
@@ -873,6 +879,11 @@ html:not(.js) .theme-toggle {
     grid-column: span 2;
   }
 
+  /* Services tiene 3 tarjetas: con 2 columnas la última ocupa la fila completa */
+  .card-grid-3 > :last-child {
+    grid-column: span 2;
+  }
+
   .case-steps {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -926,9 +937,9 @@ html:not(.js) .theme-toggle {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* Services tiene 4 tarjetas: 2x2 (4 en fila las dejaría muy angostas) */
-  .card-grid-4 {
-    grid-template-columns: repeat(2, 1fr);
+  /* Con 3 columnas las 3 tarjetas de Services caben en una sola fila */
+  .card-grid-3 > :last-child {
+    grid-column: auto;
   }
 
   .about-grid {
