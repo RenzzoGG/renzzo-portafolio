@@ -6,7 +6,7 @@
   <!-- Chrome usa el <title> como nombre sugerido del PDF al guardar -->
   <title>renzzo-gracia-gomez-cv</title>
   <meta name="author" content="Renzzo Gracia Gomez">
-  <meta name="description" content="CV of Renzzo Gracia Gomez, Full Stack Developer.">
+  <meta name="description" content="CV of Renzzo Gracia Gomez, Full-Stack Developer.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
     <!-- ===== ENCABEZADO ===== -->
     <header class="cv-header">
       <h1 class="name">Renzzo Gracia Gomez</h1>
-      <p class="role">Full Stack Developer</p>
+      <p class="role">Full-Stack Developer · Next.js, TypeScript, PostgreSQL, Python</p>
       <p class="meta">Hermosillo, Sonora, Mexico · Open to remote work · Spanish (native), English (intermediate–advanced)</p>
       <p class="meta contact">
         <a href="mailto:renzzo.gomez07@gmail.com">renzzo.gomez07@gmail.com</a>
@@ -41,10 +41,11 @@
     <section class="cv-section">
       <h2>Summary</h2>
       <p class="summary">
-        Software Engineering student who thinks end to end. I build fast, polished websites with HTML, CSS,
-        JavaScript, Tailwind CSS and Bootstrap, and app interfaces with React and TypeScript. On the back end, I've
-        built and deployed a REST API in Python with FastAPI and PostgreSQL. I launch what I build myself, with
-        custom domains and HTTPS. Open to freelance projects.
+        Software Engineering student and full-stack developer who thinks end to end. I built Stocktill, a
+        multi-store POS and inventory SaaS with Next.js, TypeScript, Supabase/PostgreSQL and Stripe, isolated by
+        Row-Level Security and backed by 700+ automated tests in CI. I've also deployed a REST API in Python with
+        FastAPI and PostgreSQL, and fast front ends with React and Tailwind CSS. I ship what I build myself —
+        Docker, custom domains and HTTPS included. Open to freelance projects.
       </p>
     </section>
 
@@ -52,18 +53,32 @@
     <section class="cv-section">
       <h2>Skills</h2>
       <ul class="skills">
-        <li><strong>Front-end:</strong> HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS, Bootstrap, JavaScript, TypeScript, React, SVG, Responsive Design</li>
-        <li><strong>Back-end:</strong> Python, FastAPI, PostgreSQL, SQL, REST APIs, JWT auth, pytest</li>
+        <li><strong>Front-end:</strong> HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design</li>
+        <li><strong>Back-end:</strong> Python, FastAPI, PostgreSQL, Supabase, SQL, Row-Level Security, REST APIs, JWT auth, Stripe</li>
+        <li><strong>Testing:</strong> Vitest, Playwright, pytest, pgTAP</li>
+        <li><strong>DevOps &amp; deployment:</strong> Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains</li>
         <li><strong>Libraries:</strong> Chart.js, jsPDF, SheetJS</li>
-        <li><strong>Design:</strong> UI design fundamentals, Design systems</li>
         <li><strong>Tools &amp; workflow:</strong> Git, GitHub, Linux (WSL)</li>
-        <li><strong>Deployment:</strong> Railway, Cloudflare (DNS, SSL), Custom domains</li>
       </ul>
     </section>
 
     <!-- ===== PROJECTS ===== -->
     <section class="cv-section">
       <h2>Projects</h2>
+
+      <article class="item">
+        <h3><span class="item-title">Stocktill — Multi-Store POS &amp; Inventory SaaS</span> <span class="item-type">— Full-stack SaaS</span></h3>
+        <p>Multi-tenant POS where each business only sees its own data. Barcode checkout on desktop and mobile;
+          owner/admin/cashier roles enforced with PostgreSQL RLS; Stripe billing with a free trial; 700+ tests (Vitest,
+          pgTAP, Playwright) in GitHub Actions on every push; Docker.</p>
+        <p class="item-meta">
+          Next.js, TypeScript, Supabase/PostgreSQL, Stripe, Docker
+          <span class="sep" aria-hidden="true">·</span>
+          Live: <a class="url" href="https://stocktill.renzzogg.com">stocktill.renzzogg.com</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href="https://github.com/RenzzoGG/retail-pos-saas">Source</a>
+        </p>
+      </article>
 
       <article class="item">
         <h3><span class="item-title">Fernwick Platform</span> <span class="item-type">— Full-stack web app</span></h3>
@@ -105,24 +120,14 @@
       </article>
 
       <article class="item">
-        <h3><span class="item-title">UIFlow Admin Dashboard</span> <span class="item-type">— Web app</span></h3>
-        <p>Admin dashboard with range-filtered analytics, a searchable, sortable table, dark mode and mobile layout.</p>
+        <h3><span class="item-title">UIFlow</span> <span class="item-type">— Admin dashboard &amp; landing page</span></h3>
+        <p>Admin dashboard with range-filtered analytics, a sortable table and dark mode, plus its accessible landing page.</p>
         <p class="item-meta">
           HTML, CSS, JavaScript, Chart.js
           <span class="sep" aria-hidden="true">·</span>
           Live: <a class="url" href="https://uiflow.renzzogg.com/dashboard.html">uiflow.renzzogg.com/dashboard.html</a>
           <span class="sep" aria-hidden="true">·</span>
-          <a href="https://github.com/RenzzoGG/uiflow">Source</a>
-        </p>
-      </article>
-
-      <article class="item">
-        <h3><span class="item-title">UIFlow Landing Page</span> <span class="item-type">— Landing page</span></h3>
-        <p>Landing page for a fictional dashboard tool with an accessible mobile menu and FAQ, and a self-hosted font.</p>
-        <p class="item-meta">
-          HTML, CSS, JavaScript
-          <span class="sep" aria-hidden="true">·</span>
-          Live: <a class="url" href="https://uiflow.renzzogg.com">uiflow.renzzogg.com</a>
+          <a href="https://uiflow.renzzogg.com">Landing</a>
           <span class="sep" aria-hidden="true">·</span>
           <a href="https://github.com/RenzzoGG/uiflow">Source</a>
         </p>
