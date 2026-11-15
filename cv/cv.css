@@ -17,7 +17,7 @@
   --item-gap: 6pt;
 
   /* Márgenes de la hoja: deben coincidir con @page */
-  --margin-y: 0.5in;
+  --margin-y: 0.4in;
   --margin-x: 0.6in;
 
   /* Colores: blanco con el azul de la página solo como acento */
@@ -32,7 +32,7 @@
 
 @page {
   size: letter;
-  margin: 0.5in 0.6in;
+  margin: 0.4in 0.6in;
 }
 
 /* ===== Base ===== */

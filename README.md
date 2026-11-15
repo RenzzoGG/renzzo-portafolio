@@ -62,7 +62,19 @@ Then open <http://localhost:8000>.
 
 ## Open Graph image
 
-`public/og-image.png` (1200×630) is the preview shown when renzzogg.com is shared on LinkedIn, WhatsApp, etc. To regenerate it after editing `og/og-image.html`, take a screenshot with headless Chrome from the repo root (WSL with Chrome installed on Windows):
+`public/og-image.png` (1200×630) is the preview shown when renzzogg.com is shared on LinkedIn, WhatsApp, etc. To regenerate it after editing `og/og-image.html`, take a screenshot with headless Chromium from the repo root. Use either option:
+
+**Option A — Playwright's Chromium (Linux/WSL, recommended).** Uses the Chromium that Playwright keeps in `~/.cache/ms-playwright/` (install it once with `npx playwright install chromium`; `sort -V | tail -1` picks the newest version):
+
+```bash
+CHROME="$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome | sort -V | tail -1)"
+"$CHROME" --headless --hide-scrollbars \
+  --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=5000 \
+  --screenshot="$PWD/public/og-image.png" \
+  "file://$PWD/og/og-image.html"
+```
+
+**Option B — Chrome installed on Windows (from WSL).** Adjust the path if Chrome lives elsewhere (e.g. `Program Files (x86)`):
 
 ```bash
 "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless --hide-scrollbars \
