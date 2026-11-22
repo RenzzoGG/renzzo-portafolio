@@ -7,7 +7,7 @@ import prettier from "eslint-config-prettier";
 import globals from "globals";
 
 export default defineConfig(
-  { ignores: ["dist/", ".astro/", "node_modules/", "legacy/", "cv/", "og/"] },
+  { ignores: ["dist/", ".astro/", "node_modules/", "test-results/"] },
   js.configs.recommended,
   tseslint.configs.strict,
   astro.configs.recommended,

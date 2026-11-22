@@ -41,7 +41,7 @@ function resolveFile(pathname: string) {
 export function startServer(port: number): Promise<Server> {
   const server = createServer((request, response) => {
     const { pathname } = new URL(request.url ?? "/", "http://localhost");
-    let file: string | null = null;
+    let file: string | null;
     try {
       file = resolveFile(pathname);
     } catch {

@@ -4,87 +4,53 @@ Personal portfolio and CV of Renzzo Gracia Gomez, Full-Stack Developer.
 
 **Live site:** [https://renzzogg.com](https://renzzogg.com)
 
+The `redesign` branch holds the "Signal" rebuild. See [`docs/PLAN.md`](docs/PLAN.md) for its phases and budgets, and [`docs/CONTENT.md`](docs/CONTENT.md) for all copy and project data.
+
 ## Stack
 
-- HTML, CSS and vanilla JavaScript
-- No frameworks, no build step and no npm dependencies
-- Fonts from Google Fonts (Inter, JetBrains Mono)
-- Light/dark theme, responsive, mobile-first
+- Astro (static output) and strict TypeScript
+- Self-hosted Geist and Geist Mono
+- Astro's image pipeline (AVIF and WebP)
+- Playwright for E2E tests, the CV PDF and the OG image
+- Works without JavaScript. The only script on the page powers the Motion toggle.
+
+## Commands
+
+Requires the Node version in `.nvmrc`.
+
+| Command              | What it does                                                 |
+| -------------------- | ------------------------------------------------------------ |
+| `npm run dev`        | Starts the dev server                                        |
+| `npm run build`      | Builds the site to `dist/`                                   |
+| `npm run preview`    | Previews the production build                                |
+| `npm run check`      | Runs lint, format check, typecheck, contrast check and build |
+| `npm run test:e2e`   | Builds and runs the Playwright tests                         |
+| `npm run cv:pdf`     | Prints `/cv` to a one-page Letter PDF in `public/`           |
+| `npm run og:image`   | Regenerates `public/og-image.png`                            |
+| `npm run lighthouse` | Reports the median of 5 Lighthouse runs (build first)        |
 
 ## Project structure
 
 ```
-.
-├── public/                        # Everything here is published
-│   ├── index.html                 # Portfolio page
-│   ├── css/styles.css
-│   ├── js/main.js
-│   ├── favicon.svg
-│   ├── og-image.png               # Social preview image (generated from og/)
-│   └── renzzo-gracia-gomez-cv.pdf # Downloadable CV (exported from cv/)
-├── cv/                            # Source of the CV (not published)
-│   ├── index.html
-│   └── cv.css
-└── og/                            # Source of the Open Graph image (not published)
-    └── og-image.html
+src/
+├── assets/projects/  # Screenshot masters, optimized at build time
+├── components/       # Page sections
+├── content/          # Typed content collections
+├── layouts/
+├── lib/
+├── pages/            # Home, /cv, sitemap.xml and robots.txt
+└── styles/           # Tokens, fonts and shared primitives
+scripts/              # CV PDF, OG image, Lighthouse, contrast, local server
+tests/e2e/            # Playwright tests
+docs/                 # Plan, content and reviews
 ```
 
-## Projects
+## Updating content
 
-Each project lives in its own repository and is deployed to its own subdomain. This repo only links to them.
-
-| Project                                               | Live                                                                             | Source                                                                                      |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Stocktill (featured)                                  | [stocktill.renzzogg.com](https://stocktill.renzzogg.com)                         | [RenzzoGG/retail-pos-saas](https://github.com/RenzzoGG/retail-pos-saas)                     |
-| Fernwick Platform                                     | [fernwick-admin.renzzogg.com](https://fernwick-admin.renzzogg.com)               | [RenzzoGG/fernwick-platform](https://github.com/RenzzoGG/fernwick-platform)                 |
-| Pulse Theory                                          | [pulse.renzzogg.com](https://pulse.renzzogg.com)                                 | [RenzzoGG/fitness-coach-landing](https://github.com/RenzzoGG/fitness-coach-landing)         |
-| Fernwick Home Cleaning (landing of Fernwick Platform) | [fernwick.renzzogg.com](https://fernwick.renzzogg.com)                           | [RenzzoGG/fernwick-home-cleaning](https://github.com/RenzzoGG/fernwick-home-cleaning)       |
-| Inventory & Sales Dashboard                           | [inventory.renzzogg.com](https://inventory.renzzogg.com)                         | [RenzzoGG/inventory-sales-dashboard](https://github.com/RenzzoGG/inventory-sales-dashboard) |
-| UIFlow Admin Dashboard                                | [uiflow.renzzogg.com/dashboard.html](https://uiflow.renzzogg.com/dashboard.html) | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow)                                       |
-| UIFlow Landing Page                                   | [uiflow.renzzogg.com](https://uiflow.renzzogg.com)                               | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow)                                       |
-
-## Local preview
-
-Requires Python 3.
-
-```bash
-python3 -m http.server 8000 -d public
-```
-
-Then open <http://localhost:8000>.
-
-## Updating the CV
-
-1. Serve the source: `python3 -m http.server 8001 -d cv`, then open <http://localhost:8001>.
-2. Print it from Chrome (`Ctrl + P`) as **Save as PDF**, Letter size, default margins, headers and footers off.
-3. Replace `public/renzzo-gracia-gomez-cv.pdf` with the new file.
-4. In `public/index.html`, increment the `?v=` number in the "Resume (PDF)" link (e.g. `?v=2` → `?v=3`) so browsers and Cloudflare fetch the new PDF instead of a cached copy.
-
-## Open Graph image
-
-`public/og-image.png` (1200×630) is the preview shown when renzzogg.com is shared on LinkedIn, WhatsApp, etc. To regenerate it after editing `og/og-image.html`, take a screenshot with headless Chromium from the repo root. Use either option:
-
-**Option A — Playwright's Chromium (Linux/WSL, recommended).** Uses the Chromium that Playwright keeps in `~/.cache/ms-playwright/` (install it once with `npx playwright install chromium`; `sort -V | tail -1` picks the newest version):
-
-```bash
-CHROME="$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome | sort -V | tail -1)"
-"$CHROME" --headless --hide-scrollbars \
-  --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=5000 \
-  --screenshot="$PWD/public/og-image.png" \
-  "file://$PWD/og/og-image.html"
-```
-
-**Option B — Chrome installed on Windows (from WSL).** Adjust the path if Chrome lives elsewhere (e.g. `Program Files (x86)`):
-
-```bash
-"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless --hide-scrollbars \
-  --force-device-scale-factor=1 --window-size=1200,630 --virtual-time-budget=5000 \
-  --screenshot="$(wslpath -w "$PWD/public")\\og-image.png" \
-  "file:///$(wslpath -w og/og-image.html | sed 's#\\#/#g')"
-```
-
-Social networks cache previews, so after deploying use [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) to refresh it.
+1. Change the wording in `docs/CONTENT.md`, then in `src/content/`.
+2. If the CV changed, run `npm run cv:pdf` and bump `?v=` on the PDF link in `src/content/profile.yaml`.
+3. If the OG image changed, run `npm run og:image` and bump `?v=` in `src/components/BaseHead.astro`.
 
 ## Deployment
 
-The site is hosted on [Railway](https://railway.com). Railpack detects the `public/` folder and serves it as a static site. Every push to `main` is deployed automatically to https://renzzogg.com, behind Cloudflare (DNS and SSL).
+The live site deploys from `main` on Railway, with Cloudflare in front. **Every push to `main` goes live.** The redesign reaches `main` only in the launch phase.

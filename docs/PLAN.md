@@ -72,7 +72,7 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 - The content schema typechecks. No copy is hardcoded in components.
 - The font payload for the first view is ≤ ~40 KB woff2.
 
-## Phase 2: Base site without 3D
+## Phase 2: Base site without 3D ✅
 
 **Goals:** the full, accessible, fast site with zero 3D. This is the baseline every later phase must not regress.
 

@@ -2,9 +2,6 @@ dist/
 .astro/
 node_modules/
 package-lock.json
-legacy/
-cv/
-og/
 public/
 .mcp.json
 .claude/skills/
