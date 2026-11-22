@@ -77,9 +77,16 @@ async function runOnce(url: string, formFactor: "mobile" | "desktop") {
 function criticalJsBytes() {
   const html = readFileSync("dist/index.html", "utf8");
   const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
+  // Counts inline scripts and entry modules. Lazy chunks load after first paint.
   return scripts
     .filter(([, attrs]) => !attrs?.includes("application/ld+json"))
-    .reduce((total, [, , body]) => total + Buffer.byteLength(body ?? ""), 0);
+    .reduce((total, [, attrs, body]) => {
+      const src = /\bsrc="\/([^"]+)"/.exec(attrs ?? "")?.[1];
+      const size = src
+        ? readFileSync(`dist/${src}`).length
+        : Buffer.byteLength(body ?? "");
+      return total + size;
+    }, 0);
 }
 
 const server = await startServer(PORT);

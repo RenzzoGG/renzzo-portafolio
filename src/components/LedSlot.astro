@@ -1,13 +1,24 @@
 ---
 /*
- * Reserved stage for the LED face (Phases 3 and 4). The aspect ratio is fixed
- * here so a canvas can replace the poster with zero layout shift.
+ * Stage for the LED face. The fixed ratio means the canvas can replace the
+ * poster with zero layout shift. The poster is a CSS mask, so it works without
+ * JS and can't become the LCP element, which must stay the hero heading.
  */
+import posterUrl from "../assets/face/poster.webp?url";
+
+const style = `--poster: url("${posterUrl}")`;
 ---
 
-<div class="led-slot" data-led-slot aria-hidden="true">
-  <div class="led-slot__poster"></div>
+<div class="led-slot" data-led-slot aria-hidden="true" {style}>
+  <div class="led-slot__glow">
+    <div class="led-slot__poster"></div>
+  </div>
+  <canvas class="led-slot__canvas"></canvas>
 </div>
+
+<script>
+  import "../lib/face/start.ts";
+</script>
 
 <style>
   .led-slot {
@@ -18,27 +29,44 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background-color: var(--color-surface-subtle);
+    /* Unlit LEDs, aligned to the face's 90×112 grid. */
     background-image: radial-gradient(
       circle,
-      var(--color-border) 0 1.5px,
-      transparent 2px
+      var(--color-border) 0 20%,
+      transparent 27%
     );
-    background-position: center;
-    background-size: 10px 10px;
+    background-size: calc(100% / 90) calc(100% / 112);
+  }
+
+  .led-slot__glow,
+  .led-slot__poster,
+  .led-slot__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .led-slot__glow {
+    filter: drop-shadow(0 0 3px rgb(194 29 58 / 0.6));
+    transition: opacity var(--duration-slower) var(--ease-out);
   }
 
   .led-slot__poster {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(
-      circle,
-      var(--color-glow) 0 2.25px,
-      transparent 2.75px
-    );
-    background-position: center;
-    background-size: 10px 10px;
-    --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500' preserveAspectRatio='none'%3E%3Cfilter id='b' filterUnits='userSpaceOnUse' x='0' y='0' width='400' height='500'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3Cpath d='M-20 262H104L132 262L158 176L192 372L226 104L258 322L280 262H420' fill='none' stroke='%23fff' stroke-width='13' stroke-linejoin='round' filter='url(%23b)'/%3E%3C/svg%3E");
-    -webkit-mask: var(--wave) center / 100% 100% no-repeat;
-    mask: var(--wave) center / 100% 100% no-repeat;
+    background: var(--color-glow);
+    -webkit-mask: var(--poster) center / 100% 100% no-repeat;
+    mask: var(--poster) center / 100% 100% no-repeat;
+  }
+
+  .led-slot__canvas {
+    opacity: 0;
+  }
+
+  .led-slot[data-face="live"] .led-slot__glow {
+    opacity: 0;
+  }
+
+  .led-slot[data-face="live"] .led-slot__canvas {
+    opacity: 1;
   }
 </style>

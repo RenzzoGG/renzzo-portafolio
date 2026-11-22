@@ -23,8 +23,17 @@ const TYPES: Record<string, string> = {
   ".avif": "image/avif",
   ".woff2": "font/woff2",
   ".pdf": "application/pdf",
+  ".bin": "application/octet-stream",
 };
-const COMPRESSIBLE = new Set([".html", ".css", ".js", ".svg", ".xml", ".txt"]);
+const COMPRESSIBLE = new Set([
+  ".html",
+  ".css",
+  ".js",
+  ".svg",
+  ".xml",
+  ".txt",
+  ".bin",
+]);
 
 function resolveFile(pathname: string) {
   const relative = normalize(decodeURIComponent(pathname));
