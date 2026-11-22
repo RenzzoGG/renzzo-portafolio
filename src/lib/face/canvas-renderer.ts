@@ -7,6 +7,8 @@ const DOT_IN = 0.38; // Share of the assemble each dot spends appearing.
 const SHIMMER_FRAME_MS = 1000 / 12;
 const SHIMMER_DEPTH = 0.2;
 const MAX_DPR = 2;
+const BUCKETS = 16; // Dots that share an opacity are filled in one call.
+const TAU = Math.PI * 2;
 
 export interface FaceRenderer {
   start(): void;
@@ -21,35 +23,32 @@ function hash(index: number) {
   return value - Math.floor(value);
 }
 
-function makeSprite(pitch: number, radius: number, core: string, halo: string) {
-  const size = Math.ceil(pitch * 2.6);
-  const sprite = document.createElement("canvas");
-  sprite.width = size;
-  sprite.height = size;
-  const context = sprite.getContext("2d");
+function addDot(path: Path2D, x: number, y: number, radius: number) {
+  path.moveTo(x + radius, y);
+  path.arc(x, y, radius, 0, TAU);
+}
+
+/** The glow alone, cached once so neighboring halos never muddy the dots. */
+function makeGlow(
+  shape: Path2D,
+  width: number,
+  height: number,
+  dpr: number,
+  color: string,
+) {
+  const layer = document.createElement("canvas");
+  layer.width = width;
+  layer.height = height;
+  const context = layer.getContext("2d");
   if (!context) throw new Error("Canvas 2D is unavailable");
-
-  const center = size / 2;
-  const glow = context.createRadialGradient(
-    center,
-    center,
-    radius * pitch * 0.6,
-    center,
-    center,
-    center,
-  );
-  glow.addColorStop(0, halo);
-  glow.addColorStop(1, "transparent");
-  context.globalAlpha = 0.3;
-  context.fillStyle = glow;
-  context.fillRect(0, 0, size, size);
-
-  context.globalAlpha = 1;
-  context.fillStyle = core;
-  context.beginPath();
-  context.arc(center, center, radius * pitch, 0, Math.PI * 2);
-  context.fill();
-  return sprite;
+  // The shape is drawn off-canvas, so only its shadow lands on the layer.
+  context.shadowColor = color;
+  context.shadowBlur = 3 * dpr;
+  context.shadowOffsetX = width * 2;
+  context.translate(-width * 2, 0);
+  context.fillStyle = "#000";
+  context.fill(shape);
+  return layer;
 }
 
 export function createCanvasRenderer(
@@ -63,6 +62,9 @@ export function createCanvasRenderer(
   const delay = new Float32Array(face.count);
   const phase = new Float32Array(face.count);
   const speed = new Float32Array(face.count);
+  const xs = new Float32Array(face.count);
+  const ys = new Float32Array(face.count);
+  const radii = new Float32Array(face.count);
   const centerX = (face.cols - 1) / 2;
   const centerY = (face.rows - 1) * 0.42;
   const reach = Math.hypot(centerX, face.rows * 0.58);
@@ -76,14 +78,14 @@ export function createCanvasRenderer(
     );
     // Only about one dot in four shimmers, which keeps the effect subtle.
     speed[dot] = random < 0.25 ? 0.0012 + hash(dot + 7) * 0.0022 : 0;
-    phase[dot] = hash(dot + 13) * Math.PI * 2;
+    phase[dot] = hash(dot + 13) * TAU;
   }
 
-  let sprites: HTMLCanvasElement[] = [];
+  let steady = new Path2D();
+  let glow: HTMLCanvasElement | null = null;
+  let core = "";
   let width = 0;
   let height = 0;
-  let pitchX = 0;
-  let pitchY = 0;
   let clock = 0;
   let last = 0;
   let lastPaint = 0;
@@ -98,24 +100,49 @@ export function createCanvasRenderer(
     height = Math.max(1, Math.round(box.height * dpr));
     canvas.width = width;
     canvas.height = height;
-    pitchX = width / face.cols;
-    pitchY = height / face.rows;
+
+    const pitchX = width / face.cols;
+    const pitchY = height / face.rows;
+    const pitch = Math.min(pitchX, pitchY);
+    const all = new Path2D();
+    steady = new Path2D();
+    for (let dot = 0; dot < face.count; dot += 1) {
+      const x = ((face.column[dot] ?? 0) + 0.5) * pitchX;
+      const y = ((face.row[dot] ?? 0) + 0.5) * pitchY;
+      const radius = (RADII[face.styled[dot] ?? 0] ?? 0) * pitch;
+      xs[dot] = x;
+      ys[dot] = y;
+      radii[dot] = radius;
+      addDot(all, x, y, radius);
+      if (!speed[dot]) addDot(steady, x, y, radius);
+    }
 
     const styles = getComputedStyle(document.documentElement);
-    const core = styles.getPropertyValue("--color-glow").trim();
-    const halo = styles.getPropertyValue("--color-signal").trim();
-    const pitch = Math.min(pitchX, pitchY);
-    sprites = RADII.map((radius) => makeSprite(pitch, radius, core, halo));
+    core = styles.getPropertyValue("--color-glow").trim();
+    glow = makeGlow(all, width, height, dpr, "rgb(194 29 58 / 0.6)");
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
     const assembling = clock < ASSEMBLE_MS;
-    const progress = clock / ASSEMBLE_MS;
+    const progress = Math.min(clock / ASSEMBLE_MS, 1);
+    if (glow) {
+      ctx.globalAlpha = easeOut(progress);
+      ctx.drawImage(glow, 0, 0);
+    }
+    ctx.fillStyle = core;
+    if (!assembling) {
+      ctx.globalAlpha = 1;
+      ctx.fill(steady);
+    }
 
+    const buckets: (Path2D | undefined)[] = new Array<Path2D | undefined>(
+      BUCKETS,
+    );
     for (let dot = 0; dot < face.count; dot += 1) {
-      const sprite = sprites[face.styled[dot] ?? 0];
-      if (!sprite) continue;
+      const rate = speed[dot] ?? 0;
+      if (!assembling && !rate) continue;
+
       let alpha = 1;
       let scale = 1;
       if (assembling) {
@@ -125,18 +152,20 @@ export function createCanvasRenderer(
         alpha = eased;
         scale = 0.45 + eased * 0.55;
       }
-      const rate = speed[dot] ?? 0;
-      if (rate > 0) {
+      if (rate) {
         const wave = 0.5 + 0.5 * Math.sin(clock * rate + (phase[dot] ?? 0));
         alpha *= 1 - SHIMMER_DEPTH * wave;
       }
 
-      const size = sprite.width * scale;
-      const x = ((face.column[dot] ?? 0) + 0.5) * pitchX - size / 2;
-      const y = ((face.row[dot] ?? 0) + 0.5) * pitchY - size / 2;
-      ctx.globalAlpha = alpha;
-      ctx.drawImage(sprite, x, y, size, size);
+      const bucket = Math.max(0, Math.ceil(alpha * BUCKETS) - 1);
+      const path = (buckets[bucket] ??= new Path2D());
+      addDot(path, xs[dot] ?? 0, ys[dot] ?? 0, (radii[dot] ?? 0) * scale);
     }
+    buckets.forEach((path, bucket) => {
+      if (!path) return;
+      ctx.globalAlpha = (bucket + 1) / BUCKETS;
+      ctx.fill(path);
+    });
     ctx.globalAlpha = 1;
   }
 
@@ -197,7 +226,7 @@ export function createCanvasRenderer(
       ctx.clearRect(0, 0, width, height);
       canvas.width = 0;
       canvas.height = 0;
-      sprites = [];
+      glow = null;
     },
   };
 }
