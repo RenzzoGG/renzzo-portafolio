@@ -142,7 +142,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 | Dev tooling   | A dev-only FPS overlay (`npm run dev`, then `/?fps`), excluded from production builds and checked by E2E.                                                                                                                                   |
 | Adaptive load | The renderer lowers internal resolution, then effects, when frame time stays high. It pauses in a hidden tab.                                                                                                                               |
 
-## Phase 4: Desktop hero
+## Phase 4: Desktop hero ✅ (real-GPU FPS check pending with Renzzo)
 
 **Goals:** the persistent WebGL foundation and a hero where the LED face is the centerpiece.
 

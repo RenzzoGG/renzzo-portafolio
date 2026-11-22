@@ -65,6 +65,12 @@ The approved variant is `e2-halftone`. `npm run face:build` writes its data and 
 
 The first run downloads Python, the locked packages and two checksum-verified models. Those, plus the masks and depth maps, stay in `~/.cache/renzzo-face/`. After that, the pipeline runs offline.
 
+## WebGL world
+
+On desktop, `src/lib/world/` renders the hero in a Web Worker with Three.js, with a main-thread and 2D fallback. It never loads on phones, with reduced motion or with Motion off.
+
+To check real performance on your GPU, run `npm run dev` and open the printed local URL with `/?fps` at the end. The overlay shows FPS, JS frame time, thread, DPR and effect level. It's dev-only and excluded from production builds.
+
 ## Deployment
 
 The live site deploys from `main` on Railway, with Cloudflare in front. **Every push to `main` goes live.** The redesign reaches `main` only in the launch phase.
