@@ -1,0 +1,44 @@
+- id: main
+  name: Renzzo Gracia Gomez
+  role: Full-Stack Developer
+  heroStack: Next.js · TypeScript · PostgreSQL · Python
+  tagline: I build web apps end to end — and ship them live.
+  cvRole: Full-Stack Developer · Next.js, TypeScript, PostgreSQL, Python
+  location: Hermosillo, Sonora, Mexico
+  remote: Open to remote work
+  languages: Spanish (native) · English (intermediate–advanced)
+  domain: renzzogg.com
+  about: "I'm a full-stack developer who thinks end to end, studying Information Systems and Digital Networks Engineering. I built Stocktill, a multi-store POS and inventory SaaS with Next.js, TypeScript, Supabase/PostgreSQL and Stripe, where each business's data is isolated by Row-Level Security and 700+ automated tests run in CI on every push. I've also built and deployed a REST API in Python with FastAPI and PostgreSQL, and fast, polished front ends with React, Tailwind CSS and plain HTML, CSS and JavaScript. I ship what I build myself — Docker, custom domains and HTTPS included. Open to freelance projects."
+  cvSummary: "Full-stack developer who thinks end to end, studying Information Systems and Digital Networks Engineering. I built Stocktill, a multi-store POS and inventory SaaS with Next.js, TypeScript, Supabase/PostgreSQL and Stripe, isolated by Row-Level Security and backed by 700+ automated tests in CI. I've also deployed a REST API in Python with FastAPI and PostgreSQL, and fast front ends with React and Tailwind CSS. I ship what I build myself — Docker, custom domains and HTTPS included. Open to freelance projects."
+  meta:
+    title: Renzzo Gracia Gomez — Full-Stack Developer
+    description: Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — and ship them live.
+    ogDescription: Full-stack developer from Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — from database to deployment. Open to freelance projects.
+    ogImageAlt: Renzzo Gracia Gomez — Full-Stack Developer — renzzogg.com
+  degree:
+    en: Information Systems and Digital Networks Engineering
+    es: Ingeniería en Sistemas de la Información y Redes Digitales
+  servicesLink:
+    label: Let's talk →
+    href: "#contact"
+  platzi:
+    label: View full Platzi profile →
+    url: https://platzi.com/p/renzzo.gomez07/
+  contact:
+    heading: Let's work together
+    intro: Have a project in mind? Reach me through any of these channels.
+    links:
+      - label: Email
+        value: renzzo.gomez07@gmail.com
+        href: mailto:renzzo.gomez07@gmail.com
+      - label: GitHub
+        value: github.com/RenzzoGG
+        href: https://github.com/RenzzoGG
+      - label: Platzi
+        value: platzi.com/p/renzzo.gomez07
+        href: https://platzi.com/p/renzzo.gomez07/
+      - label: Resume (PDF)
+        value: renzzo-gracia-gomez-cv.pdf
+        href: /renzzo-gracia-gomez-cv.pdf?v=11
+        download: true
+  footer: © {year} Renzzo Gracia Gomez · renzzogg.com

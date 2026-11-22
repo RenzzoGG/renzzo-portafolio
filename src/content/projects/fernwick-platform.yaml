@@ -1,0 +1,26 @@
+title: Fernwick Platform
+tier: featured
+type: Full-stack web app
+order: 3
+accent: fernwick
+links:
+  live: https://fernwick-admin.renzzogg.com
+  source: https://github.com/RenzzoGG/fernwick-platform
+  landing: https://fernwick.renzzogg.com
+  landingSource: https://github.com/RenzzoGG/fernwick-home-cleaning
+stack: [React, TypeScript, Tailwind CSS, Python, FastAPI, PostgreSQL]
+summary: "Quote management system for a cleaning business: requests sent from the landing page are saved through a FastAPI + PostgreSQL API, and the team tracks them in a React dashboard with search, status history and metrics. The public demo is read-only and can't see real customer data — the database itself enforces it with Row-Level Security."
+cvLine: "Quote system for a cleaning business: landing form → FastAPI + PostgreSQL API → React dashboard. Read-only public demo isolated by Row-Level Security; JWT auth; 300+ pytest tests."
+disclaimer: Fernwick Home Cleaning is a fictional cleaning business, built as a portfolio project.
+stats: [300+ pytest tests, PostgreSQL Row-Level Security, JWT auth]
+caseStudy:
+  - label: Flow
+    text: Requests sent from the landing page are saved through a FastAPI + PostgreSQL API.
+  - label: Dashboard
+    text: The team tracks them in a React dashboard with search, status history and metrics.
+  - label: Security
+    text: The public demo is read-only and can't see real customer data — the database itself enforces it with Row-Level Security.
+screenshots:
+  - base: /img/projects/fernwick-platform
+    widths: [640, 1200]
+    alt: Fernwick Admin dashboard in demo mode with quote totals and a quotes-per-day bar chart for the last 30 days

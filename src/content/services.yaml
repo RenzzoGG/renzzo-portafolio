@@ -1,0 +1,15 @@
+- id: web-apps
+  title: Web apps & SaaS
+  text: Dashboards, admin panels and apps with user accounts and roles — including subscriptions and payments with Stripe.
+  stack: [Next.js, Supabase, PostgreSQL, Stripe]
+  order: 1
+- id: apis
+  title: APIs & back end
+  text: REST APIs with Node.js or Python, PostgreSQL database design, third-party integrations and webhooks.
+  stack: [Node.js, FastAPI, PostgreSQL, Webhooks]
+  order: 2
+- id: landing-pages
+  title: Landing pages & websites
+  text: Fast, responsive sites for products and small businesses — live on your own domain with HTTPS.
+  stack: [HTML, CSS, JavaScript, Tailwind CSS]
+  order: 3

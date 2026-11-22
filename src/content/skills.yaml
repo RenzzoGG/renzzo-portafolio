@@ -1,0 +1,59 @@
+- id: front-end
+  group: Front-end
+  order: 1
+  items:
+    [
+      HTML5,
+      "CSS3 (Grid, Flexbox)",
+      Sass,
+      Tailwind CSS v4,
+      Bootstrap,
+      JavaScript,
+      TypeScript,
+      React,
+      Next.js,
+      SVG,
+      Responsive Design,
+    ]
+- id: back-end
+  group: Back-end
+  order: 2
+  items:
+    [
+      Node.js,
+      Python,
+      FastAPI,
+      Django,
+      Django REST Framework (DRF),
+      PostgreSQL,
+      Supabase,
+      Drizzle ORM,
+      SQL,
+      Row-Level Security,
+      REST APIs,
+      JWT auth,
+      Stripe,
+    ]
+- id: testing
+  group: Testing
+  order: 3
+  items: [Vitest, Playwright, pytest, pgTAP]
+- id: devops
+  group: DevOps & deployment
+  order: 4
+  items:
+    [
+      Docker,
+      GitHub Actions (CI),
+      Railway,
+      "Cloudflare (DNS, SSL)",
+      Custom domains,
+    ]
+- id: libraries
+  group: Libraries
+  order: 5
+  items: [GSAP, Motion, Chart.js, jsPDF, SheetJS]
+- id: tools
+  group: Tools & workflow
+  order: 6
+  items: [Git, GitHub, Vite, Linux (WSL)]

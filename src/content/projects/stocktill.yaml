@@ -1,0 +1,48 @@
+title: Stocktill — Multi-Store POS & Inventory SaaS
+tier: featured
+type: Full-stack SaaS
+order: 4
+accent: stocktill
+links:
+  live: https://stocktill.renzzogg.com
+  source: https://github.com/RenzzoGG/retail-pos-saas
+stack:
+  [
+    Next.js,
+    TypeScript,
+    Supabase / PostgreSQL,
+    Drizzle ORM,
+    Stripe,
+    PDFKit,
+    Resend,
+    Docker,
+  ]
+summary: Point of sale and inventory for many stores on one platform, where each business only ever sees its own data. The barcode-scanner checkout works on desktop and on phones; owner, admin and cashier roles are enforced with Row-Level Security in PostgreSQL; billing runs on Stripe with a free trial; and it ships as a Docker container.
+cvLine: "Multi-tenant POS where each business only sees its own data. Barcode checkout on desktop and mobile; owner/admin/cashier roles enforced with PostgreSQL RLS; Stripe billing with a free trial; 700+ tests (Vitest, pgTAP, Playwright) in GitHub Actions on every push; Docker."
+disclaimer: Stocktill is a fictional brand created for a portfolio project.
+stats: [700+ tests in CI, RLS on 20/20 tables, 3 roles]
+caseStudy:
+  - label: Problem
+    text: "Small shops run the counter on spreadsheets: stock drifts, cashiers can see margins they shouldn't, and nobody knows who changed what."
+  - label: Solution
+    text: A fast register for any USB scanner or the keyboard alone, inventory with low-stock alerts and Excel import, reports, returns and an activity log.
+  - label: Technical decisions
+    text: Tenant isolation and roles live in PostgreSQL RLS, not just the UI. Stock only changes through database functions that log every movement, and money is stored as exact decimals.
+  - label: Result
+    text: A live public demo backed by unit, pgTAP, integration and Playwright end-to-end tests that run in GitHub Actions on every push.
+screenshots:
+  - base: /img/projects/stocktill-cover
+    widths: [640, 1200]
+    alt: "Stocktill cover: the owner dashboard with today's, this week's and this month's sales on a laptop, next to the point-of-sale cart on a phone"
+  - base: /img/projects/stocktill-dashboard
+    widths: [480, 960]
+    caption: Owner dashboard
+    alt: Owner dashboard with a low-stock alert, sales for today, this week and this month, and a sales-per-day bar chart
+  - base: /img/projects/stocktill-pos
+    widths: [480, 960]
+    caption: Barcode checkout (cashier)
+    alt: Point-of-sale screen signed in as a cashier, with four scanned products in the cart and a Charge $105.95 button
+  - base: /img/projects/stocktill-reports
+    widths: [480, 960]
+    caption: Reports with Excel export
+    alt: Monthly report with gross sales, refunds, net sales and gross profit, an Export to Excel button and a sales-by-day chart

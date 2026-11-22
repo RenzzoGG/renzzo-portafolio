@@ -1,0 +1,14 @@
+title: UIFlow Admin Dashboard
+tier: more
+type: Web app
+order: 7
+links:
+  live: https://uiflow.renzzogg.com/dashboard.html
+  source: https://github.com/RenzzoGG/uiflow
+stack: [HTML, CSS, JavaScript, Chart.js]
+summary: Admin dashboard with range-filtered analytics, a searchable, sortable users table, a remembered dark mode and a layout that works on phones.
+cvLine: "UIFlow — Admin dashboard & landing page: Dashboard with range-filtered analytics, a sortable table and dark mode, plus its accessible landing page."
+screenshots:
+  - base: /img/projects/uiflow-dashboard
+    widths: [400, 800]
+    alt: UIFlow admin dashboard in dark mode with revenue, users, session and conversion KPIs above a revenue line chart
