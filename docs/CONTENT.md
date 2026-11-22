@@ -11,7 +11,8 @@ Project data for repos outside this one was read (read-only) from the local clon
 - **Name:** Renzzo Gracia Gomez
 - **Role:** Full-Stack Developer
 - **Hero stack line:** Next.js · TypeScript · PostgreSQL · Python
-- **Tagline:** I build web apps end to end — and ship them live.
+- **Hero headline:** I build web apps end to end and ship them live.
+- **Hero subline:** Full-Stack Developer in Hermosillo, Mexico. Available for freelance projects, from the database to the deployed product.
 - **CV role line:** Full-Stack Developer · Next.js, TypeScript, PostgreSQL, Python
 - **Location:** Hermosillo, Sonora, Mexico
 - **Remote:** Open to remote work
@@ -27,15 +28,13 @@ Project data for repos outside this one was read (read-only) from the local clon
 
 ## About (page)
 
-> I'm a full-stack developer who thinks end to end, studying Information Systems and Digital Networks Engineering. I built Stocktill, a multi-store POS and inventory SaaS with Next.js, TypeScript, Supabase/PostgreSQL and Stripe, where each business's data is isolated by Row-Level Security and 700+ automated tests run in CI on every push. I've also built and deployed a REST API in Python with FastAPI and PostgreSQL, and fast, polished front ends with React, Tailwind CSS and plain HTML, CSS and JavaScript. I ship what I build myself — Docker, custom domains and HTTPS included. Open to freelance projects.
+> I'm a Full-Stack Developer based in Hermosillo, Mexico, studying Information Systems and Digital Networks Engineering. My portfolio projects cover the whole product. Clearline Dental is a booking system with a Django REST API and a React dashboard, where PostgreSQL itself prevents overlapping appointments. Stocktill is a multi-store POS and inventory SaaS with Next.js, Supabase and Stripe, where Row-Level Security isolates each business's data and 700+ automated tests run in CI on every push. I also care about how an interface feels: for Pulse Theory, I built a GSAP motion redesign that stays accessible, with a switch that turns all motion off. I deploy what I build myself, Docker, custom domains and HTTPS included. Open to freelance projects.
 
 The about card (`renzzo.json`) has three entries: location, remote and languages (see Identity).
 
 ## Summary (CV)
 
-> Full-stack developer who thinks end to end, studying Information Systems and Digital Networks Engineering. I built Stocktill, a multi-store POS and inventory SaaS with Next.js, TypeScript, Supabase/PostgreSQL and Stripe, isolated by Row-Level Security and backed by 700+ automated tests in CI. I've also deployed a REST API in Python with FastAPI and PostgreSQL, and fast front ends with React and Tailwind CSS. I ship what I build myself — Docker, custom domains and HTTPS included. Open to freelance projects.
-
-> **Note:** neither text mentions Clearline Dental (Django + React) yet. Phase 1 updates both to include it (Clearline's stack is now in Skills).
+> Full-Stack Developer based in Hermosillo, Mexico, studying Information Systems and Digital Networks Engineering. I built Clearline Dental, a booking system with a Django REST API and a React dashboard where PostgreSQL prevents overlapping appointments, and Stocktill, a multi-store POS and inventory SaaS with Next.js, Supabase and Stripe, isolated by Row-Level Security and backed by 700+ automated tests in CI. I also built an accessible GSAP motion redesign for Pulse Theory. I deploy what I build myself, Docker, custom domains and HTTPS included. Open to freelance projects.
 
 ## Skills (identical on page and CV)
 
@@ -118,7 +117,8 @@ Old screenshots live in `public/img/projects/`. Project repos also have screensh
 
 - **Type:** Full-stack web app
 - **Live:** https://clearline.renzzogg.com · **Source:** https://github.com/RenzzoGG/clearline-dental
-- **One-liner (provided by Renzzo):** Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway.
+- **One-liner:** A dental clinic booking system where PostgreSQL makes double bookings impossible, with a Django API, a React dashboard and 98% backend test coverage.
+- **Summary (provided by Renzzo):** Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway.
 - **README intro:** Online booking and front-desk dashboard for a dental clinic. A Django REST API and a React SPA, deployed to production with CI, end-to-end tests and an animated, fast public site. _(Clearline is a fictional clinic, built as a portfolio project.)_
 - **Features (README):** patients book a visit in five steps (service → dentist → date and time → details → confirm) with live availability. The front desk gets a week/day schedule per dentist color-coded by status, confirm/complete/cancel from a side drawer, and insights for 7/30/90 days. Admins manage dentists, services and patients, plus the Django admin. Public demo accounts exist, and demo data resets nightly.
 - **Stack:** Django, DRF, PostgreSQL 17, React 19, TypeScript, Vite, Tailwind v4, Motion, Docker, GitHub Actions, Railway
@@ -129,9 +129,10 @@ Old screenshots live in `public/img/projects/`. Project repos also have screensh
 
 - **Type:** Landing page
 - **Live:** https://pulse.renzzogg.com · **Source:** https://github.com/RenzzoGG/fitness-coach-landing
+- **One-liner:** A fast, accessible coaching landing page with GSAP scroll motion that visitors can turn off.
 - **Page copy:** Built to turn visitors into free-consultation bookings: the coach's offer is clear at a glance, monthly and annual plans are easy to compare, and booking takes one short form. It loads fast on phones and works for everyone, including keyboard and screen-reader users.
-- **Stats:** Lighthouse 97–100 mobile · 99–100 desktop · 15 KB CSS (brotli)
-- **CV line:** Fitness coach landing on a custom Bootstrap 5 build with an accessible pricing toggle; Lighthouse 97–100.
+- **Stats:** Lighthouse 100 on mobile and desktop (median of 5 runs) · 14.9 KB critical JS (min) · 51.8 KB motion chunk (gzip)
+- **CV line:** Fitness coach landing on a custom Bootstrap 5 build with an accessible pricing toggle and GSAP motion; Lighthouse 100 on mobile and desktop (median of 5 runs).
 - **Stack:** HTML, Bootstrap, Sass, JavaScript, GSAP (ScrollTrigger, SplitText; motion redesign is live)
 - **Image alt:** Pulse Theory hero: "Train with intent. Get strong for real life." beside a hand gripping a dumbbell in a dark gym
 - **Brand color** (`src/scss/_variables.scss`, `docs/DESIGN.md`): `$primary: $volt` = **`#C6F432`** (volt), on ink.
@@ -142,6 +143,7 @@ Old screenshots live in `public/img/projects/`. Project repos also have screensh
 - **Type:** Full-stack web app
 - **Live:** https://fernwick-admin.renzzogg.com · **Landing:** https://fernwick.renzzogg.com
 - **Source:** https://github.com/RenzzoGG/fernwick-platform · **Landing source:** https://github.com/RenzzoGG/fernwick-home-cleaning
+- **One-liner:** A quote management system that takes requests from a landing page to a React dashboard, with a read-only demo enforced by the database.
 - **Page copy:** Quote management system for a cleaning business: requests sent from the landing page are saved through a FastAPI + PostgreSQL API, and the team tracks them in a React dashboard with search, status history and metrics. The public demo is read-only and can't see real customer data — the database itself enforces it with Row-Level Security.
 - **Stats:** 300+ pytest tests · PostgreSQL Row-Level Security · JWT auth
 - **CV line:** Quote system for a cleaning business: landing form → FastAPI + PostgreSQL API → React dashboard. Read-only public demo isolated by Row-Level Security; JWT auth; 300+ pytest tests.
@@ -156,6 +158,7 @@ Old screenshots live in `public/img/projects/`. Project repos also have screensh
 - **Title:** Stocktill — Multi-Store POS & Inventory SaaS
 - **Type:** Full-stack SaaS
 - **Live:** https://stocktill.renzzogg.com · **Source:** https://github.com/RenzzoGG/retail-pos-saas
+- **One-liner:** A multi-store POS and inventory SaaS where each business only sees its own data, backed by 700+ automated tests.
 - **Page copy:** Point of sale and inventory for many stores on one platform, where each business only ever sees its own data. The barcode-scanner checkout works on desktop and on phones; owner, admin and cashier roles are enforced with Row-Level Security in PostgreSQL; billing runs on Stripe with a free trial; and it ships as a Docker container.
 - **Stats:** 700+ tests in CI · RLS on 20/20 tables · 3 roles
 - **CV line:** Multi-tenant POS where each business only sees its own data. Barcode checkout on desktop and mobile; owner/admin/cashier roles enforced with PostgreSQL RLS; Stripe billing with a free trial; 700+ tests (Vitest, pgTAP, Playwright) in GitHub Actions on every push; Docker.

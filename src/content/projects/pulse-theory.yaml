@@ -7,10 +7,14 @@ links:
   live: https://pulse.renzzogg.com
   source: https://github.com/RenzzoGG/fitness-coach-landing
 stack: [HTML, Bootstrap, Sass, JavaScript, GSAP]
+oneLiner: A fast, accessible coaching landing page with GSAP scroll motion that visitors can turn off.
 summary: "Built to turn visitors into free-consultation bookings: the coach's offer is clear at a glance, monthly and annual plans are easy to compare, and booking takes one short form. It loads fast on phones and works for everyone, including keyboard and screen-reader users."
-cvLine: Fitness coach landing on a custom Bootstrap 5 build with an accessible pricing toggle; Lighthouse 97–100.
+cvLine: Fitness coach landing on a custom Bootstrap 5 build with an accessible pricing toggle and GSAP motion; Lighthouse 100 on mobile and desktop (median of 5 runs).
 disclaimer: Pulse Theory is a fictional coaching brand, built as a demo project.
-stats: [Lighthouse 97–100 mobile, Lighthouse 99–100 desktop, 15 KB CSS (brotli)]
+stats:
+  - Lighthouse 100 on mobile and desktop (median of 5 runs)
+  - 14.9 KB critical JS (min)
+  - 51.8 KB motion chunk (gzip)
 caseStudy:
   - label: Goal
     text: Built to turn visitors into free-consultation bookings.

@@ -9,6 +9,7 @@ links:
   landing: https://fernwick.renzzogg.com
   landingSource: https://github.com/RenzzoGG/fernwick-home-cleaning
 stack: [React, TypeScript, Tailwind CSS, Python, FastAPI, PostgreSQL]
+oneLiner: A quote management system that takes requests from a landing page to a React dashboard, with a read-only demo enforced by the database.
 summary: "Quote management system for a cleaning business: requests sent from the landing page are saved through a FastAPI + PostgreSQL API, and the team tracks them in a React dashboard with search, status history and metrics. The public demo is read-only and can't see real customer data — the database itself enforces it with Row-Level Security."
 cvLine: "Quote system for a cleaning business: landing form → FastAPI + PostgreSQL API → React dashboard. Read-only public demo isolated by Row-Level Security; JWT auth; 300+ pytest tests."
 disclaimer: Fernwick Home Cleaning is a fictional cleaning business, built as a portfolio project.

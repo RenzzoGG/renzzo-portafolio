@@ -4,7 +4,7 @@ Working rules for this repository.
 
 ## Project
 
-- Personal portfolio and CV of Renzzo Gracia Gomez, presented as a **Full Stack Developer**. English content.
+- Personal portfolio and CV of Renzzo Gracia Gomez, presented as a **Full-Stack Developer**. English content.
 - Live at **renzzogg.com** on Railway (Cloudflare in front), deployed from `main`. **Every push to `main` goes live.**
 - We're rebuilding the site ("Signal" redesign). See `docs/PLAN.md` for phases, budgets and dependencies, `docs/CONTENT.md` for all copy and project data, and `docs/INVENTORY.md` for what the old site had.
 

@@ -1,6 +1,6 @@
 # Redesign plan: "Signal"
 
-The portfolio for Renzzo Gracia Gomez, Full Stack Developer, rebuilt in Astro + TypeScript, with Three.js on desktop only and GSAP for motion. English content.
+The portfolio for Renzzo Gracia Gomez, Full-Stack Developer, rebuilt in Astro + TypeScript, with Three.js on desktop only and GSAP for motion. English content.
 
 All work happens on the `redesign` branch. `main` stays live and untouched until Phase 8.
 

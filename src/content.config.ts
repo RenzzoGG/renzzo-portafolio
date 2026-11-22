@@ -48,6 +48,7 @@ const featuredProject = z.strictObject({
   ...projectBase,
   tier: z.literal("featured"),
   accent: z.enum(ACCENTS),
+  oneLiner: text,
   stats: z.array(text).min(1),
   caseStudy: z.array(z.strictObject({ label: text, text })).min(1),
 });
@@ -116,7 +117,7 @@ const profile = defineCollection({
     name: text,
     role: text,
     heroStack: text,
-    tagline: text,
+    hero: z.strictObject({ headline: text, subline: text }),
     cvRole: text,
     location: text,
     remote: text,

@@ -17,6 +17,7 @@ stack:
     Resend,
     Docker,
   ]
+oneLiner: A multi-store POS and inventory SaaS where each business only sees its own data, backed by 700+ automated tests.
 summary: Point of sale and inventory for many stores on one platform, where each business only ever sees its own data. The barcode-scanner checkout works on desktop and on phones; owner, admin and cashier roles are enforced with Row-Level Security in PostgreSQL; billing runs on Stripe with a free trial; and it ships as a Docker container.
 cvLine: "Multi-tenant POS where each business only sees its own data. Barcode checkout on desktop and mobile; owner/admin/cashier roles enforced with PostgreSQL RLS; Stripe billing with a free trial; 700+ tests (Vitest, pgTAP, Playwright) in GitHub Actions on every push; Docker."
 disclaimer: Stocktill is a fictional brand created for a portfolio project.
