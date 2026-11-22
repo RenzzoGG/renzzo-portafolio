@@ -61,6 +61,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all-variants", action="store_true", help="build every variant with previews")
     parser.add_argument("--stylized", action="store_true", help="build the stylized variants with previews")
+    parser.add_argument("--only", help="comma-separated stylized variants to build")
     parser.add_argument("--out", type=Path, help="output folder for --all-variants or --stylized")
     args = parser.parse_args()
     if (args.all_variants or args.stylized) and not args.out:
@@ -82,9 +83,10 @@ def main() -> None:
     box = find_crop(alpha, config["crop"])
 
     if args.stylized:
-        _, reference = build_variant(assets, box, config["variants"]["b-balanced"])
+        only = args.only.split(",") if args.only else None
+        reference = None if only else build_variant(assets, box, config["variants"]["b-balanced"])[1]
         out = args.out if args.out.is_absolute() else ROOT / args.out
-        build_all(assets, config, reference, out)
+        build_all(assets, config, reference, out, only)
         return
 
     if not args.all_variants:

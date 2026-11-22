@@ -38,6 +38,7 @@ class StyledFace:
     styled: np.ndarray  # one level per visible dot
     focused: np.ndarray  # 0..15, one per visible dot
     depth: np.ndarray  # 0..255, one per visible dot
+    remapped: np.ndarray | None = None  # Build-time only: dots changed by a face remap
 
 
 def pack_bits(values: np.ndarray, width: int) -> bytes:
@@ -194,6 +195,26 @@ def features(regions: dict, params: dict) -> np.ndarray:
     return levels
 
 
+def erode(mask: np.ndarray) -> np.ndarray:
+    interior = mask.copy()
+    interior[1:] &= mask[:-1]
+    interior[:-1] &= mask[1:]
+    interior[:, 1:] &= mask[:, :-1]
+    interior[:, :-1] &= mask[:, 1:]
+    return interior
+
+
+def remap_face(styled: np.ndarray, source: np.ndarray, regions: dict, remap: dict) -> tuple[np.ndarray, np.ndarray]:
+    """Spreads the face's interior dots across every halftone size by tonal rank."""
+    # The silhouette keeps its dots, so only cells inside the outline change.
+    cells = regions["hull"] & ~regions["cap"] & regions["visible"] & erode(regions["mask"])
+    values = source[cells]
+    ranks = np.argsort(np.argsort(values, kind="stable"), kind="stable") / max(values.size - 1, 1)
+    result = styled.copy()
+    result[cells] = np.digitize(ranks, np.cumsum(remap["shares"])[:-1]).astype(np.uint8)
+    return result, cells
+
+
 def stylize(assets: tuple, box: tuple, params: dict, treatment: dict) -> StyledFace:
     regions = analyze(assets, box, params["cols"], treatment)
     mask, fade = regions["visible"], regions["fade"]
@@ -215,6 +236,13 @@ def stylize(assets: tuple, box: tuple, params: dict, treatment: dict) -> StyledF
             # Keeps the hoodie at "dim" so only the dither fades it, with no hard line.
             styled_grid = np.where(regions["hoodie"], np.maximum(styled_grid, 1), styled_grid)
 
+    remapped = None
+    if "faceRemap" in params:
+        remap = params["faceRemap"]
+        source = luma + (luma - blur(luma, params["cols"] / remap["radiusDivisor"])) * remap["localContrast"]
+        styled_grid, cells = remap_face(styled_grid, source, regions, remap)
+        remapped = cells[mask]
+
     focused_grid = np.round(focused_values * (FOCUS_LEVELS - 1)).astype(np.uint8)
     return StyledFace(
         params["cols"],
@@ -225,6 +253,7 @@ def stylize(assets: tuple, box: tuple, params: dict, treatment: dict) -> StyledF
         styled_grid[mask],
         focused_grid[mask],
         regions["near"][mask],
+        remapped,
     )
 
 
@@ -302,7 +331,33 @@ def sheet(columns: list[dict], path: Path, width: int) -> None:
     canvas.save(path, optimize=True)
 
 
-def build_all(assets: tuple, config: dict, reference, out: Path) -> None:
+def face_light(face: StyledFace, cells: np.ndarray, image: Image.Image) -> float:
+    """Mean rendered light over the given dots, measured on the final image."""
+    grid = np.zeros((face.rows, face.cols), dtype=bool)
+    grid[face.mask] = cells
+    area = Image.fromarray(grid).resize(image.size, Image.Resampling.NEAREST)
+    return float(np.asarray(image, dtype=np.float32)[np.asarray(area)].mean())
+
+
+def check_base(name: str, face: StyledFace, base: StyledFace, styled: Image.Image) -> dict:
+    """Proves a tweak changed only the styled state of the face's interior."""
+    for field in ("mask", "focused", "depth"):
+        if not np.array_equal(getattr(face, field), getattr(base, field)):
+            raise RuntimeError(f"{name}: {field} differs from its base variant")
+    cells = face.remapped
+    if cells is None or not np.array_equal(face.styled[~cells], base.styled[~cells]):
+        raise RuntimeError(f"{name}: styled dots changed outside the face")
+    before = face_light(base, cells, render_styled(base, 880, "styled"))
+    after = face_light(face, cells, styled)
+    return {
+        "faceDots": int(cells.sum()),
+        "faceSizesBefore": np.bincount(base.styled[cells], minlength=4).tolist(),
+        "faceSizesAfter": np.bincount(face.styled[cells], minlength=4).tolist(),
+        "faceLightChangePercent": round((after / before - 1) * 100, 1),
+    }
+
+
+def build_all(assets: tuple, config: dict, reference, out: Path, only: list[str] | None = None) -> None:
     stylized = config["stylized"]
     alpha = assets[1]
     box = find_crop(alpha, stylized["crop"])
@@ -310,9 +365,11 @@ def build_all(assets: tuple, config: dict, reference, out: Path) -> None:
         raise RuntimeError("The crop cuts the top of the cap")
 
     out.mkdir(parents=True, exist_ok=True)
-    columns = [{"label": "B, reference", "styled": render(reference, 880)}]
+    columns = [{"label": "B, reference", "styled": render(reference, 880)}] if reference else []
     report = {"crop": stylized["crop"], "cropBox": box, "treatment": stylized["treatment"], "variants": {}}
     for name, params in stylized["variants"].items():
+        if only and name not in only:
+            continue
         face = stylize(assets, box, params, stylized["treatment"])
         data = pack(face)
         if len(data) > MAX_BYTES:
@@ -336,6 +393,11 @@ def build_all(assets: tuple, config: dict, reference, out: Path) -> None:
             "gzipBytes": len(gzip.compress(data, 9)),
             "styledCounts": np.bincount(decoded.styled, minlength=decoded.levels).tolist(),
         }
+        if "baseVariant" in params:
+            base_params = stylized["variants"][params["baseVariant"]]
+            base = stylize(assets, box, base_params, stylized["treatment"])
+            report["variants"][name]["faceRemapCheck"] = check_base(name, face, base, styled)
+            print(name, json.dumps(report["variants"][name]["faceRemapCheck"]))
         summary = report["variants"][name]
         print(name, json.dumps({key: summary[key] for key in ("cols", "rows", "dots", "rawBytes", "gzipBytes", "styledCounts")}))
 

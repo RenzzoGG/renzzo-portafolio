@@ -92,6 +92,23 @@
         "featureOn": 0.3,
         "localContrast": 0.7,
         "beardStart": 0.62
+      },
+      "e2-halftone": {
+        "label": "E2, Halftone",
+        "style": "halftone",
+        "mode": "size",
+        "levels": 4,
+        "cols": 90,
+        "contrast": 1.35,
+        "gamma": 1.25,
+        "thresholds": [0.2, 0.48, 0.78],
+        "localContrast": 0.7,
+        "baseVariant": "e-halftone",
+        "faceRemap": {
+          "shares": [0.14, 0.24, 0.32, 0.3],
+          "radiusDivisor": 12,
+          "localContrast": 0.6
+        }
       }
     }
   }
