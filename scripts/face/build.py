@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 
 from models import PHOTO, ROOT, work_path
 from sample import find_crop, pack, render, sample, unpack
-from stylize import build_all
+from stylize import build_all, build_selected
 
 HERE = Path(__file__).resolve().parent
 MAX_BYTES = 60 * 1024
@@ -87,6 +87,10 @@ def main() -> None:
         reference = None if only else build_variant(assets, box, config["variants"]["b-balanced"])[1]
         out = args.out if args.out.is_absolute() else ROOT / args.out
         build_all(assets, config, reference, out, only)
+        return
+
+    if not args.all_variants and selected in config["stylized"]["variants"]:
+        build_selected(assets, config, selected, OUTPUT)
         return
 
     if not args.all_variants:

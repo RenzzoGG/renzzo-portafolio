@@ -310,6 +310,49 @@ def render_styled(face: StyledFace, width: int, state: str) -> Image.Image:
     return Image.fromarray(np.clip(result, 0, 255).astype(np.uint8), mode="RGB")
 
 
+def render_poster(face: StyledFace, pitch: int) -> Image.Image:
+    """Alpha-only poster on an exact pixel grid. Repeated dots compress very well."""
+    radii, light = dot_style(face, "styled")
+    supersample = 8
+    sprites: dict[float, np.ndarray] = {}
+    alpha = np.zeros((face.rows * pitch, face.cols * pitch), dtype=np.uint8)
+    for (row, col), radius, value in zip(np.argwhere(face.mask), radii, light):
+        key = round(float(radius), 3)
+        if key not in sprites:
+            size = pitch * supersample
+            image = Image.new("L", (size, size), 0)
+            center, r = size / 2, key * size
+            ImageDraw.Draw(image).ellipse((center - r, center - r, center + r, center + r), fill=255)
+            sprites[key] = np.asarray(image.resize((pitch, pitch), Image.Resampling.BOX), dtype=np.uint8)
+        dot = np.round(sprites[key] * float(value)).astype(np.uint8)
+        alpha[row * pitch : (row + 1) * pitch, col * pitch : (col + 1) * pitch] = dot
+
+    poster = Image.new("RGBA", (alpha.shape[1], alpha.shape[0]), (255, 255, 255, 0))
+    poster.putalpha(Image.fromarray(alpha, mode="L"))
+    return poster
+
+
+def build_selected(assets: tuple, config: dict, name: str, output: Path) -> None:
+    """Writes the approved variant's data and poster. Nothing else enters src/."""
+    stylized = config["stylized"]
+    box = find_crop(assets[1], stylized["crop"])
+    face = stylize(assets, box, stylized["variants"][name], stylized["treatment"])
+    data = pack(face)
+    if len(data) > MAX_BYTES:
+        raise RuntimeError(f"{name} is {len(data)} bytes, over budget")
+    decoded = unpack(data)
+    for field in ("mask", "styled", "focused", "depth"):
+        if not np.array_equal(getattr(decoded, field), getattr(face, field)):
+            raise RuntimeError(f"{name}: round-trip mismatch in {field}")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(data)
+    poster_path = output.with_name("poster.webp")
+    render_poster(decoded, 10).save(poster_path, lossless=True, quality=100, method=6, exif=b"", xmp=b"", icc_profile=b"")
+    print(f"{output.name}: {len(data)} B raw, {len(gzip.compress(data, 9))} B gzip")
+    print(f"{poster_path.name}: {poster_path.stat().st_size} B master")
+
+
 def sheet(columns: list[dict], path: Path, width: int) -> None:
     """Styled row on top, focused row below, at the slot's real width."""
     height, gap, label = round(width * ASPECT), 20, 32
