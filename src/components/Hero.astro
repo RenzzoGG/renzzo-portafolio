@@ -9,7 +9,11 @@ const { hero, heroStack, ui } = await getProfile();
   <div class="hero__copy">
     <h1 id="hero-title">{hero.headline}</h1>
     <p class="hero__subline">{hero.subline}</p>
-    <p class="hero__stack">{heroStack}</p>
+    <ul class="stack-list hero__stack">
+      {heroStack.split(" · ").map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
     <div class="actions">
       <a class="btn" href="#work">
         {ui.heroActions.primary}

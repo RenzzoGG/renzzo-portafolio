@@ -72,7 +72,7 @@ const { more } = await getProjects();
     border-bottom: 1px solid var(--color-border);
   }
 
-  .row :global(.row__thumb) {
+  .row :global(picture) {
     display: none;
   }
 
@@ -108,8 +108,11 @@ const { more } = await getProjects();
       gap: var(--space-5);
     }
 
-    .row :global(.row__thumb) {
+    .row :global(picture) {
       display: block;
+    }
+
+    .row :global(.row__thumb) {
       width: 10rem;
       height: auto;
       aspect-ratio: 16 / 10;

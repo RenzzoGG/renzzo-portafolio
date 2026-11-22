@@ -58,11 +58,11 @@ main:focus {
   color: var(--color-bg);
   font-weight: var(--weight-medium);
   border-radius: var(--radius-sm);
-  transform: translateY(-200%);
 }
 
-.skip-link:focus {
-  transform: none;
+.skip-link:not(:focus) {
+  clip-path: inset(50%);
+  transform: translateY(-200%);
 }
 
 .actions {
