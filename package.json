@@ -15,7 +15,9 @@
     "format:check": "prettier --check .",
     "typecheck": "astro check",
     "check:contrast": "node scripts/check-contrast.ts",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm run check:contrast && npm run build"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run check:contrast && npm run build",
+    "cv:pdf": "node scripts/cv-pdf.ts",
+    "og:image": "node scripts/og-image.ts"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
@@ -32,6 +34,7 @@
     "lighthouse": "13.6.0",
     "prettier": "3.10.1",
     "prettier-plugin-astro": "1.1.2",
+    "sharp": "0.35.5",
     "typescript": "6.0.3",
     "typescript-eslint": "8.73.0"
   }
