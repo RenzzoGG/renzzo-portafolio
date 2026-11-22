@@ -32,18 +32,5 @@ caseStudy:
   - label: Result
     text: A live public demo backed by unit, pgTAP, integration and Playwright end-to-end tests that run in GitHub Actions on every push.
 screenshots:
-  - base: /img/projects/stocktill-cover
-    widths: [640, 1200]
-    alt: "Stocktill cover: the owner dashboard with today's, this week's and this month's sales on a laptop, next to the point-of-sale cart on a phone"
-  - base: /img/projects/stocktill-dashboard
-    widths: [480, 960]
-    caption: Owner dashboard
-    alt: Owner dashboard with a low-stock alert, sales for today, this week and this month, and a sales-per-day bar chart
-  - base: /img/projects/stocktill-pos
-    widths: [480, 960]
-    caption: Barcode checkout (cashier)
-    alt: Point-of-sale screen signed in as a cashier, with four scanned products in the cart and a Charge $105.95 button
-  - base: /img/projects/stocktill-reports
-    widths: [480, 960]
-    caption: Reports with Excel export
-    alt: Monthly report with gross sales, refunds, net sales and gross profit, an Export to Excel button and a sales-by-day chart
+  - src: ../../assets/projects/stocktill-dashboard.webp
+    alt: "Owner dashboard with a low-stock alert, sales for today, this week and this month, and a sales-per-day bar chart"

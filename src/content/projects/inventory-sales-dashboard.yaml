@@ -9,6 +9,5 @@ stack: [HTML, CSS, JavaScript, SVG, jsPDF, SheetJS]
 summary: "Inventory and sales dashboard where every metric agrees: a hand-built SVG 30-day revenue chart, Products, Sales, Reports and Settings views, PDF and Excel export, and a mobile-ready layout."
 cvLine: Inventory and sales dashboard with a hand-built SVG revenue chart, PDF/Excel export and mobile layout.
 screenshots:
-  - base: /img/projects/inventory
-    widths: [400, 800]
-    alt: Inventory & Sales Dashboard preview with 30-day revenue, low-stock count and a daily revenue bar chart
+  - src: ../../assets/projects/inventory-dashboard.webp
+    alt: "Inventory & Sales Dashboard preview with 30-day revenue, low-stock count and a daily revenue bar chart"

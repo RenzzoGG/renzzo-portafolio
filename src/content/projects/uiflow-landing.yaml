@@ -9,6 +9,5 @@ stack: [HTML, CSS, JavaScript]
 summary: Landing page for a fictional dashboard tool with strong visual hierarchy, an accessible mobile menu and FAQ, and a self-hosted custom font.
 cvLine: "UIFlow — Admin dashboard & landing page: Dashboard with range-filtered analytics, a sortable table and dark mode, plus its accessible landing page."
 screenshots:
-  - base: /img/projects/uiflow-landing
-    widths: [400, 800]
-    alt: 'UIFlow landing hero: "Design Better Dashboards, Faster." next to a dark dashboard card with KPIs and a revenue chart'
+  - src: ../../assets/projects/uiflow-landing.webp
+    alt: 'UIFlow landing hero: "Design Better Dashboards, Faster." next to a dashboard card with metrics and charts'

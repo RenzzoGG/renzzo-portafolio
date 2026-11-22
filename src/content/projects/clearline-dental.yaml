@@ -33,4 +33,6 @@ caseStudy:
     text: Admins manage dentists, services and patients, plus the Django admin.
   - label: Demo
     text: Public demo accounts exist, and demo data resets nightly.
-screenshots: []
+screenshots:
+  - src: ../../assets/projects/clearline-schedule.webp
+    alt: "Clearline reception schedule: a week view of appointments per day, color-coded by status"

@@ -22,6 +22,5 @@ caseStudy:
   - label: Security
     text: The public demo is read-only and can't see real customer data — the database itself enforces it with Row-Level Security.
 screenshots:
-  - base: /img/projects/fernwick-platform
-    widths: [640, 1200]
-    alt: Fernwick Admin dashboard in demo mode with quote totals and a quotes-per-day bar chart for the last 30 days
+  - src: ../../assets/projects/fernwick-dashboard.webp
+    alt: "Fernwick Admin dashboard in demo mode with quote totals and a quotes-per-day bar chart for the last 30 days"

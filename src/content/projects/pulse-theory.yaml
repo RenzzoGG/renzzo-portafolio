@@ -25,6 +25,5 @@ caseStudy:
   - label: Motion
     text: GSAP motion redesign with ScrollTrigger and SplitText.
 screenshots:
-  - base: /img/projects/pulse-theory
-    widths: [400, 800]
+  - src: ../../assets/projects/pulse-hero.webp
     alt: 'Pulse Theory hero: "Train with intent. Get strong for real life." beside a hand gripping a dumbbell in a dark gym'

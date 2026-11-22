@@ -1,29 +1,10 @@
-import { existsSync } from "node:fs";
-import { defineCollection } from "astro:content";
+import { defineCollection, type SchemaContext } from "astro:content";
 import { file, glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { ACCENTS } from "./lib/accents.ts";
 
 const text = z.string().trim().min(1);
 const stack = z.array(text).min(1);
-
-const screenshot = z
-  .strictObject({
-    base: z.string().regex(/^\/img\/projects\/[a-z0-9-]+$/),
-    widths: z.array(z.number().int().positive()).min(1),
-    alt: text,
-    caption: text.optional(),
-  })
-  .superRefine(({ base, widths }, context) => {
-    for (const width of widths) {
-      for (const format of ["avif", "webp"]) {
-        const path = `public${base}-${width}.${format}`;
-        if (!existsSync(path)) {
-          context.addIssue({ code: "custom", message: `Missing ${path}` });
-        }
-      }
-    }
-  });
 
 const links = z.strictObject({
   live: z.url({ protocol: /^https$/ }),
@@ -32,36 +13,45 @@ const links = z.strictObject({
   landingSource: z.url({ protocol: /^https$/ }).optional(),
 });
 
-const projectBase = {
-  title: text,
-  type: text,
-  order: z.number().int().positive(),
-  links,
-  stack,
-  summary: text,
-  cvLine: text.optional(),
-  disclaimer: text.optional(),
-  screenshots: z.array(screenshot),
+const projectSchema = ({ image }: SchemaContext) => {
+  const screenshot = z.strictObject({
+    src: image(),
+    alt: text,
+    caption: text.optional(),
+  });
+
+  const projectBase = {
+    title: text,
+    type: text,
+    order: z.number().int().positive(),
+    links,
+    stack,
+    summary: text,
+    cvLine: text.optional(),
+    disclaimer: text.optional(),
+    screenshots: z.array(screenshot).min(1),
+  };
+
+  return z.discriminatedUnion("tier", [
+    z.strictObject({
+      ...projectBase,
+      tier: z.literal("featured"),
+      accent: z.enum(ACCENTS),
+      oneLiner: text,
+      stats: z.array(text).min(1),
+      caseStudy: z.array(z.strictObject({ label: text, text })).min(1),
+    }),
+    z.strictObject({
+      ...projectBase,
+      tier: z.literal("more"),
+      accent: z.enum(ACCENTS).optional(),
+    }),
+  ]);
 };
-
-const featuredProject = z.strictObject({
-  ...projectBase,
-  tier: z.literal("featured"),
-  accent: z.enum(ACCENTS),
-  oneLiner: text,
-  stats: z.array(text).min(1),
-  caseStudy: z.array(z.strictObject({ label: text, text })).min(1),
-});
-
-const moreProject = z.strictObject({
-  ...projectBase,
-  tier: z.literal("more"),
-  accent: z.enum(ACCENTS).optional(),
-});
 
 const projects = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/projects" }),
-  schema: z.discriminatedUnion("tier", [featuredProject, moreProject]),
+  schema: projectSchema,
 });
 
 const skills = defineCollection({

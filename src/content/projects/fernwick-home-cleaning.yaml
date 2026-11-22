@@ -9,4 +9,6 @@ links:
 stack: [HTML, Tailwind CSS, JavaScript]
 summary: 'Marketing landing page for a fictional residential cleaning service, built with HTML, Tailwind CSS and a little vanilla JavaScript. It has a hero, services, "Book in three simple steps", pricing, reviews, FAQ, and a free quote form that sends to the Fernwick API with fetch.'
 disclaimer: Fernwick Home Cleaning is a fictional cleaning business, built as a portfolio project.
-screenshots: []
+screenshots:
+  - src: ../../assets/projects/fernwick-landing.webp
+    alt: 'Fernwick Home Cleaning landing hero: "A spotless home, without lifting a finger." next to an illustrated house'

@@ -111,7 +111,7 @@ Section link: "Let's talk →" (to #contact).
 
 New layout: **Featured** (4 curved 3D screens) and **More work** (list).
 
-Old screenshots live in `public/img/projects/`. Project repos also have screenshots in `docs/screenshots/`, but copy them into this repo only when Phase 2/5 needs them.
+Since Phase 2, each project has one 16:10 master in `src/assets/projects/`, optimized by Astro's image pipeline. The old `public/img/projects/` files are gone, so any "Images here" path below is historical. No image may show the real domain (the old Pulse image did, so it was recaptured from the live site).
 
 ### Featured 1 — Clearline Dental _(new, not on the current site or CV)_
 
