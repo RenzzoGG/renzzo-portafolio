@@ -61,6 +61,8 @@ docs/                 # Plan, content and reviews
 3. Preview the stylized variants, each with a styled and a focused state: `npm run face:build -- --stylized --out docs/reports/phase-3/stylized`.
 4. Set `"selected"` in `scripts/face/variants.json`, then run `npm run face:build` to write `src/assets/face/face.bin`.
 
+The approved variant is `e2-halftone`. `npm run face:build` writes its data and an LED poster rendered only from the dots. The hero shows the poster without JS or with motion off, and a lazy 2D canvas (`src/lib/face/`) otherwise.
+
 The first run downloads Python, the locked packages and two checksum-verified models. Those, plus the masks and depth maps, stay in `~/.cache/renzzo-face/`. After that, the pipeline runs offline.
 
 ## Deployment

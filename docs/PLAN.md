@@ -92,7 +92,7 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 - Critical JS ≤ 20 KB min.
 - Every link from `docs/CONTENT.md` is present. External links use `target="_blank" rel="noopener noreferrer"`.
 
-## Phase 3: Face pipeline
+## Phase 3: Face pipeline ✅ (E2 halftone approved 2026-11-22)
 
 **Goals:** an offline pipeline from photo to compact LED point data, plus the 2D canvas renderer (mobile and fallback).
 
