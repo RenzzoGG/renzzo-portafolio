@@ -5,9 +5,9 @@
 import type { FaceRenderer } from "./canvas-renderer.ts";
 
 const slot = document.querySelector<HTMLElement>("[data-led-slot]");
-const canvas = slot?.querySelector("canvas");
+const host = slot?.querySelector<HTMLElement>("[data-face-layers]");
 
-if (slot && canvas) {
+if (slot && host) {
   const root = document.documentElement;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   let renderer: FaceRenderer | null = null;
@@ -24,9 +24,14 @@ if (slot && canvas) {
       ]);
       const face = await loadFace();
       if (allowed() && !renderer) {
-        renderer = createCanvasRenderer(canvas, face);
-        renderer.start();
-        slot.dataset.face = "live";
+        const next = createCanvasRenderer(host, face);
+        const ready = await next.start();
+        if (ready && allowed()) {
+          renderer = next;
+          slot.dataset.face = "live";
+        } else {
+          next.destroy();
+        }
       }
     } catch {
       // The poster stays in place, so the hero is never empty.

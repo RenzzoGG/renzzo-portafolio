@@ -13,7 +13,7 @@ const style = `--poster: url("${posterUrl}")`;
   <div class="led-slot__glow">
     <div class="led-slot__poster"></div>
   </div>
-  <canvas class="led-slot__canvas"></canvas>
+  <div class="led-slot__live" data-face-layers></div>
 </div>
 
 <script>
@@ -40,7 +40,8 @@ const style = `--poster: url("${posterUrl}")`;
 
   .led-slot__glow,
   .led-slot__poster,
-  .led-slot__canvas {
+  .led-slot__live,
+  .led-slot__live :global(canvas) {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -58,15 +59,58 @@ const style = `--poster: url("${posterUrl}")`;
     mask: var(--poster) center / 100% 100% no-repeat;
   }
 
-  .led-slot__canvas {
-    opacity: 0;
+  .led-slot__live {
+    visibility: hidden;
+  }
+
+  .led-slot__live :global(canvas[data-layer="glow"]) {
+    opacity: 0.4;
   }
 
   .led-slot[data-face="live"] .led-slot__glow {
     opacity: 0;
   }
 
-  .led-slot[data-face="live"] .led-slot__canvas {
-    opacity: 1;
+  /* All motion is CSS on baked canvases, so it stays off the main thread. */
+  .led-slot[data-face="live"] .led-slot__live {
+    visibility: visible;
+    animation: led-assemble var(--duration-scene) var(--ease-out-expo) both;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="1"]) {
+    animation: led-shimmer 3.7s ease-in-out infinite;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="2"]) {
+    animation: led-shimmer 2.9s ease-in-out -1.1s infinite;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="3"]) {
+    animation: led-shimmer 4.3s ease-in-out -2.4s infinite;
+  }
+
+  .led-slot__live[data-paused] :global(canvas) {
+    animation-play-state: paused !important;
+  }
+
+  @keyframes led-assemble {
+    from {
+      clip-path: circle(0% at 50% 42%);
+    }
+
+    to {
+      clip-path: circle(115% at 50% 42%);
+    }
+  }
+
+  @keyframes led-shimmer {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.78;
+    }
   }
 </style>

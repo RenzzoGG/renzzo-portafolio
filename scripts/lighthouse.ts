@@ -11,7 +11,7 @@ import { startServer } from "./serve-dist.ts";
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT = "docs/reports/phase-2/lighthouse.json";
+const REPORT = "docs/reports/phase-3/lighthouse.json";
 const CATEGORIES = [
   "performance",
   "accessibility",
@@ -62,6 +62,15 @@ async function runOnce(url: string, formFactor: "mobile" | "desktop") {
       cls: lhr.audits["cumulative-layout-shift"]?.numericValue ?? 0,
       tbt: lhr.audits["total-blocking-time"]?.numericValue ?? 0,
       lcpElement: findSnippet(lhr.audits["lcp-breakdown-insight"]?.details),
+      longTasks: (
+        (
+          lhr.audits["long-tasks"]?.details as
+            { items?: { url?: string; duration?: number }[] } | undefined
+        )?.items ?? []
+      ).map(
+        (task) =>
+          `${Math.round(task.duration ?? 0)}ms ${(task.url ?? "").split("/").pop() ?? ""}`,
+      ),
       failed: Object.values(lhr.categories)
         .flatMap((category) => category.auditRefs)
         .filter((ref) => ref.weight > 0)
@@ -112,12 +121,13 @@ try {
       tbtMs: Math.round(median(runs.map((run) => run.tbt))),
       lcpElement: runs[0]?.lcpElement,
       failedAudits: [...new Set(runs.flatMap((run) => run.failed))],
+      longTasksLastRun: runs.at(-1)?.longTasks,
     };
   }
 } finally {
   server.close();
 }
 
-mkdirSync("docs/reports/phase-2", { recursive: true });
+mkdirSync("docs/reports/phase-3", { recursive: true });
 writeFileSync(REPORT, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 2));

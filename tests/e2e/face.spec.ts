@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const LIVE = '[data-led-slot][data-face="live"]';
 
 const canvasHasPixels = (page: Page) =>
-  page.locator(".led-slot__canvas").evaluate((element) => {
+  page.locator('.led-slot__live canvas[data-layer="0"]').evaluate((element) => {
     const canvas = element as HTMLCanvasElement;
     if (!canvas.width || !canvas.height) return false;
     const context = canvas.getContext("2d");
@@ -34,7 +34,7 @@ test.describe("without JavaScript", () => {
     const box = await slot.boundingBox();
     expect(box).not.toBeNull();
     expect((box?.width ?? 0) / (box?.height ?? 1)).toBeCloseTo(0.8, 2);
-    await expect(page.locator(".led-slot__canvas")).toHaveCSS("opacity", "0");
+    await expect(page.locator(".led-slot__live canvas")).toHaveCount(0);
   });
 });
 
@@ -71,6 +71,7 @@ test("Motion on draws the canvas, and the toggle stops it", async ({
 
   await page.locator("[data-motion-toggle]").click();
   await expect(page.locator(LIVE)).toHaveCount(0);
+  await expect(page.locator(".led-slot__live canvas")).toHaveCount(0);
   await expect(page.locator(".led-slot__poster")).toBeVisible();
   await expect(page.locator(".led-slot__glow")).toHaveCSS("opacity", "1");
 
