@@ -39,14 +39,14 @@ The about card (`renzzo.json`) has three entries: location, remote and languages
 
 ## Skills (identical on page and CV)
 
-| Group               | Items                                                                                                                                     |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Front-end           | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS v4, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design             |
-| Back-end            | Node.js, Python, FastAPI, Django, Django REST Framework (DRF), PostgreSQL, Supabase, SQL, Row-Level Security, REST APIs, JWT auth, Stripe |
-| Testing             | Vitest, Playwright, pytest, pgTAP                                                                                                         |
-| DevOps & deployment | Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains                                                               |
-| Libraries           | GSAP, Motion, Chart.js, jsPDF, SheetJS                                                                                                    |
-| Tools & workflow    | Git, GitHub, Vite, Linux (WSL)                                                                                                            |
+| Group               | Items                                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Front-end           | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS v4, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design                          |
+| Back-end            | Node.js, Python, FastAPI, Django, Django REST Framework (DRF), PostgreSQL, Supabase, Drizzle ORM, SQL, Row-Level Security, REST APIs, JWT auth, Stripe |
+| Testing             | Vitest, Playwright, pytest, pgTAP                                                                                                                      |
+| DevOps & deployment | Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains                                                                            |
+| Libraries           | GSAP, Motion, Chart.js, jsPDF, SheetJS                                                                                                                 |
+| Tools & workflow    | Git, GitHub, Vite, Linux (WSL)                                                                                                                         |
 
 Rule: Skills only lists technologies used in a published project.
 
@@ -54,7 +54,7 @@ Rule: Skills only lists technologies used in a published project.
 
 The portfolio itself will add Astro and Three.js once it's live.
 
-Not yet listed, but used in published projects (candidates, ask before adding): Drizzle ORM, PDFKit, Resend (Stocktill).
+**Decided 2026-11-22:** Drizzle ORM is added to Skills (Stocktill). PDFKit and Resend stay only in Stocktill's project stack and are not listed in Skills.
 
 ## Education
 
