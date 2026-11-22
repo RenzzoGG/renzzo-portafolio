@@ -4,19 +4,19 @@ Snapshot of `main` at `93d9b4d` (the live site on renzzogg.com), taken when the 
 
 ## Structure
 
-| Path | What it is |
-| --- | --- |
-| `public/index.html` | Single-page portfolio (42 KB). Sections: hero, about, skills, projects, education, certifications, services, contact. Light/dark theme toggle. **Moved to `legacy/index.html`.** |
-| `public/css/styles.css` (`?v=6`) | All styles. **Moved to `legacy/css/`.** |
-| `public/js/main.js` (`?v=2`) | Menu, theme toggle, scroll reveal, footer year. **Moved to `legacy/js/`.** |
-| `public/favicon.svg` | `<RG />` favicon. Kept until Phase 1 replaces it. |
-| `public/og-image.png` | 1200×630 Open Graph image, captured from `og/og-image.html`. Kept until regenerated in Signal style. |
-| `public/renzzo-gracia-gomez-cv.pdf` (`?v=11`) | Downloadable CV, exported from `cv/`. Kept. |
-| `public/img/projects/*.{avif,webp}` | 40 project screenshots in 2 widths × 2 formats (Stocktill, Fernwick Platform, Pulse Theory, Inventory, UIFlow ×2). Kept; Astro serves `public/` as-is. |
-| `cv/index.html`, `cv/cv.css` | CV source (Letter, 1 page). Not published. Kept. |
-| `og/og-image.html` | OG image template. Not published. Kept. |
-| `.claude/settings.json` | Deny rules for `git push` and `rm -rf`-style commands. Kept. |
-| `README.md` | Describes the old static stack. To be rewritten in Phase 2. |
+| Path                                          | What it is                                                                                                                                                                       |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `public/index.html`                           | Single-page portfolio (42 KB). Sections: hero, about, skills, projects, education, certifications, services, contact. Light/dark theme toggle. **Moved to `legacy/index.html`.** |
+| `public/css/styles.css` (`?v=6`)              | All styles. **Moved to `legacy/css/`.**                                                                                                                                          |
+| `public/js/main.js` (`?v=2`)                  | Menu, theme toggle, scroll reveal, footer year. **Moved to `legacy/js/`.**                                                                                                       |
+| `public/favicon.svg`                          | `<RG />` favicon. Kept until Phase 1 replaces it.                                                                                                                                |
+| `public/og-image.png`                         | 1200×630 Open Graph image, captured from `og/og-image.html`. Kept until regenerated in Signal style.                                                                             |
+| `public/renzzo-gracia-gomez-cv.pdf` (`?v=11`) | Downloadable CV, exported from `cv/`. Kept.                                                                                                                                      |
+| `public/img/projects/*.{avif,webp}`           | 40 project screenshots in 2 widths × 2 formats (Stocktill, Fernwick Platform, Pulse Theory, Inventory, UIFlow ×2). Kept; Astro serves `public/` as-is.                           |
+| `cv/index.html`, `cv/cv.css`                  | CV source (Letter, 1 page). Not published. Kept.                                                                                                                                 |
+| `og/og-image.html`                            | OG image template. Not published. Kept.                                                                                                                                          |
+| `.claude/settings.json`                       | Deny rules for `git push` and `rm -rf`-style commands. Kept.                                                                                                                     |
+| `README.md`                                   | Describes the old static stack. To be rewritten in Phase 2.                                                                                                                      |
 
 ## Firebase
 
@@ -42,13 +42,13 @@ There's no script. Phase 2 can automate it with Playwright's `page.pdf()`, reusi
 
 ## Keep / move / remove
 
-| Item | Decision |
-| --- | --- |
-| `public/img/`, `public/favicon.svg`, `public/og-image.png`, `public/renzzo-gracia-gomez-cv.pdf` | **Keep** in `public/` (Astro serves it). |
-| `cv/`, `og/` | **Keep** as sources until Phase 2 replaces them with Astro-generated equivalents. |
-| `public/index.html`, `public/css/`, `public/js/` | **Moved** to `legacy/` (reference only, not built). Delete in Phase 2 once the new site covers all content in `docs/CONTENT.md`. |
-| Light/dark theme toggle | **Remove**. Signal is dark-only. |
-| Google Fonts (Inter, JetBrains Mono) | **Remove**. Replaced by self-hosted Geist + Geist Mono. |
-| Certifications section | Content kept in CONTENT.md. It isn't in the new section list; Phase 1 decides where it lives (CV block or skills/experience). |
-| README.md | **Rewrite** in Phase 2. |
-| `respaldo-laptop` branch | Untouched. |
+| Item                                                                                            | Decision                                                                                                                         |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `public/img/`, `public/favicon.svg`, `public/og-image.png`, `public/renzzo-gracia-gomez-cv.pdf` | **Keep** in `public/` (Astro serves it).                                                                                         |
+| `cv/`, `og/`                                                                                    | **Keep** as sources until Phase 2 replaces them with Astro-generated equivalents.                                                |
+| `public/index.html`, `public/css/`, `public/js/`                                                | **Moved** to `legacy/` (reference only, not built). Delete in Phase 2 once the new site covers all content in `docs/CONTENT.md`. |
+| Light/dark theme toggle                                                                         | **Remove**. Signal is dark-only.                                                                                                 |
+| Google Fonts (Inter, JetBrains Mono)                                                            | **Remove**. Replaced by self-hosted Geist + Geist Mono.                                                                          |
+| Certifications section                                                                          | Content kept in CONTENT.md. It isn't in the new section list; Phase 1 decides where it lives (CV block or skills/experience).    |
+| README.md                                                                                       | **Rewrite** in Phase 2.                                                                                                          |
+| `respaldo-laptop` branch                                                                        | Untouched.                                                                                                                       |

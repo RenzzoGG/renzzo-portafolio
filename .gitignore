@@ -26,3 +26,10 @@ node_modules/
 
 # ===== Reportes locales (capturas, Lighthouse) =====
 docs/reports/
+
+# ===== Astro =====
+dist/
+.astro/
+
+# ===== Source photos / depth maps for the LED face (never committed) =====
+assets-src/

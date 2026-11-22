@@ -33,15 +33,15 @@ Personal portfolio and CV of Renzzo Gracia Gomez, Full-Stack Developer.
 
 Each project lives in its own repository and is deployed to its own subdomain. This repo only links to them.
 
-| Project | Live | Source |
-| --- | --- | --- |
-| Stocktill (featured) | [stocktill.renzzogg.com](https://stocktill.renzzogg.com) | [RenzzoGG/retail-pos-saas](https://github.com/RenzzoGG/retail-pos-saas) |
-| Fernwick Platform | [fernwick-admin.renzzogg.com](https://fernwick-admin.renzzogg.com) | [RenzzoGG/fernwick-platform](https://github.com/RenzzoGG/fernwick-platform) |
-| Pulse Theory | [pulse.renzzogg.com](https://pulse.renzzogg.com) | [RenzzoGG/fitness-coach-landing](https://github.com/RenzzoGG/fitness-coach-landing) |
-| Fernwick Home Cleaning (landing of Fernwick Platform) | [fernwick.renzzogg.com](https://fernwick.renzzogg.com) | [RenzzoGG/fernwick-home-cleaning](https://github.com/RenzzoGG/fernwick-home-cleaning) |
-| Inventory & Sales Dashboard | [inventory.renzzogg.com](https://inventory.renzzogg.com) | [RenzzoGG/inventory-sales-dashboard](https://github.com/RenzzoGG/inventory-sales-dashboard) |
-| UIFlow Admin Dashboard | [uiflow.renzzogg.com/dashboard.html](https://uiflow.renzzogg.com/dashboard.html) | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow) |
-| UIFlow Landing Page | [uiflow.renzzogg.com](https://uiflow.renzzogg.com) | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow) |
+| Project                                               | Live                                                                             | Source                                                                                      |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Stocktill (featured)                                  | [stocktill.renzzogg.com](https://stocktill.renzzogg.com)                         | [RenzzoGG/retail-pos-saas](https://github.com/RenzzoGG/retail-pos-saas)                     |
+| Fernwick Platform                                     | [fernwick-admin.renzzogg.com](https://fernwick-admin.renzzogg.com)               | [RenzzoGG/fernwick-platform](https://github.com/RenzzoGG/fernwick-platform)                 |
+| Pulse Theory                                          | [pulse.renzzogg.com](https://pulse.renzzogg.com)                                 | [RenzzoGG/fitness-coach-landing](https://github.com/RenzzoGG/fitness-coach-landing)         |
+| Fernwick Home Cleaning (landing of Fernwick Platform) | [fernwick.renzzogg.com](https://fernwick.renzzogg.com)                           | [RenzzoGG/fernwick-home-cleaning](https://github.com/RenzzoGG/fernwick-home-cleaning)       |
+| Inventory & Sales Dashboard                           | [inventory.renzzogg.com](https://inventory.renzzogg.com)                         | [RenzzoGG/inventory-sales-dashboard](https://github.com/RenzzoGG/inventory-sales-dashboard) |
+| UIFlow Admin Dashboard                                | [uiflow.renzzogg.com/dashboard.html](https://uiflow.renzzogg.com/dashboard.html) | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow)                                       |
+| UIFlow Landing Page                                   | [uiflow.renzzogg.com](https://uiflow.renzzogg.com)                               | [RenzzoGG/uiflow](https://github.com/RenzzoGG/uiflow)                                       |
 
 ## Local preview
 

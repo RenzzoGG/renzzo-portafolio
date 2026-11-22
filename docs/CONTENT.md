@@ -39,14 +39,14 @@ The about card (`renzzo.json`) has three entries: location, remote and languages
 
 ## Skills (identical on page and CV)
 
-| Group | Items |
-| --- | --- |
-| Front-end | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design |
-| Back-end | Node.js, Python, FastAPI, PostgreSQL, Supabase, SQL, Row-Level Security, REST APIs, JWT auth, Stripe |
-| Testing | Vitest, Playwright, pytest, pgTAP |
-| DevOps & deployment | Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains |
-| Libraries | Chart.js, jsPDF, SheetJS |
-| Tools & workflow | Git, GitHub, Linux (WSL) |
+| Group               | Items                                                                                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Front-end           | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design |
+| Back-end            | Node.js, Python, FastAPI, PostgreSQL, Supabase, SQL, Row-Level Security, REST APIs, JWT auth, Stripe                       |
+| Testing             | Vitest, Playwright, pytest, pgTAP                                                                                          |
+| DevOps & deployment | Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains                                                |
+| Libraries           | Chart.js, jsPDF, SheetJS                                                                                                   |
+| Tools & workflow    | Git, GitHub, Linux (WSL)                                                                                                   |
 
 Rule: Skills only lists technologies used in a published project.
 
@@ -65,40 +65,40 @@ The portfolio itself will add Astro, Three.js and GSAP once it's live. GSAP is a
 
 Profile: https://platzi.com/p/renzzo.gomez07/ ("View full Platzi profile →")
 
-| Certificate | Diploma URL | On CV |
-| --- | --- | --- |
-| Frontend Developer | https://platzi.com/p/renzzo.gomez07/curso/2467-course/diploma/detalle/ | ✔ |
-| JavaScript Fundamentals | https://platzi.com/p/renzzo.gomez07/curso/10266-course/diploma/detalle/ | ✔ |
-| CSS Architecture | https://platzi.com/p/renzzo.gomez07/curso/7991-course/diploma/detalle/ | ✔ |
-| Professional CSS Grid Layout | https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/ | |
-| CSS Grid Basics | https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/ | |
-| Web Design with CSS Grid & Flexbox | https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/ | |
-| Practical CSS Layout | https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/ | |
-| Sass Fundamentals | https://platzi.com/p/renzzo.gomez07/curso/6867-course/diploma/detalle/ | ✔ |
-| Design for Developers | https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/ | |
-| Effective Design Systems | https://platzi.com/p/renzzo.gomez07/curso/1420-course/diploma/detalle/ | ✔ |
+| Certificate                        | Diploma URL                                                             | On CV |
+| ---------------------------------- | ----------------------------------------------------------------------- | ----- |
+| Frontend Developer                 | https://platzi.com/p/renzzo.gomez07/curso/2467-course/diploma/detalle/  | ✔     |
+| JavaScript Fundamentals            | https://platzi.com/p/renzzo.gomez07/curso/10266-course/diploma/detalle/ | ✔     |
+| CSS Architecture                   | https://platzi.com/p/renzzo.gomez07/curso/7991-course/diploma/detalle/  | ✔     |
+| Professional CSS Grid Layout       | https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/  |       |
+| CSS Grid Basics                    | https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/  |       |
+| Web Design with CSS Grid & Flexbox | https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/  |       |
+| Practical CSS Layout               | https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/  |       |
+| Sass Fundamentals                  | https://platzi.com/p/renzzo.gomez07/curso/6867-course/diploma/detalle/  | ✔     |
+| Design for Developers              | https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/  |       |
+| Effective Design Systems           | https://platzi.com/p/renzzo.gomez07/curso/1420-course/diploma/detalle/  | ✔     |
 
 ## Services
 
 Section link: "Let's talk →" (to #contact).
 
-| # | Title | Text | Stack |
-| --- | --- | --- | --- |
-| 01 | Web apps & SaaS | Dashboards, admin panels and apps with user accounts and roles — including subscriptions and payments with Stripe. | Next.js, Supabase, PostgreSQL, Stripe |
-| 02 | APIs & back end | REST APIs with Node.js or Python, PostgreSQL database design, third-party integrations and webhooks. | Node.js, FastAPI, PostgreSQL, Webhooks |
-| 03 | Landing pages & websites | Fast, responsive sites for products and small businesses — live on your own domain with HTTPS. | HTML, CSS, JavaScript, Tailwind CSS |
+| #   | Title                    | Text                                                                                                               | Stack                                  |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| 01  | Web apps & SaaS          | Dashboards, admin panels and apps with user accounts and roles — including subscriptions and payments with Stripe. | Next.js, Supabase, PostgreSQL, Stripe  |
+| 02  | APIs & back end          | REST APIs with Node.js or Python, PostgreSQL database design, third-party integrations and webhooks.               | Node.js, FastAPI, PostgreSQL, Webhooks |
+| 03  | Landing pages & websites | Fast, responsive sites for products and small businesses — live on your own domain with HTTPS.                     | HTML, CSS, JavaScript, Tailwind CSS    |
 
 ## Contact (links only)
 
 - **Heading:** Let's work together
 - **Intro:** Have a project in mind? Reach me through any of these channels.
 
-| Label | Value | Href |
-| --- | --- | --- |
-| Email | renzzo.gomez07@gmail.com | `mailto:renzzo.gomez07@gmail.com` |
-| GitHub | github.com/RenzzoGG | https://github.com/RenzzoGG |
-| Platzi | platzi.com/p/renzzo.gomez07 | https://platzi.com/p/renzzo.gomez07/ |
-| Resume (PDF) | renzzo-gracia-gomez-cv.pdf | `/renzzo-gracia-gomez-cv.pdf?v=11` (download) |
+| Label        | Value                       | Href                                          |
+| ------------ | --------------------------- | --------------------------------------------- |
+| Email        | renzzo.gomez07@gmail.com    | `mailto:renzzo.gomez07@gmail.com`             |
+| GitHub       | github.com/RenzzoGG         | https://github.com/RenzzoGG                   |
+| Platzi       | platzi.com/p/renzzo.gomez07 | https://platzi.com/p/renzzo.gomez07/          |
+| Resume (PDF) | renzzo-gracia-gomez-cv.pdf  | `/renzzo-gracia-gomez-cv.pdf?v=11` (download) |
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
@@ -110,12 +110,12 @@ New layout: **Featured** (4 curved 3D screens) and **More work** (list).
 
 Old screenshots live in `public/img/projects/`. Project repos also have screenshots in `docs/screenshots/`, but copy them into this repo only when Phase 2/5 needs them.
 
-### Featured 1 — Clearline Dental *(new, not on the current site or CV)*
+### Featured 1 — Clearline Dental _(new, not on the current site or CV)_
 
 - **Type:** Full-stack web app
 - **Live:** https://clearline.renzzogg.com · **Source:** https://github.com/RenzzoGG/clearline-dental
 - **One-liner (provided by Renzzo):** Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway.
-- **README intro:** Online booking and front-desk dashboard for a dental clinic. A Django REST API and a React SPA, deployed to production with CI, end-to-end tests and an animated, fast public site. *(Clearline is a fictional clinic, built as a portfolio project.)*
+- **README intro:** Online booking and front-desk dashboard for a dental clinic. A Django REST API and a React SPA, deployed to production with CI, end-to-end tests and an animated, fast public site. _(Clearline is a fictional clinic, built as a portfolio project.)_
 - **Features (README):** patients book a visit in five steps (service → dentist → date and time → details → confirm) with live availability. The front desk gets a week/day schedule per dentist color-coded by status, confirm/complete/cancel from a side drawer, and insights for 7/30/90 days. Admins manage dentists, services and patients, plus the Django admin. Public demo accounts exist, and demo data resets nightly.
 - **Stack:** Django, DRF, PostgreSQL 17, React 19, TypeScript, Vite, Tailwind v4, Motion, Docker, GitHub Actions, Railway
 - **Brand color** (`frontend/src/index.css`, `@theme`), teal `brand` scale: 50 `#effaf8` · 100 `#d6f2ec` · 200 `#aee4d9` · 300 `#7ccfc1` · **400 `#4cb3a5`** · **500 `#2f978a`** · **600 `#227a70`** · 700 `#1b625b` · 800 `#144f4a` · 900 `#0b3b37` · 950 `#062523`. Accent `coral`: 400 `#ff8f72` · 500 `#f4704f` · 600 `#de5636`. Suggested screen glow on dark bg: `#4cb3a5`.
