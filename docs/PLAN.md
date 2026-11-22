@@ -20,13 +20,16 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 
 ## Global budgets and rules
 
-- **Critical JS ≤ 20 KB min** (everything that loads before first paint or on a mobile visit).
+- **Critical JS ≤ 20 KB min** (everything that loads before first paint).
+- **Mobile deferred motion JS ≤ 50 KB gzip** (proposed, for GSAP). It loads after idle, and Lighthouse mobile 100 remains the deciding gate.
 - **LED face data ≤ 60 KB** (transferred, per device class).
-- **Three.js chunk:** desktop only, requested after first paint (idle / `requestIdleCallback`), never on mobile, never with reduced motion or Motion off.
+- **WebGL JS ≤ 250 KB gzip** (Three.js, worker, shaders and any texture transcoder): desktop only, requested after first paint (idle / `requestIdleCallback`), never on mobile, never with reduced motion or Motion off.
+- **Project textures ≤ 800 KB total** (AVIF/KTX2), desktop only, streamed per section as they approach.
+- **No blocking loader.** Text is visible immediately.
 - **LCP element is text** (the hero heading), never the canvas or an image.
-- **Lighthouse 100** target on mobile, in all four categories.
+- **Lighthouse:** mobile stays at 100 in all four categories. Desktop Performance in the 90s is acceptable, with Accessibility, Best Practices and SEO at 100.
 - **Progressive enhancement:** every section is complete and usable without JS and without 3D.
-- `prefers-reduced-motion` is respected, and there's an on-page **Motion** toggle (persisted per visitor). Turning it off reverts or stops every animation (WCAG 2.2.2).
+- `prefers-reduced-motion` is respected, and there's an on-page **Motion** toggle (persisted per visitor). Turning it off reverts or stops every animation and shuts down the WebGL world, falling back to the static site (WCAG 2.2.2).
 - The source photo lives in `assets-src/` (gitignored) and is **never committed**. Only derived LED data ships (a dot portrait that is still recognizable by design).
 
 ---
@@ -113,55 +116,102 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 - The 2D renderer holds 60 fps on a mid-range phone profile (CPU 4× throttle) and pauses offscreen.
 - Lighthouse mobile is still 100. Critical JS ≤ 20 KB.
 
-## Phase 4: 3D LED face (desktop)
+## Creative direction for Phases 4–6: "The Signal"
 
-**Goals:** a Three.js LED dot-matrix face with depth and mouse tilt, desktop only.
+fojcikdominik.com is inspiration for **techniques only**. We never copy its design, code, shaders, assets or copy. See `docs/REFERENCE-ANALYSIS.md`.
+
+**World concept, entirely ours:** everything is made of the LED dots of Renzzo's face, the "signal". Scrolling is one continuous trip through one 3D space:
+
+1. **Hero:** the signal holds the shape of the face.
+2. **Tunnel:** the camera pulls back, and the dots detach and flow into a tunnel of crimson LEDs.
+3. **Featured Work:** the tunnel leads to a vertical drum of 4 curved CRT screens.
+4. **About:** the tunnel becomes a code/signal journey.
+5. **Contact:** the dots gather into a full crimson pixel curtain.
+
+**The site must never feel static.** On desktop something is always moving. Mobile is lighter but alive, and never uses the WebGL world.
+
+### Architecture decisions (approved 2026-11-22)
+
+| Area          | Decision                                                                                                                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rendering     | One persistent, fixed, `aria-hidden` WebGL canvas, rendered in a module Web Worker through OffscreenCanvas. If that's unsupported, the same renderer runs on the main thread. If WebGL fails or the context is lost, the static site stays. |
+| Analog look   | **Medium** strength on the 3D scene: scanlines, grain, vignette, barrel distortion, chromatic aberration and occasional horizontal signal cuts. One combined pass with a single `intensity` setting. **Never applied to HTML text.**        |
+| Scroll        | Native scroll. The camera follows scroll progress with damped interpolation and never hijacks scrolling. No smooth-scroll library unless testing proves we need it.                                                                         |
+| Text          | Real HTML above the canvas, visible at first paint. It stays the LCP. No blocking loader.                                                                                                                                                   |
+| Data          | Every dot derives from `src/assets/face/face.bin`, reusing `src/lib/face/decode.ts` and `load.ts`.                                                                                                                                          |
+| Adaptive load | The renderer lowers internal resolution, then effects, when frame time stays high. It pauses in a hidden tab.                                                                                                                               |
+
+## Phase 4: Desktop hero
+
+**Goals:** the persistent WebGL foundation and a hero where the LED face is the centerpiece.
 
 **Deliverables**
 
-- A lazy `three` chunk loaded by a small gate: desktop pointer + width + no reduced motion + Motion on + WebGL available, triggered after first paint or on idle.
-- Instanced points/sprites with an LED glow shader in the Signal palette, depth from Phase 3 data, and damped pointer tilt.
-- Graceful fallback to the 2D canvas on failure or context loss.
+- **Renderer foundation:** a small gate (fine pointer, desktop width, no reduced motion, Motion on, WebGL 2), loaded after first paint. A renderer shared by the worker and main-thread paths, with a typed message protocol for pointer, scroll, resize, visibility and motion state.
+- **Layout (desktop):** a large, centered LED face, with name and role on one side and the headline and CTAs on the other. Mobile keeps the stacked layout. The heading stays the `h1` and the LCP.
+- **LED face:** instanced dots from E2 with depth, in the Signal palette.
+- **Hover "disruption":**
+  - Dots near the cursor are pushed outward in depth and radially, and stretched into streaks with a chromatic split (crimson, glow pink, white).
+  - They spring back with damped easing. A small, decaying displacement field on the GPU drives this, so there's no per-dot CPU loop.
+  - Just outside the radius, dots sharpen to the focused state already in the data.
+- **Head motion:** a subtle turn toward the cursor, idle drift, and a short glitch assemble on first load.
+- **Backdrop:** a curved CRT-style grid wall behind the face, with analog post-processing at medium strength.
+- **Mobile:** the 2D face tilts with the gyroscope. Permission is requested only from a visible control tapped by the visitor (required on iOS). If it's denied or unavailable, the face simply stays alive with its CSS motion.
+- **Fallbacks:** reduced motion or Motion off destroys the WebGL world and returns to the static site, live.
 
 **Acceptance checks**
 
-- The mobile network log contains **no** Three.js request.
-- The desktop Three.js request starts after FCP.
-- Steady 60 fps on desktop. No layout shift when the canvas swaps in.
-- The Motion toggle and reduced motion stop rendering.
+- The mobile network log contains **no** Three.js or WebGL worker request.
+- The desktop WebGL request starts after FCP. LCP is the `h1`, and CLS stays below 0.05.
+- The main thread stays responsive while the worker renders, and the main-thread fallback is tested.
+- Toggling Motion off stops rendering and frees the worker. Toggling it on restores the scene.
+- The HTML text never receives the analog effect and keeps AA contrast over the moving scene.
+- **Frame rate is checked by Renzzo on a real GPU** with a dev-only overlay, because this development environment has no hardware GPU. Target: 60 fps.
 
-## Phase 5: Curved project screens
+## Phase 5: The signal tunnel and Featured Work
 
-**Goals:** the 4 featured projects shown on curved 3D screens (desktop), with section color shifts from signal crimson to each project's brand color.
+**Goals:** the face-to-tunnel transition and the project drum.
 
 **Deliverables**
 
-- Curved screen meshes with project screenshots as textures (lazy, compressed: AVIF/WebP source → KTX2 or plain WebP textures, decided in-phase).
-- Section color shift tokens driven by scroll (CSS custom properties, so the non-3D path shifts too).
-- Mobile: animated 2D cards with the same color shift.
-- Accessible equivalents: real links, headings and alt text in the DOM. The 3D is decorative (`aria-hidden`).
+- **Face to tunnel:** scrolling from the hero pulls the camera back while the face's dots detach, flow as a traveling signal and form a tunnel of crimson LEDs leading to the drum.
+- **Project drum:** a vertical drum of 4 curved CRT screens with a VHS look. The active screen is centered, and the previous and next ones peek in above and below, tilted. Scroll velocity drives the distortion.
+- **Synced left index:** "SELECTED WORK" with [01]–[04] in uppercase mono and a crimson active dot. Items are real links that scroll to their project. The label goes into `docs/CONTENT.md` first.
+- **Accessible content:** each project keeps its real DOM heading, text, links and image alternative. The drum is decorative.
+- **Textures:** project textures stream per section as they approach. AVIF comes first, decoded off the main thread. KTX2 is used only if GPU memory requires it and its transcoder fits the WebGL JS budget.
+- **Bone-white shift:** the section background shifts to `#F2EEEA` and back. On bone, text uses `#0B0A0C` (17.12:1) and signal `#C21D3A` (5.15:1). Muted text needs a new token, `#5F585E` (5.98:1), because the current muted fails (3.20:1). Glow (`#FF3B5C`, 3.02:1) is not used for text on bone.
+- **Mobile:** the index plus stacked cards with a light CSS VHS overlay, and CSS/GSAP motion. No WebGL.
 
 **Acceptance checks**
 
-- Every project is fully reachable and readable with 3D disabled and JS disabled.
-- Texture payload is loaded only when it's near the viewport.
+- Every project is reachable and readable with JS off, with 3D off and by keyboard.
+- Project textures total ≤ 800 KB and load only as their section approaches.
+- WebGL JS stays ≤ 250 KB gzip.
+- The index stays in sync in both scroll directions. Native scrolling, keyboard scrolling and anchors keep working.
+- `npm run check:contrast` covers the bone-white pairs.
 - Lighthouse mobile is still 100.
 
-## Phase 6: Motion polish
+## Phase 6: World and polish
 
-**Goals:** glitch transitions, choreography, and timing polish.
+**Goals:** complete the journey and the interface details.
 
 **Deliverables**
 
-- A GSAP-based glitch transition between sections, plus a hero entrance, both as a deferred chunk.
-- Motion reviewed with the approved design skills (Impeccable critique and/or Emil's review-animations / animation-performance).
-- A full Motion-off and reduced-motion path that reverts every tween.
+- **About:** the tunnel becomes a code/signal journey.
+- **Contact:** the dots gather into a full crimson pixel curtain.
+- **Project detail view:** a horizontal-slice glitch and a "01 / 04" counter. Each project has a real static route for no-JS and SEO. With WebGL active, it opens in place so the canvas persists. Back and Escape return to the same project. It uses only approved content.
+- **HUD details:** "+" crosshairs, mono labels and counters, all decorative or backed by real text.
+- **Menu:** a fullscreen numbered menu on a native `<dialog>`, which closes with Escape, traps focus and returns focus to its button. The plain nav remains without JS.
+- **Section color shifts** through CSS custom properties, so the non-WebGL path shifts too.
+- Motion reviewed with Impeccable and Emil's review-animations and animation-performance skills.
+- A complete Motion-off and reduced-motion path that reverts every tween.
 
 **Acceptance checks**
 
-- GSAP isn't in the critical bundle. It never loads with reduced motion or Motion off.
-- No animation runs on main-thread-heavy properties (only transform/opacity/filter where justified).
-- A Playwright check that Motion off leaves no running animations.
+- GSAP isn't in the critical bundle and never loads with reduced motion or Motion off.
+- A Playwright check confirms Motion off leaves no running animations and no WebGL rendering.
+- Menu and project detail pass a keyboard walkthrough.
+- Budgets hold: Lighthouse mobile 100/100/100/100. Desktop Performance in the 90s, with Accessibility, Best Practices and SEO at 100.
 
 ## Phase 7: Performance & QA
 
@@ -170,14 +220,14 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 **Deliverables**
 
 - Lighthouse CI-style runs (median of 5, mobile and desktop) saved to `docs/reports/` (gitignored).
-- A bundle-size check script that fails if critical JS > 20 KB or face data > 60 KB.
+- A bundle-size check script that fails if critical JS > 20 KB, mobile deferred motion JS > 50 KB gzip, WebGL JS > 250 KB gzip, project textures > 800 KB or face data > 60 KB.
 - An accessibility pass: axe via Playwright, keyboard, screen reader spot check, 200% zoom, 320 px width.
 - Cross-browser checks: Chromium, Firefox, WebKit (Playwright), plus a real phone check.
 - Optional: an Impeccable `detect` / `audit` pass.
 
 **Acceptance checks**
 
-- Lighthouse mobile is 100/100/100/100 (median). Desktop is ≥ 98 performance.
+- Lighthouse mobile is 100/100/100/100 (median). Desktop Performance is ≥ 90, with Accessibility, Best Practices and SEO at 100.
 - Zero axe violations. All budgets are green.
 
 ## Phase 8: Launch
@@ -204,30 +254,31 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 
 Every dependency must be justified here before it's added. Versions are pinned exactly.
 
-| Package                                                     | Version           | Phase | Kind                    | Why                                                                                                                                                                                  |
-| ----------------------------------------------------------- | ----------------- | ----- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| astro                                                       | 7.4.13            | 0     | dev                     | Static site generator. Ships zero JS by default, which suits the 20 KB critical JS budget. Gives components, content collections and per-component lazy scripts.                     |
-| typescript                                                  | 6.0.3             | 0     | dev                     | Strict typing. Pinned to 6.0.x because 7.0 isn't yet supported by `typescript-eslint` (<6.1) or `@astrojs/check` (^5 \|\| ^6).                                                       |
-| @astrojs/check                                              | 0.9.12            | 0     | dev                     | `astro check`: typechecks `.astro` files (the `typecheck` script).                                                                                                                   |
-| eslint                                                      | 10.15.0           | 0     | dev                     | Linting.                                                                                                                                                                             |
-| @eslint/js                                                  | 10.0.1            | 0     | dev                     | ESLint recommended rules.                                                                                                                                                            |
-| typescript-eslint                                           | 8.73.0            | 0     | dev                     | TS-aware lint rules (strict preset).                                                                                                                                                 |
-| eslint-plugin-astro                                         | 3.2.1             | 0     | dev                     | Lints `.astro` files.                                                                                                                                                                |
-| eslint-config-prettier                                      | 10.1.8            | 0     | dev                     | Turns off lint rules that conflict with Prettier.                                                                                                                                    |
-| globals                                                     | 17.14.0           | 0     | dev                     | Browser/Node global definitions for ESLint.                                                                                                                                          |
-| prettier                                                    | 3.10.1            | 0     | dev                     | Formatting (`format`, `format:check`).                                                                                                                                               |
-| prettier-plugin-astro                                       | 1.1.2             | 0     | dev                     | Prettier support for `.astro`.                                                                                                                                                       |
-| @fontsource-variable/geist, @fontsource-variable/geist-mono | 5.3.0             | 1     | dev (build-time asset)  | Self-hosted Geist fonts (OFL-1.1). No third-party font request. Only the Latin variable woff2 files are referenced, and Astro bundles them with hashed names.                        |
-| @types/node                                                 | 24.19.2           | 1     | dev                     | Types for Node APIs used by the content schema and the contrast script. Matches the Node 24 in `.nvmrc`.                                                                             |
-| @playwright/test                                            | 1.65.1            | 2     | dev                     | E2E, visual checks, CV PDF generation, OG/Upwork captures. 1.65.1 matches the Chromium 1255 already installed on the machine.                                                        |
-| sharp                                                       | 0.35.5            | 2     | dev                     | Compresses the generated OG image. Same version Astro already installs for its image pipeline, declared because a script now imports it directly.                                    |
-| three                                                       | 0.187.x (planned) | 4     | runtime (lazy, desktop) | WebGL for the LED face and curved screens. Imported only through dynamic `import()`.                                                                                                 |
-| gsap                                                        | 3.15.x (planned)  | 6     | runtime (lazy)          | Timeline-based glitch and section transitions. Deferred chunk. Already used in Pulse Theory.                                                                                         |
-| uv                                                          | 0.13.7            | 3     | user tool, dev-only     | Manages the pipeline's Python and locked env. MIT / Apache-2.0. Network: installs Python and packages. Installed in `~/.local/bin` with Renzzo's approval, no shell profile changes. |
-| Python (via uv)                                             | 3.13              | 3     | dev-only, offline       | Runtime for `scripts/face/`. PSF-2.0. Network: one download by uv. Not shipped.                                                                                                      |
-| onnxruntime                                                 | 1.32.0            | 3     | dev-only, offline       | Runs both models on CPU without PyTorch, which keeps the install small on a 3 GB machine. MIT. No network use.                                                                       |
-| numpy                                                       | 2.5.5             | 3     | dev-only, offline       | Array math for masks, depth and dot sampling. BSD-3-Clause and bundled permissive licenses. No network use.                                                                          |
-| pillow                                                      | 13.0.0            | 3     | dev-only, offline       | Reads the photo and writes LED previews. MIT-CMU. No network use.                                                                                                                    |
-| Depth Anything V2 Small (ONNX)                              | rev `4472b73`     | 3     | model, dev-only         | Monocular depth. Apache-2.0 (the larger V2 models are non-commercial). Network: model download only, SHA-256 verified, stored in `~/.cache/renzzo-face/`.                            |
-| IS-Net general-use (ONNX)                                   | SHA-256 pinned    | 3     | model, dev-only         | Background removal that keeps hard silhouettes such as the cap. Apache-2.0. Network: model download only, SHA-256 verified, stored in `~/.cache/renzzo-face/`.                       |
-| lighthouse                                                  | 13.6.0            | 2     | dev                     | Scripted, repeatable Lighthouse runs (median of 5). Moved up from Phase 7 because Phase 2 must already prove the budgets.                                                            |
+| Package                                                     | Version           | Phase | Kind                    | Why                                                                                                                                                                                     |
+| ----------------------------------------------------------- | ----------------- | ----- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| astro                                                       | 7.4.13            | 0     | dev                     | Static site generator. Ships zero JS by default, which suits the 20 KB critical JS budget. Gives components, content collections and per-component lazy scripts.                        |
+| typescript                                                  | 6.0.3             | 0     | dev                     | Strict typing. Pinned to 6.0.x because 7.0 isn't yet supported by `typescript-eslint` (<6.1) or `@astrojs/check` (^5 \|\| ^6).                                                          |
+| @astrojs/check                                              | 0.9.12            | 0     | dev                     | `astro check`: typechecks `.astro` files (the `typecheck` script).                                                                                                                      |
+| eslint                                                      | 10.15.0           | 0     | dev                     | Linting.                                                                                                                                                                                |
+| @eslint/js                                                  | 10.0.1            | 0     | dev                     | ESLint recommended rules.                                                                                                                                                               |
+| typescript-eslint                                           | 8.73.0            | 0     | dev                     | TS-aware lint rules (strict preset).                                                                                                                                                    |
+| eslint-plugin-astro                                         | 3.2.1             | 0     | dev                     | Lints `.astro` files.                                                                                                                                                                   |
+| eslint-config-prettier                                      | 10.1.8            | 0     | dev                     | Turns off lint rules that conflict with Prettier.                                                                                                                                       |
+| globals                                                     | 17.14.0           | 0     | dev                     | Browser/Node global definitions for ESLint.                                                                                                                                             |
+| prettier                                                    | 3.10.1            | 0     | dev                     | Formatting (`format`, `format:check`).                                                                                                                                                  |
+| prettier-plugin-astro                                       | 1.1.2             | 0     | dev                     | Prettier support for `.astro`.                                                                                                                                                          |
+| @fontsource-variable/geist, @fontsource-variable/geist-mono | 5.3.0             | 1     | dev (build-time asset)  | Self-hosted Geist fonts (OFL-1.1). No third-party font request. Only the Latin variable woff2 files are referenced, and Astro bundles them with hashed names.                           |
+| @types/node                                                 | 24.19.2           | 1     | dev                     | Types for Node APIs used by the content schema and the contrast script. Matches the Node 24 in `.nvmrc`.                                                                                |
+| @playwright/test                                            | 1.65.1            | 2     | dev                     | E2E, visual checks, CV PDF generation, OG/Upwork captures. 1.65.1 matches the Chromium 1255 already installed on the machine.                                                           |
+| sharp                                                       | 0.35.5            | 2     | dev                     | Compresses the generated OG image. Same version Astro already installs for its image pipeline, declared because a script now imports it directly.                                       |
+| three                                                       | 0.187.0 (planned) | 4     | runtime (lazy, desktop) | WebGL for the persistent LED world, in a worker or on the main thread. MIT. Imported only through dynamic `import()`, inside the 250 KB gzip WebGL budget. No third-party network use.  |
+| @types/three                                                | 0.187.0 (planned) | 4     | dev                     | Strict TypeScript types matching the Three.js version. MIT. Not shipped.                                                                                                                |
+| gsap                                                        | 3.15.1 (planned)  | 5     | runtime (lazy)          | Timelines and ScrollTrigger for DOM choreography and mobile motion. Standard no-charge license (free, not open source). Deferred chunk, never loaded with reduced motion or Motion off. |
+| uv                                                          | 0.13.7            | 3     | user tool, dev-only     | Manages the pipeline's Python and locked env. MIT / Apache-2.0. Network: installs Python and packages. Installed in `~/.local/bin` with Renzzo's approval, no shell profile changes.    |
+| Python (via uv)                                             | 3.13              | 3     | dev-only, offline       | Runtime for `scripts/face/`. PSF-2.0. Network: one download by uv. Not shipped.                                                                                                         |
+| onnxruntime                                                 | 1.32.0            | 3     | dev-only, offline       | Runs both models on CPU without PyTorch, which keeps the install small on a 3 GB machine. MIT. No network use.                                                                          |
+| numpy                                                       | 2.5.5             | 3     | dev-only, offline       | Array math for masks, depth and dot sampling. BSD-3-Clause and bundled permissive licenses. No network use.                                                                             |
+| pillow                                                      | 13.0.0            | 3     | dev-only, offline       | Reads the photo and writes LED previews. MIT-CMU. No network use.                                                                                                                       |
+| Depth Anything V2 Small (ONNX)                              | rev `4472b73`     | 3     | model, dev-only         | Monocular depth. Apache-2.0 (the larger V2 models are non-commercial). Network: model download only, SHA-256 verified, stored in `~/.cache/renzzo-face/`.                               |
+| IS-Net general-use (ONNX)                                   | SHA-256 pinned    | 3     | model, dev-only         | Background removal that keeps hard silhouettes such as the cap. Apache-2.0. Network: model download only, SHA-256 verified, stored in `~/.cache/renzzo-face/`.                          |
+| lighthouse                                                  | 13.6.0            | 2     | dev                     | Scripted, repeatable Lighthouse runs (median of 5). Moved up from Phase 7 because Phase 2 must already prove the budgets.                                                               |
