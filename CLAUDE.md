@@ -44,7 +44,6 @@ Working rules for this repository.
 - Fonts: Geist + Geist Mono, self-hosted. No CDN scripts and no third-party font requests.
 - **New dependencies must be justified in `docs/PLAN.md` (Dependencies table) before they're added**, with exact pinned versions.
 - Scripts: `npm run dev`, `build`, `preview`, `lint`, `format`, `format:check`, `typecheck`, and `check` (all of them).
-- `legacy/` holds the old site for reference only (not built, not linted). It gets deleted in Phase 2.
 
 ## Identity ("Signal")
 
@@ -69,7 +68,7 @@ Working rules for this repository.
 - `docs/CONTENT.md` is the source of truth for copy. Reuse it, don't rewrite it. Change wording there first.
 - Keep the official degree name: **Information Systems and Digital Networks Engineering** (Ingeniería en Sistemas de la Información y Redes Digitales).
 - **Skills only lists technologies used in a published project.** When one is added, update it on the page and in the CV.
-- Project links must match in the page and the CV. External links use `target="_blank" rel="noopener noreferrer"`.
+- Project links must match in the page and the CV. External links use `target="_blank" rel="noopener noreferrer"`, except Contact channels, which open in the same tab, with `rel="me"` on profiles.
 
 | Project                                 | Live                                       | Source                                                |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
