@@ -82,7 +82,9 @@ const style = `--poster: url("${posterUrl}")`;
   .led-slot[data-world="live"] .led-slot__panel,
   .led-slot[data-world="live"] .led-slot__glow {
     opacity: 0;
-    transition-duration: var(--duration-slow);
+    transition-duration: var(--duration-base);
+    /* The frame is opaque first, so brightness never dips in the crossfade. */
+    transition-delay: calc(var(--duration-fast) * 0.75);
   }
 
   /* All motion is CSS on baked canvases, so it stays off the main thread. */

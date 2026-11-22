@@ -52,7 +52,7 @@ void main() {
 
   // Occasional horizontal signal cuts: a thin band slips sideways for a moment.
   float window = floor(uTime * 7.0);
-  if (random(vec2(window, 3.0)) > 0.86) {
+  if (random(vec2(window, 3.0)) > 0.955) {
     float center = random(vec2(window, 7.0));
     float height = 0.012 + random(vec2(window, 11.0)) * 0.05;
     float band = 1.0 - smoothstep(height * 0.6, height, abs(uv.y - center));

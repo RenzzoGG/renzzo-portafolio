@@ -10,6 +10,7 @@ const send = (message: FromWorld) => {
 
 let scene: WorldScene | null = null;
 let closing = false;
+let active = true;
 
 async function init(message: WorldInit) {
   try {
@@ -37,6 +38,8 @@ async function init(message: WorldInit) {
           }
         : undefined,
     });
+    // The hero may have left the screen while the scene was loading.
+    scene.setActive(active);
   } catch {
     send({ type: "failed" });
   }
@@ -58,7 +61,8 @@ context.onmessage = (event: MessageEvent<ToWorld | WorldInit>) => {
       scene?.setPointer(message.x, message.y, message.inside);
       break;
     case "active":
-      scene?.setActive(message.active);
+      active = message.active;
+      scene?.setActive(active);
       break;
     case "dispose":
       closing = true;

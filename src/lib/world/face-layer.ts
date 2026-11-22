@@ -16,7 +16,7 @@ import type { LedFace } from "../face/decode.ts";
 /** Halftone dot radius per styled size, in grid pitches. Matches the pipeline. */
 const RADII = [0.13, 0.25, 0.36, 0.48];
 
-export const DISRUPT_RADIUS = 0.085;
+export const DISRUPT_RADIUS = 0.06;
 
 const vertex = /* glsl */ `
 precision highp float;
@@ -60,14 +60,16 @@ void main() {
   // Each dot reacts a little differently, so the burst never looks like a grid.
   float seed = hash(aGrid.x * 311.7 + aGrid.y * 173.3);
   push *= 0.58 + seed * 0.84;
+  float turn = (seed - 0.5) * 0.7;
+  push = mat2(cos(turn), sin(turn), -sin(turn), cos(turn)) * push;
   float amount = length(push);
   vec2 dir = amount > 0.0001 ? push / amount : vec2(1.0, 0.0);
   float energy = clamp(amount * 42.0, 0.0, 1.0);
 
   // Just outside the disruption, dots sharpen to the focused state.
-  float focus = uHover
-    * smoothstep(uRadius * 0.6, uRadius, dist)
-    * (1.0 - smoothstep(uRadius * 1.25, uRadius * 2.3, dist));
+  float focus = uHover * (1.0 - energy)
+    * smoothstep(uRadius * 2.4, uRadius * 3.0, dist)
+    * (1.0 - smoothstep(uRadius * 3.4, uRadius * 4.4, dist));
   float focusedRadius = 0.1 + 0.39 * pow(aFocused, 0.6);
   float dotRadius = mix(aStyled, focusedRadius, focus);
   float light = mix(1.0, 0.55 + 0.45 * aFocused, focus);
@@ -139,9 +141,12 @@ void main() {
   vec3 lit = GLOW * core;
   if (vEnergy > 0.001) {
     // The chromatic split: crimson trails, pink holds, white leads.
-    float behind = capsule(vQuad + vec2(vSplit, 0.0), edge);
-    float ahead = capsule(vQuad - vec2(vSplit, 0.0), edge);
-    vec3 split = max(max(SIGNAL * behind, GLOW * core), WHITE * ahead * 0.7 * step(0.55, vLight));
+    vec2 shift = vec2(vSplit * 0.6, vSplit * 0.45);
+    float behind = capsule(vQuad + shift, edge);
+    float ahead = capsule(vQuad - shift, edge);
+    float lead = smoothstep(0.25, 0.9, vQuad.x / (vStreak + vDot));
+    vec3 split = max(max(SIGNAL * behind, GLOW * core),
+      WHITE * ahead * lead * 0.7 * step(0.55, vLight));
     lit = mix(lit, split, vEnergy);
   }
   color = vec4(lit * vLight, 1.0);

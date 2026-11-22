@@ -17,6 +17,7 @@ const FOV = 30;
 const MAX_DPR = 2;
 const DPR_STEPS = [2, 1.5, 1.25, 1];
 const ASSEMBLE_S = 0.7;
+const ASSEMBLE_HOLD_S = 0.12; // Waits for the poster crossfade to reveal it.
 const SLOW_FRAME_MS = 24;
 const SLOW_WINDOW_MS = 1200;
 const MAX_YAW = 0.2;
@@ -93,6 +94,7 @@ export function createScene(options: SceneOptions): WorldScene {
   let last = 0;
   let time = 0;
   let assemble = 0;
+  let assembleClock = 0;
   let slowSince = 0;
   let statFrames = 0;
   let statWork = 0;
@@ -101,6 +103,7 @@ export function createScene(options: SceneOptions): WorldScene {
   const pointerTarget = new Vector2();
   const pointer = new Vector2();
   let hoverTarget = 0;
+  let lookTarget = 0;
   let hover = 0;
   let aimX = 0;
   let aimY = 0;
@@ -144,7 +147,13 @@ export function createScene(options: SceneOptions): WorldScene {
 
   function update(dt: number) {
     time += dt;
-    if (shown) assemble = Math.min(1, assemble + dt / ASSEMBLE_S);
+    if (shown) {
+      assembleClock += dt;
+      assemble = Math.max(
+        0,
+        Math.min(1, (assembleClock - ASSEMBLE_HOLD_S) / ASSEMBLE_S),
+      );
+    }
 
     const follow = 1 - Math.exp(-dt * 16);
     pointer.lerp(pointerTarget, follow);
@@ -157,7 +166,7 @@ export function createScene(options: SceneOptions): WorldScene {
     yaw = spring(
       yaw.value,
       yaw.velocity,
-      aimX * MAX_YAW * hoverTarget + driftYaw,
+      aimX * MAX_YAW * lookTarget + driftYaw,
       dt,
       34,
       11,
@@ -165,7 +174,7 @@ export function createScene(options: SceneOptions): WorldScene {
     pitch = spring(
       pitch.value,
       pitch.velocity,
-      -aimY * MAX_PITCH * hoverTarget + driftPitch,
+      -aimY * MAX_PITCH * lookTarget + driftPitch,
       dt,
       34,
       11,
@@ -269,14 +278,20 @@ export function createScene(options: SceneOptions): WorldScene {
       applySlot();
     },
     setPointer(x, y, inside) {
+      // Leaving isn't a cursor position, so the burst fades where it is.
+      if (!inside) {
+        hoverTarget = 0;
+        lookTarget = 0;
+        return;
+      }
       const px = (x - slot.x) / slot.width - 0.5;
       const py = 0.5 - (y - slot.y) / slot.height;
       pointerTarget.set(px, py);
+      if (hover < 0.01) pointer.copy(pointerTarget);
+      lookTarget = 1;
       // The disruption acts around the face, and fades as the cursor moves away.
       const reach = Math.max(Math.abs(px), Math.abs(py));
-      hoverTarget = inside
-        ? 1 - Math.min(1, Math.max(0, reach - 0.56) / 0.3)
-        : 0;
+      hoverTarget = 1 - Math.min(1, Math.max(0, reach - 0.56) / 0.3);
       aimX = Math.max(-1, Math.min(1, px * 1.5));
       aimY = Math.max(-1, Math.min(1, py * 1.5));
     },

@@ -232,12 +232,13 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
       clearTimeout(timer);
       live = true;
       // One crossfade: the frame fades in as the poster and panel fade out.
+      fadeWithScroll();
       if (canvas) canvas.dataset.live = "";
       slot.dataset.world = "live";
+      syncActive();
       settle = window.setTimeout(() => {
         if (canvas) canvas.dataset.settled = "";
-        fadeWithScroll();
-      }, 460);
+      }, 220);
       finish(true);
     } else if (message.type === "failed") {
       if (!live && thread === "worker") {

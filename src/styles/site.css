@@ -138,7 +138,7 @@ main:focus {
   height: 100%;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--duration-slow) var(--ease-out);
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
 .world-canvas[data-live] {

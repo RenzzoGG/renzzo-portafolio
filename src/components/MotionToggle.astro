@@ -60,6 +60,13 @@ const { ui } = await getProfile();
     transition: background-color var(--duration-fast) var(--ease-out);
   }
 
+  /* On and Off share a width, so the nav never shifts on toggle. */
+  .motion span {
+    display: inline-block;
+    min-width: 3ch;
+    text-align: left;
+  }
+
   .motion:disabled {
     color: var(--color-muted);
     cursor: not-allowed;
