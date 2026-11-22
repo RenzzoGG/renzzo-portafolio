@@ -6,3 +6,6 @@ legacy/
 cv/
 og/
 public/
+.mcp.json
+.claude/skills/
+.claude/agents/
