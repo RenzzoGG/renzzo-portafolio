@@ -25,5 +25,7 @@ function devStyleguide() {
 export default defineConfig({
   site: "https://renzzogg.com",
   output: "static",
+  // Inlined CSS removes the render-blocking request, which protects text LCP.
+  build: { inlineStylesheets: "always" },
   integrations: [devStyleguide()],
 });

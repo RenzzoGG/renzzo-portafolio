@@ -22,6 +22,7 @@ stack:
   ]
 oneLiner: A dental clinic booking system where PostgreSQL makes double bookings impossible, with a Django API, a React dashboard and 98% backend test coverage.
 summary: "Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway."
+cvLine: "Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway."
 disclaimer: Clearline is a fictional clinic, built as a portfolio project.
 stats: [98% backend test coverage, Overlap-proof bookings, JWT roles]
 caseStudy:

@@ -105,6 +105,19 @@ Section link: "Let's talk →" (to #contact).
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
+## Interface labels
+
+- **Skip link:** Skip to content
+- **Nav:** Work · Skills · Services · CV · Contact
+- **Hero actions:** See my work · Let's talk
+- **Section headings:** About · Featured work · More work · Skills · Education · Certifications · Services · CV
+- **About facts:** Location · Work · Languages
+- **Project:** Live demo · Source · Landing · Landing source · How it's built
+- **CV actions:** Download CV (PDF) · View full CV
+- **CV headings:** Summary · Skills · Projects · Education · Certifications
+- **Motion toggle:** Motion · On · Off
+- **New tab suffix (visually hidden):** (opens in new tab)
+
 ---
 
 ## Projects
@@ -119,6 +132,7 @@ Since Phase 2, each project has one 16:10 master in `src/assets/projects/`, opti
 - **Live:** https://clearline.renzzogg.com · **Source:** https://github.com/RenzzoGG/clearline-dental
 - **One-liner:** A dental clinic booking system where PostgreSQL makes double bookings impossible, with a Django API, a React dashboard and 98% backend test coverage.
 - **Summary (provided by Renzzo):** Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway.
+- **CV line:** Dental clinic booking system: Django REST API + React/TypeScript dashboard, overlap-proof bookings enforced by PostgreSQL, JWT roles, 98% backend test coverage, CI-gated deploys on Railway.
 - **README intro:** Online booking and front-desk dashboard for a dental clinic. A Django REST API and a React SPA, deployed to production with CI, end-to-end tests and an animated, fast public site. _(Clearline is a fictional clinic, built as a portfolio project.)_
 - **Features (README):** patients book a visit in five steps (service → dentist → date and time → details → confirm) with live availability. The front desk gets a week/day schedule per dentist color-coded by status, confirm/complete/cancel from a side drawer, and insights for 7/30/90 days. Admins manage dentists, services and patients, plus the Django admin. Public demo accounts exist, and demo data resets nightly.
 - **Stack:** Django, DRF, PostgreSQL 17, React 19, TypeScript, Vite, Tailwind v4, Motion, Docker, GitHub Actions, Railway

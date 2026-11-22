@@ -44,3 +44,37 @@
         href: /renzzo-gracia-gomez-cv.pdf?v=12
         download: true
   footer: © {year} Renzzo Gracia Gomez · renzzogg.com
+  ui:
+    skipLink: Skip to content
+    nav:
+      - { label: Work, href: "/#work" }
+      - { label: Skills, href: "/#skills" }
+      - { label: Services, href: "/#services" }
+      - { label: CV, href: "/#cv" }
+      - { label: Contact, href: "/#contact" }
+    heroActions: { primary: See my work, secondary: Let's talk }
+    headings:
+      about: About
+      work: Featured work
+      more: More work
+      skills: Skills
+      education: Education
+      certifications: Certifications
+      services: Services
+      cv: CV
+    facts: { location: Location, work: Work, languages: Languages }
+    project:
+      live: Live demo
+      source: Source
+      landing: Landing
+      landingSource: Landing source
+      details: How it's built
+    cvActions: { download: Download CV (PDF), view: View full CV }
+    cvHeadings:
+      summary: Summary
+      skills: Skills
+      projects: Projects
+      education: Education
+      certifications: Certifications
+    motion: { label: Motion, on: On, off: Off }
+    newTab: (opens in new tab)
