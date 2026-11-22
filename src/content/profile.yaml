@@ -1,11 +1,11 @@
 - id: main
   name: Renzzo Gracia Gomez
   role: Full-Stack Developer
-  heroStack: Next.js · TypeScript · PostgreSQL · Python
+  heroStack: TypeScript · React · Next.js · Django · PostgreSQL
   hero:
     headline: I build web apps end to end and ship them live.
     subline: Full-Stack Developer in Hermosillo, Mexico. Available for freelance projects, from the database to the deployed product.
-  cvRole: Full-Stack Developer · Next.js, TypeScript, PostgreSQL, Python
+  cvRole: Full-Stack Developer · TypeScript, React, Next.js, Django, PostgreSQL
   location: Hermosillo, Sonora, Mexico
   remote: Open to remote work
   languages: Spanish (native) · English (intermediate–advanced)
@@ -14,8 +14,8 @@
   cvSummary: "Full-Stack Developer based in Hermosillo, Mexico, studying Information Systems and Digital Networks Engineering. I built Clearline Dental, a booking system with a Django REST API and a React dashboard where PostgreSQL prevents overlapping appointments, and Stocktill, a multi-store POS and inventory SaaS with Next.js, Supabase and Stripe, isolated by Row-Level Security and backed by 700+ automated tests in CI. I also built an accessible GSAP motion redesign for Pulse Theory. I deploy what I build myself, Docker, custom domains and HTTPS included. Open to freelance projects."
   meta:
     title: Renzzo Gracia Gomez — Full-Stack Developer
-    description: Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — and ship them live.
-    ogDescription: Full-stack developer from Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — from database to deployment. Open to freelance projects.
+    description: Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with TypeScript, React, Next.js, Django and PostgreSQL — and ship them live.
+    ogDescription: Full-stack developer from Hermosillo, Mexico. I build web apps end to end with TypeScript, React, Next.js, Django and PostgreSQL — from database to deployment. Open to freelance projects.
     ogImageAlt: Renzzo Gracia Gomez — Full-Stack Developer
   degree:
     en: Information Systems and Digital Networks Engineering

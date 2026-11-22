@@ -8,6 +8,11 @@ const font = readFileSync(
   "node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2",
 ).toString("base64");
 
+const stack = /heroStack: (.+)/.exec(
+  readFileSync("src/content/profile.yaml", "utf8"),
+)?.[1];
+if (!stack) throw new Error("Missing heroStack in profile.yaml");
+
 const COLUMNS = 34;
 const ROWS = 42;
 const wave = [
@@ -50,8 +55,9 @@ const html = `<!doctype html><style>
 body{width:1200px;height:630px;display:flex;align-items:center;justify-content:space-between;padding:0 64px;background:#0B0A0C;color:#F2EEEA;font-family:Geist,sans-serif}
 h1{font-size:84px;line-height:1;letter-spacing:-.04em;font-weight:600}
 p{margin-top:28px;font-size:34px;color:#FF3B5C;font-weight:500;letter-spacing:-.01em}
+.stack{margin-top:14px;font-size:21px;color:#8A8389;font-weight:400;letter-spacing:0;white-space:nowrap}
 svg{flex:none}
-</style><div><h1>Renzzo<br>Gracia Gomez</h1><p>Full-Stack Developer</p></div>
+</style><div><h1>Renzzo<br>Gracia Gomez</h1><p>Full-Stack Developer</p><p class="stack">${stack}</p></div>
 <svg width="512" height="632" viewBox="0 0 512 632" aria-hidden="true">${dots}</svg>`;
 
 const browser = await chromium.launch();

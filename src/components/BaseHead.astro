@@ -18,7 +18,7 @@ const education = await getEducation();
 const site = Astro.site ?? new URL(`https://${profile.domain}`);
 const canonical = new URL(Astro.url.pathname, site).href;
 // Bump ?v= whenever public/og-image.png changes (it has a fixed URL).
-const ogImage = new URL("/og-image.png?v=2", site).href;
+const ogImage = new URL("/og-image.png?v=3", site).href;
 const socialDescription = profile.meta.ogDescription;
 
 const [locality, region] = profile.location.split(", ");

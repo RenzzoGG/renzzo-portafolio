@@ -10,10 +10,10 @@ Project data for repos outside this one was read (read-only) from the local clon
 
 - **Name:** Renzzo Gracia Gomez
 - **Role:** Full-Stack Developer
-- **Hero stack line:** Next.js · TypeScript · PostgreSQL · Python
+- **Hero stack line:** TypeScript · React · Next.js · Django · PostgreSQL
 - **Hero headline:** I build web apps end to end and ship them live.
 - **Hero subline:** Full-Stack Developer in Hermosillo, Mexico. Available for freelance projects, from the database to the deployed product.
-- **CV role line:** Full-Stack Developer · Next.js, TypeScript, PostgreSQL, Python
+- **CV role line:** Full-Stack Developer · TypeScript, React, Next.js, Django, PostgreSQL
 - **Location:** Hermosillo, Sonora, Mexico
 - **Remote:** Open to remote work
 - **Languages:** Spanish (native) · English (intermediate–advanced)
@@ -22,8 +22,8 @@ Project data for repos outside this one was read (read-only) from the local clon
 ### Meta (SEO / social)
 
 - **Title:** Renzzo Gracia Gomez — Full-Stack Developer
-- **Meta description:** Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — and ship them live.
-- **OG / Twitter description:** Full-stack developer from Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — from database to deployment. Open to freelance projects.
+- **Meta description:** Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with TypeScript, React, Next.js, Django and PostgreSQL — and ship them live.
+- **OG / Twitter description:** Full-stack developer from Hermosillo, Mexico. I build web apps end to end with TypeScript, React, Next.js, Django and PostgreSQL — from database to deployment. Open to freelance projects.
 - **OG image alt:** Renzzo Gracia Gomez — Full-Stack Developer
 
 ## About (page)
