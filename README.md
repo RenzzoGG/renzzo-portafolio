@@ -58,7 +58,8 @@ docs/                 # Plan, content and reviews
 
 1. Install [uv](https://docs.astral.sh/uv/) and put the photo at `assets-src/face.webp`. That folder is gitignored and must never be committed.
 2. Preview every variant: `npm run face:build -- --all-variants --out docs/reports/phase-3`.
-3. Set `"selected"` in `scripts/face/variants.json`, then run `npm run face:build` to write `src/assets/face/face.bin`.
+3. Preview the stylized variants, each with a styled and a focused state: `npm run face:build -- --stylized --out docs/reports/phase-3/stylized`.
+4. Set `"selected"` in `scripts/face/variants.json`, then run `npm run face:build` to write `src/assets/face/face.bin`.
 
 The first run downloads Python, the locked packages and two checksum-verified models. Those, plus the masks and depth maps, stay in `~/.cache/renzzo-face/`. After that, the pipeline runs offline.
 

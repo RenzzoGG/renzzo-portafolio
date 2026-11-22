@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw
 
 from models import PHOTO, ROOT, work_path
 from sample import find_crop, pack, render, sample, unpack
+from stylize import build_all
 
 HERE = Path(__file__).resolve().parent
 MAX_BYTES = 60 * 1024
@@ -59,14 +60,15 @@ def comparison(previews: list[tuple[str, Image.Image]], path: Path, width: int) 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--all-variants", action="store_true", help="build every variant with previews")
-    parser.add_argument("--out", type=Path, help="output folder for --all-variants")
+    parser.add_argument("--stylized", action="store_true", help="build the stylized variants with previews")
+    parser.add_argument("--out", type=Path, help="output folder for --all-variants or --stylized")
     args = parser.parse_args()
-    if args.all_variants and not args.out:
-        parser.error("--all-variants needs --out")
+    if (args.all_variants or args.stylized) and not args.out:
+        parser.error("--all-variants and --stylized need --out")
 
     config = json.loads((HERE / "variants.json").read_text())
     selected = config["selected"]
-    if not args.all_variants and selected is None:
+    if not args.all_variants and not args.stylized and selected is None:
         raise SystemExit('No variant chosen yet: set "selected" in scripts/face/variants.json.')
 
     # Each model runs in its own process, so its memory is freed before the next.
@@ -78,6 +80,12 @@ def main() -> None:
     depth = np.load(work_path("depth", "depth-anything-v2-small"))
     assets = (photo, alpha, depth)
     box = find_crop(alpha, config["crop"])
+
+    if args.stylized:
+        _, reference = build_variant(assets, box, config["variants"]["b-balanced"])
+        out = args.out if args.out.is_absolute() else ROOT / args.out
+        build_all(assets, config, reference, out)
+        return
 
     if not args.all_variants:
         data, _ = build_variant(assets, box, config["variants"][selected])
