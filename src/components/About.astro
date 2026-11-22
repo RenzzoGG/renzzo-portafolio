@@ -2,6 +2,8 @@
 import { getProfile } from "../lib/content.ts";
 
 const { about, location, remote, languages, ui } = await getProfile();
+// Paragraph breaks only: the approved wording stays in one profile field.
+const paragraphs = about.split(/ (?=Clearline Dental is|I also care|I deploy)/);
 const facts = [
   [ui.facts.location, location],
   [ui.facts.work, remote],
@@ -15,7 +17,11 @@ const facts = [
       {ui.headings.about}
     </h2>
     <div>
-      <p class="about__text">{about}</p>
+      <div class="about__text">
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
       <dl class="about__facts">
         {facts.map(([term, value]) => (
           <div>
@@ -40,6 +46,8 @@ const facts = [
   }
 
   .about__text {
+    display: grid;
+    gap: var(--space-4);
     max-width: var(--measure-body);
     font-size: var(--text-lead);
     line-height: var(--leading-body);

@@ -5,6 +5,7 @@ import {
   getProfile,
   getProjects,
   getSkills,
+  shortTitle,
   toCvProjects,
 } from "../lib/content.ts";
 
@@ -58,7 +59,7 @@ const [email, ...otherContacts] = contacts;
     {projects.map((project) => (
       <div class="cv__item">
         <h3>
-          {project.title} <span>— {project.type}</span>
+          {shortTitle(project.title)} <span>— {project.type}</span>
         </h3>
         <p>{project.text}</p>
         <p class="cv__item-meta">

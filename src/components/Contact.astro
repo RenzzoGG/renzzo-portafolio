@@ -82,6 +82,13 @@ const { contact } = await getProfile();
     overflow-wrap: anywhere;
     font-family: var(--font-mono);
     font-size: var(--text-body);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  li:first-child .contact__value {
+    font-size: var(--text-subheading);
   }
 
   @media (hover: hover) {

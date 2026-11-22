@@ -160,9 +160,24 @@ const widths = [480, 800, 1120, 1440].filter((w) => w <= shot.src.width);
   summary {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     min-height: 2.75rem;
     font-weight: var(--weight-medium);
     cursor: pointer;
+  }
+
+  summary::after {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-inline-end: var(--space-1);
+    border-right: 1.5px solid currentcolor;
+    border-bottom: 1.5px solid currentcolor;
+    transform: translateY(-25%) rotate(45deg);
+  }
+
+  details[open] summary::after {
+    transform: translateY(25%) rotate(-135deg);
   }
 
   dl {
