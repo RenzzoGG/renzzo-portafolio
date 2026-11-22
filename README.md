@@ -28,6 +28,7 @@ Requires the Node version in `.nvmrc`.
 | `npm run cv:pdf`     | Prints `/cv` to a one-page Letter PDF in `public/`           |
 | `npm run og:image`   | Regenerates `public/og-image.png`                            |
 | `npm run lighthouse` | Reports the median of 5 Lighthouse runs (build first)        |
+| `npm run face:build` | Regenerates the LED face data from the local photo           |
 
 ## Project structure
 
@@ -50,6 +51,16 @@ docs/                 # Plan, content and reviews
 1. Change the wording in `docs/CONTENT.md`, then in `src/content/`.
 2. If the CV changed, run `npm run cv:pdf` and bump `?v=` on the PDF link in `src/content/profile.yaml`.
 3. If the OG image changed, run `npm run og:image` and bump `?v=` in `src/components/BaseHead.astro`.
+
+## Face pipeline
+
+`scripts/face/` turns a local portrait into compact LED dot data. It runs on your machine at build time and is never shipped.
+
+1. Install [uv](https://docs.astral.sh/uv/) and put the photo at `assets-src/face.webp`. That folder is gitignored and must never be committed.
+2. Preview every variant: `npm run face:build -- --all-variants --out docs/reports/phase-3`.
+3. Set `"selected"` in `scripts/face/variants.json`, then run `npm run face:build` to write `src/assets/face/face.bin`.
+
+The first run downloads Python, the locked packages and two checksum-verified models. Those, plus the masks and depth maps, stay in `~/.cache/renzzo-face/`. After that, the pipeline runs offline.
 
 ## Deployment
 

@@ -1,0 +1,39 @@
+{
+  "selected": null,
+  "crop": { "headBand": 0.3, "headScale": 1.9, "topPad": 0.05 },
+  "variants": {
+    "a-soft": {
+      "label": "A, Soft",
+      "cols": 110,
+      "gamma": 0.95,
+      "contrast": 1.05,
+      "localContrast": 0.25,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 18,
+      "maskThreshold": 0.5
+    },
+    "b-balanced": {
+      "label": "B, Balanced",
+      "cols": 125,
+      "gamma": 0.9,
+      "contrast": 1.25,
+      "localContrast": 0.45,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 14,
+      "maskThreshold": 0.5
+    },
+    "c-detailed": {
+      "label": "C, Detailed",
+      "cols": 140,
+      "gamma": 0.85,
+      "contrast": 1.45,
+      "localContrast": 0.65,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 10,
+      "maskThreshold": 0.5
+    }
+  }
+}
