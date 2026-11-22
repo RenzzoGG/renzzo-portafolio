@@ -85,11 +85,11 @@ Profile: https://platzi.com/p/renzzo.gomez07/ ("View full Platzi profile →")
 
 Section link: "Let's talk →" (to #contact).
 
-| #   | Title                    | Text                                                                                                               | Stack                                  |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| 01  | Web apps & SaaS          | Dashboards, admin panels and apps with user accounts and roles — including subscriptions and payments with Stripe. | Next.js, Supabase, PostgreSQL, Stripe  |
-| 02  | APIs & back end          | REST APIs with Node.js or Python, PostgreSQL database design, third-party integrations and webhooks.               | Node.js, FastAPI, PostgreSQL, Webhooks |
-| 03  | Landing pages & websites | Fast, responsive sites for products and small businesses — live on your own domain with HTTPS.                     | HTML, CSS, JavaScript, Tailwind CSS    |
+| #   | Title                    | Text                                                                                                                                                                         | Stack                                 |
+| --- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| 01  | Full-stack web apps      | Booking systems, dashboards, client portals and SaaS MVPs, with a Django REST API and a React frontend (or Next.js + Supabase + Stripe), tested and deployed on your domain. | React, TypeScript, Django, PostgreSQL |
+| 02  | Landing pages            | Fast, accessible landing pages with scroll animation that never slows them down, live on your own domain with HTTPS.                                                         | HTML, Sass, Tailwind CSS, GSAP        |
+| 03  | Bug fixes & improvements | Fix bugs, speed up slow pages and polish existing sites and web apps, with the scope agreed in writing before I start.                                                       | JavaScript, React, Python, CSS        |
 
 ## Contact (links only)
 
