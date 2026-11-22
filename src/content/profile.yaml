@@ -16,7 +16,7 @@
     title: Renzzo Gracia Gomez — Full-Stack Developer
     description: Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — and ship them live.
     ogDescription: Full-stack developer from Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — from database to deployment. Open to freelance projects.
-    ogImageAlt: Renzzo Gracia Gomez — Full-Stack Developer — renzzogg.com
+    ogImageAlt: Renzzo Gracia Gomez — Full-Stack Developer
   degree:
     en: Information Systems and Digital Networks Engineering
     es: Ingeniería en Sistemas de la Información y Redes Digitales
@@ -41,6 +41,6 @@
         href: https://platzi.com/p/renzzo.gomez07/
       - label: Resume (PDF)
         value: renzzo-gracia-gomez-cv.pdf
-        href: /renzzo-gracia-gomez-cv.pdf?v=11
+        href: /renzzo-gracia-gomez-cv.pdf?v=12
         download: true
   footer: © {year} Renzzo Gracia Gomez · renzzogg.com

@@ -27,7 +27,7 @@
     title: Professional CSS Grid Layout,
     issuer: Platzi,
     url: "https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/",
-    onCv: false,
+    onCv: true,
     order: 4,
   }
 - {
@@ -35,7 +35,7 @@
     title: CSS Grid Basics,
     issuer: Platzi,
     url: "https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/",
-    onCv: false,
+    onCv: true,
     order: 5,
   }
 - {
@@ -43,7 +43,7 @@
     title: "Web Design with CSS Grid & Flexbox",
     issuer: Platzi,
     url: "https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/",
-    onCv: false,
+    onCv: true,
     order: 6,
   }
 - {
@@ -51,7 +51,7 @@
     title: Practical CSS Layout,
     issuer: Platzi,
     url: "https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/",
-    onCv: false,
+    onCv: true,
     order: 7,
   }
 - {
@@ -67,7 +67,7 @@
     title: Design for Developers,
     issuer: Platzi,
     url: "https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/",
-    onCv: false,
+    onCv: true,
     order: 9,
   }
 - {

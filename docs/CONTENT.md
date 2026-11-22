@@ -24,7 +24,7 @@ Project data for repos outside this one was read (read-only) from the local clon
 - **Title:** Renzzo Gracia Gomez — Full-Stack Developer
 - **Meta description:** Renzzo Gracia Gomez, full-stack developer and Information Systems and Digital Networks Engineering student in Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — and ship them live.
 - **OG / Twitter description:** Full-stack developer from Hermosillo, Mexico. I build web apps end to end with Next.js, TypeScript, PostgreSQL and Python — from database to deployment. Open to freelance projects.
-- **OG image alt:** Renzzo Gracia Gomez — Full-Stack Developer — renzzogg.com
+- **OG image alt:** Renzzo Gracia Gomez — Full-Stack Developer
 
 ## About (page)
 
@@ -64,7 +64,7 @@ The portfolio itself will add Astro and Three.js once it's live.
 
 ## Certifications (Platzi)
 
-**Placement (decided):** the full list sits inside the CV section, with links. Skills/Experience shows a compact list (names only, or the top 5 marked "On CV", plus a "View full Platzi profile" link).
+**Placement (decided):** the full list of 10 sits inside the CV and its PDF, with links (all marked "On CV" since Phase 2). Skills/Experience shows a compact list of names, plus a "View full Platzi profile" link.
 
 Profile: https://platzi.com/p/renzzo.gomez07/ ("View full Platzi profile →")
 
@@ -73,12 +73,12 @@ Profile: https://platzi.com/p/renzzo.gomez07/ ("View full Platzi profile →")
 | Frontend Developer                 | https://platzi.com/p/renzzo.gomez07/curso/2467-course/diploma/detalle/  | ✔     |
 | JavaScript Fundamentals            | https://platzi.com/p/renzzo.gomez07/curso/10266-course/diploma/detalle/ | ✔     |
 | CSS Architecture                   | https://platzi.com/p/renzzo.gomez07/curso/7991-course/diploma/detalle/  | ✔     |
-| Professional CSS Grid Layout       | https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/  |       |
-| CSS Grid Basics                    | https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/  |       |
-| Web Design with CSS Grid & Flexbox | https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/  |       |
-| Practical CSS Layout               | https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/  |       |
+| Professional CSS Grid Layout       | https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/  | ✔     |
+| CSS Grid Basics                    | https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/  | ✔     |
+| Web Design with CSS Grid & Flexbox | https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/  | ✔     |
+| Practical CSS Layout               | https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/  | ✔     |
 | Sass Fundamentals                  | https://platzi.com/p/renzzo.gomez07/curso/6867-course/diploma/detalle/  | ✔     |
-| Design for Developers              | https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/  |       |
+| Design for Developers              | https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/  | ✔     |
 | Effective Design Systems           | https://platzi.com/p/renzzo.gomez07/curso/1420-course/diploma/detalle/  | ✔     |
 
 ## Services
@@ -101,7 +101,7 @@ Section link: "Let's talk →" (to #contact).
 | Email        | renzzo.gomez07@gmail.com    | `mailto:renzzo.gomez07@gmail.com`             |
 | GitHub       | github.com/RenzzoGG         | https://github.com/RenzzoGG                   |
 | Platzi       | platzi.com/p/renzzo.gomez07 | https://platzi.com/p/renzzo.gomez07/          |
-| Resume (PDF) | renzzo-gracia-gomez-cv.pdf  | `/renzzo-gracia-gomez-cv.pdf?v=11` (download) |
+| Resume (PDF) | renzzo-gracia-gomez-cv.pdf  | `/renzzo-gracia-gomez-cv.pdf?v=12` (download) |
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
