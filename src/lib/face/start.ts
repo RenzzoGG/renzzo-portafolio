@@ -1,33 +1,53 @@
 /**
- * Critical entry for the LED face. It only watches the motion settings. The
- * data and renderer load after first paint, and never while motion is off.
+ * Critical entry for the LED face. It only decides what this visit may run:
+ * the WebGL world, the 2D canvas, or the static poster. Everything heavier
+ * loads after first paint and idle, and never while motion is off.
  */
+import {
+  desktopDevice,
+  hasWebGL2,
+  motionAllowed,
+  onDeviceChange,
+} from "../world/gate.ts";
+import type { WorldHandle } from "../world/host.ts";
 import type { FaceRenderer } from "./canvas-renderer.ts";
+import type { FaceTilt } from "./tilt.ts";
 
 const slot = document.querySelector<HTMLElement>("[data-led-slot]");
 const host = slot?.querySelector<HTMLElement>("[data-face-layers]");
 
 if (slot && host) {
   const root = document.documentElement;
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-  let renderer: FaceRenderer | null = null;
-  let loading = false;
+  let world: WorldHandle | null = null;
+  let flat: FaceRenderer | null = null;
+  let flatLoading = false;
+  let flatFailed = false;
+  let worldLoading = false;
+  let worldFailed = false;
 
-  const allowed = () => !reduced.matches && root.dataset.motion !== "off";
+  const wantsWorld = () =>
+    motionAllowed() && desktopDevice() && !worldFailed && hasWebGL2();
+  const wantsFlat = () => motionAllowed() && !wantsWorld();
 
-  const activate = async () => {
-    loading = true;
+  const stopFlat = () => {
+    flat?.destroy();
+    flat = null;
+    delete slot.dataset.face;
+  };
+
+  const startFlat = async () => {
+    flatLoading = true;
     try {
       const [{ loadFace }, { createCanvasRenderer }] = await Promise.all([
         import("./load.ts"),
         import("./canvas-renderer.ts"),
       ]);
       const face = await loadFace();
-      if (allowed() && !renderer) {
+      if (wantsFlat() && !flat) {
         const next = createCanvasRenderer(host, face);
         const ready = await next.start();
-        if (ready && allowed()) {
-          renderer = next;
+        if (ready && wantsFlat()) {
+          flat = next;
           slot.dataset.face = "live";
         } else {
           next.destroy();
@@ -35,28 +55,61 @@ if (slot && host) {
       }
     } catch {
       // The poster stays in place, so the hero is never empty.
-      renderer = null;
+      flat = null;
+      flatFailed = true;
     } finally {
-      loading = false;
+      flatLoading = false;
+      sync();
     }
   };
 
-  const sync = () => {
-    if (allowed()) {
-      if (!renderer && !loading) void activate();
-    } else if (renderer) {
-      renderer.destroy();
-      renderer = null;
-      delete slot.dataset.face;
+  const failWorld = () => {
+    worldFailed = true;
+    world = null;
+    sync();
+  };
+
+  const startWorld = async () => {
+    worldLoading = true;
+    try {
+      const { startWorld: start } = await import("../world/host.ts");
+      if (wantsWorld()) {
+        const next = start(slot, failWorld);
+        world = next;
+        const ok = await next.ready;
+        // A failed start falls back silently. A cancelled one just ends.
+        if (!ok && world === next) failWorld();
+      }
+    } catch {
+      failWorld();
+    } finally {
+      worldLoading = false;
+      sync();
     }
   };
+
+  function sync() {
+    if (wantsWorld()) {
+      if (!world && !worldLoading) void startWorld();
+    } else if (world) {
+      world.destroy();
+      world = null;
+    }
+    if (wantsFlat()) {
+      if (!flat && !flatLoading && !flatFailed) void startFlat();
+    } else if (flat) {
+      stopFlat();
+    }
+  }
+
+  setupTilt(slot, motionAllowed);
 
   const begin = () => {
     new MutationObserver(sync).observe(root, {
       attributes: true,
       attributeFilter: ["data-motion"],
     });
-    reduced.addEventListener("change", sync);
+    onDeviceChange(sync);
     sync();
   };
 
@@ -70,4 +123,53 @@ if (slot && host) {
 
   if (document.readyState === "complete") whenIdle();
   else addEventListener("load", whenIdle, { once: true });
+}
+
+/** Phones get a visible control, because iOS needs a tap to allow motion data. */
+function setupTilt(target: HTMLElement, allowed: () => boolean) {
+  const button =
+    document.querySelector<HTMLButtonElement>("[data-tilt-toggle]");
+  const state = button?.querySelector("[data-tilt-state]");
+  if (
+    !button ||
+    !state ||
+    !("DeviceOrientationEvent" in window) ||
+    !matchMedia("(pointer: coarse)").matches
+  ) {
+    return;
+  }
+  let tilt: FaceTilt | null = null;
+
+  const render = () => {
+    button.hidden = !allowed();
+    button.setAttribute("aria-pressed", String(Boolean(tilt)));
+    state.textContent = (tilt ? button.dataset.on : button.dataset.off) ?? "";
+  };
+  const stop = () => {
+    tilt?.stop();
+    tilt = null;
+    render();
+  };
+
+  button.addEventListener("click", () => {
+    if (tilt) {
+      stop();
+      return;
+    }
+    void import("./tilt.ts")
+      .then(({ startTilt }) => startTilt(target))
+      .then((next) => {
+        tilt = next;
+        render();
+      })
+      .catch(stop);
+  });
+  new MutationObserver(() => {
+    if (!allowed()) stop();
+    else render();
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-motion"],
+  });
+  render();
 }

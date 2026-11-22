@@ -128,3 +128,23 @@ main:focus {
   font-size: var(--text-caption);
   line-height: var(--leading-snug);
 }
+
+/* The persistent WebGL world sits behind all HTML and never takes the pointer. */
+.world-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-behind);
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.world-canvas[data-live] {
+  opacity: 1;
+}
+
+.world-canvas[data-settled] {
+  transition: none;
+}

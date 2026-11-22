@@ -28,4 +28,7 @@ export default defineConfig({
   // Inlined CSS removes the render-blocking request, which protects text LCP.
   build: { inlineStylesheets: "always" },
   integrations: [devStyleguide()],
+  // The WebGL world runs in a module worker.
+  // Three.js is a lazy, desktop-only chunk, with its budget set in docs/PLAN.md.
+  vite: { worker: { format: "es" }, build: { chunkSizeWarningLimit: 700 } },
 });
