@@ -1,0 +1,122 @@
+---
+import { Picture } from "astro:assets";
+import { getProfile, getProjects } from "../lib/content.ts";
+import ExternalLink from "./ExternalLink.astro";
+
+const { ui } = await getProfile();
+const { more } = await getProjects();
+---
+
+<div class="more">
+  <h3 class="more__title">{ui.headings.more}</h3>
+  <ul class="more__list">
+    {more.map(({ data }) => {
+      const shot = data.screenshots[0];
+      return (
+        <li class="row">
+          {shot && (
+            <Picture
+              class="row__thumb"
+              src={shot.src}
+              alt=""
+              formats={["avif", "webp"]}
+              fallbackFormat="webp"
+              widths={[200, 400]}
+              sizes="12.5rem"
+              quality={65}
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+          <div class="row__text">
+            <h4>{data.title}</h4>
+            <p>{data.summary}</p>
+            <ul class="stack-list" aria-label={`${data.title} stack`}>
+              {data.stack.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div class="row__links">
+            <ExternalLink href={data.links.live}>
+              {ui.project.live}
+              <span class="visually-hidden">: {data.title}</span>
+            </ExternalLink>
+            <ExternalLink href={data.links.source}>
+              {ui.project.source}
+              <span class="visually-hidden">: {data.title}</span>
+            </ExternalLink>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<style>
+  .more__title {
+    font-size: var(--text-heading);
+  }
+
+  .more__list {
+    margin-top: var(--space-5);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .row {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .row :global(.row__thumb) {
+    display: none;
+  }
+
+  h4 {
+    font-size: var(--text-subheading);
+  }
+
+  .row__text p {
+    max-width: var(--measure-body);
+    margin-block: var(--space-2) var(--space-3);
+    color: var(--color-muted);
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .row__links {
+    display: flex;
+    gap: var(--space-4);
+    font-size: var(--text-small);
+  }
+
+  .row__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    text-decoration-line: underline;
+  }
+
+  @media (min-width: 48rem) {
+    .row {
+      grid-template-columns: 10rem minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space-5);
+    }
+
+    .row :global(.row__thumb) {
+      display: block;
+      width: 10rem;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top left;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+  }
+</style>

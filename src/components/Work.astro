@@ -1,0 +1,28 @@
+---
+import { getProfile, getProjects } from "../lib/content.ts";
+import MoreWork from "./MoreWork.astro";
+import ProjectCase from "./ProjectCase.astro";
+
+const { ui } = await getProfile();
+const { featured } = await getProjects();
+---
+
+<section class="section container" id="work" aria-labelledby="work-title">
+  <h2 class="section-title" id="work-title">
+    {ui.headings.work}
+  </h2>
+  <div class="work__cases" data-screens>
+    {featured.map((project, index) => (
+      <ProjectCase {project} reverse={index % 2 === 1} />
+    ))}
+  </div>
+  <MoreWork />
+</section>
+
+<style>
+  .work__cases {
+    display: grid;
+    gap: var(--section-gap);
+    margin-block: var(--space-7) var(--section-gap);
+  }
+</style>
