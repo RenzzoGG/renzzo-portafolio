@@ -1,0 +1,78 @@
+---
+import { getProfile, getServices } from "../lib/content.ts";
+
+const { ui, servicesLink } = await getProfile();
+const services = await getServices();
+---
+
+<section class="services" id="services" aria-labelledby="services-title">
+  <div class="container">
+    <div class="services__head">
+      <h2 class="section-title" id="services-title">
+        {ui.headings.services}
+      </h2>
+      <a class="btn btn--ghost" href={servicesLink.href}>
+        {servicesLink.label}
+      </a>
+    </div>
+    <ul class="services__list">
+      {services.map(({ data }) => (
+        <li>
+          <h3>{data.title}</h3>
+          <p>{data.text}</p>
+          <ul class="stack-list" aria-label={`${data.title} stack`}>
+            {data.stack.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding-block: var(--section-gap);
+    background: var(--color-surface);
+  }
+
+  .services__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .services__list {
+    margin-top: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .services__list > li {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--color-border-strong);
+  }
+
+  h3 {
+    font-size: var(--text-subheading);
+  }
+
+  p {
+    max-width: var(--measure-narrow);
+    color: var(--color-muted);
+    line-height: var(--leading-snug);
+  }
+
+  @media (min-width: 64rem) {
+    .services__list > li {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+      gap: var(--space-6);
+      align-items: start;
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import { getCvLink, getProfile } from "../lib/content.ts";
+
+const profile = await getProfile();
+const { ui, cvSummary } = profile;
+const cv = getCvLink(profile);
+---
+
+<section class="section container cv-block" id="cv" aria-labelledby="cv-title">
+  <h2 class="section-title" id="cv-title">
+    {ui.headings.cv}
+  </h2>
+  <div>
+    <p>{cvSummary}</p>
+    <div class="actions">
+      <a class="btn" href={cv.href} download>
+        {ui.cvActions.download}
+      </a>
+      <a class="btn btn--ghost" href="/cv/">
+        {ui.cvActions.view}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cv-block {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  p {
+    max-width: var(--measure-body);
+    margin-bottom: var(--space-5);
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .cv-block {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+  }
+</style>

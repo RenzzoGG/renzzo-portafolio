@@ -1,0 +1,70 @@
+---
+import { getProfile } from "../lib/content.ts";
+
+const { about, location, remote, languages, ui } = await getProfile();
+const facts = [
+  [ui.facts.location, location],
+  [ui.facts.work, remote],
+  [ui.facts.languages, languages],
+];
+---
+
+<section class="about" id="about" aria-labelledby="about-title">
+  <div class="container about__inner">
+    <h2 class="section-title" id="about-title">
+      {ui.headings.about}
+    </h2>
+    <div>
+      <p class="about__text">{about}</p>
+      <dl class="about__facts">
+        {facts.map(([term, value]) => (
+          <div>
+            <dt>{term}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding-block: var(--section-gap);
+    background: var(--color-surface);
+  }
+
+  .about__inner {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .about__text {
+    max-width: var(--measure-body);
+    font-size: var(--text-lead);
+    line-height: var(--leading-body);
+  }
+
+  .about__facts {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  dt {
+    color: var(--color-muted);
+    font-size: var(--text-small);
+  }
+
+  @media (min-width: 48rem) {
+    .about__facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .about__inner {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+  }
+</style>

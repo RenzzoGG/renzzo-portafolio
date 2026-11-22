@@ -1,0 +1,99 @@
+---
+import { getProfile } from "../lib/content.ts";
+import ExternalLink from "./ExternalLink.astro";
+
+const { contact } = await getProfile();
+---
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <h2 id="contact-title">{contact.heading}</h2>
+    <p class="contact__intro">{contact.intro}</p>
+    <ul>
+      {contact.links.map((link) => {
+        const body = (
+          <>
+            <span class="contact__label">{link.label}</span>
+            <span class="contact__value">{link.value}</span>
+          </>
+        );
+        return (
+          <li>
+            {link.href.startsWith("https://") ? (
+              <ExternalLink href={link.href}>{body}</ExternalLink>
+            ) : (
+              <a href={link.href} download={link.download ? "" : undefined}>
+                {body}
+              </a>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-block: var(--section-gap);
+    background: var(--color-signal);
+    color: var(--color-text);
+  }
+
+  h2 {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .contact__intro {
+    margin-top: var(--space-4);
+    font-size: var(--text-lead);
+  }
+
+  ul {
+    margin-top: var(--space-7);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-text);
+  }
+
+  li {
+    border-bottom: 1px solid var(--color-text);
+  }
+
+  a {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    text-decoration: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  a:focus-visible {
+    outline-color: var(--color-text);
+  }
+
+  .contact__label {
+    font-size: var(--text-small);
+  }
+
+  .contact__value {
+    overflow-wrap: anywhere;
+    font-family: var(--font-mono);
+    font-size: var(--text-body);
+  }
+
+  @media (hover: hover) {
+    a:hover {
+      background: var(--color-signal-hover);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    a {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+</style>

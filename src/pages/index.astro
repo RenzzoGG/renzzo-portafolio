@@ -1,18 +1,23 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
+import About from "../components/About.astro";
+import Contact from "../components/Contact.astro";
+import CvBlock from "../components/CvBlock.astro";
+import Hero from "../components/Hero.astro";
+import Services from "../components/Services.astro";
+import SkillsExperience from "../components/SkillsExperience.astro";
+import Work from "../components/Work.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getProfile } from "../lib/content.ts";
 
-const title = "Renzzo Gracia Gomez — Full-Stack Developer";
+const { meta } = await getProfile();
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={title} />
-  </head>
-  <body>
-    <main>
-      <h1>Renzzo Gracia Gomez</h1>
-      <p>Full-Stack Developer. Redesign in progress.</p>
-    </main>
-  </body>
-</html>
+<BaseLayout title={meta.title} description={meta.description}>
+  <Hero />
+  <About />
+  <Work />
+  <Services />
+  <SkillsExperience />
+  <CvBlock />
+  <Contact />
+</BaseLayout>
