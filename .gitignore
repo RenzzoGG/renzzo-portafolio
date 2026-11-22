@@ -33,3 +33,6 @@ dist/
 
 # ===== Source photos / depth maps for the LED face (never committed) =====
 assets-src/
+
+# ===== Impeccable state (never committed without approval) =====
+.impeccable/

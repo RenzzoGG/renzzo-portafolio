@@ -1,4 +1,9 @@
 {
+  "env": {
+    "DO_NOT_TRACK": "1",
+    "IMPECCABLE_HOOK_DISABLED": "1",
+    "IMPECCABLE_LIVE_COPY_AGENT": "off"
+  },
   "permissions": {
     "deny": [
       "Bash(git push)",
@@ -12,7 +17,21 @@
       "Bash(rm -r -f *)",
       "Bash(rm -f -r *)",
       "Bash(rm --recursive --force *)",
-      "Bash(sudo rm *)"
+      "Bash(sudo rm *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Bash(npx impeccable)",
+      "Bash(npx impeccable *)",
+      "Bash(npx impeccable@*)",
+      "Bash(impeccable)",
+      "Bash(impeccable *)",
+      "Bash(*/scripts/impeccable *)",
+      "Bash(claude --permission-mode bypassPermissions*)",
+      "Bash(claude --dangerously-skip-permissions*)",
+      "Bash(codex)",
+      "Bash(codex *)"
     ]
   }
 }
