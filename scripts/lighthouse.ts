@@ -63,11 +63,9 @@ async function runOnce(url: string, formFactor: "mobile" | "desktop") {
       cls: lhr.audits["cumulative-layout-shift"]?.numericValue ?? 0,
       tbt: lhr.audits["total-blocking-time"]?.numericValue ?? 0,
       lcpElement: findSnippet(lhr.audits["lcp-breakdown-insight"]?.details),
-      webglRequested: Object.values(
-        lhr.audits["network-requests"]?.details ?? {},
-      )
-        .flat()
-        .some((item) => JSON.stringify(item).includes("world.worker")),
+      webglRequested: (
+        JSON.stringify(lhr.audits["network-requests"]?.details) ?? ""
+      ).includes("world.worker"),
       longTasks: (
         (
           lhr.audits["long-tasks"]?.details as

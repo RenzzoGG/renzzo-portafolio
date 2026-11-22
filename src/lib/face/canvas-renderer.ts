@@ -4,9 +4,9 @@ import type { LedFace } from "./decode.ts";
 const RADII = [0.13, 0.25, 0.36, 0.48];
 const LAYERS = 4; // One steady layer plus three groups that twinkle.
 const GLOW_SCALE = 3;
-const MAX_DPR = 2;
+const MAX_DPR = 1.5;
 const RESIZE_TOLERANCE = 0.08;
-const DOTS_PER_FRAME = 350; // Keeps each baking task short on slow phones.
+const DOTS_PER_FRAME = 140; // Keeps each baking task short on slow phones.
 const TAU = Math.PI * 2;
 
 export interface FaceRenderer {
@@ -117,6 +117,8 @@ export function createCanvasRenderer(
     glow.context.imageSmoothingQuality = "high";
     for (const layer of baked) {
       glow.context.drawImage(layer, 0, 0, glow.layer.width, glow.layer.height);
+      await nextFrame();
+      if (id !== build) return false;
     }
     glow.context.globalCompositeOperation = "source-in";
     glow.context.fillStyle = halo;
@@ -124,7 +126,13 @@ export function createCanvasRenderer(
 
     width = w;
     height = h;
-    host.replaceChildren(glow.layer, ...baked);
+    // Added one per frame, so the browser never uploads them all in one task.
+    host.replaceChildren(glow.layer);
+    for (const layer of baked) {
+      await nextFrame();
+      if (id !== build) return false;
+      host.append(layer);
+    }
     return true;
   }
 
