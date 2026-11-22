@@ -1,0 +1,39 @@
+---
+import CvDocument from "../components/CvDocument.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCvLink, getProfile } from "../lib/content.ts";
+
+const profile = await getProfile();
+const cv = getCvLink(profile);
+const title = `${profile.ui.headings.cv} — ${profile.name}`;
+---
+
+<BaseLayout {title} description={profile.meta.description}>
+  <div class="cv-page container">
+    <div class="actions cv-page__actions" data-print-hide>
+      <a class="btn" href={cv.href} download>
+        {profile.ui.cvActions.download}
+      </a>
+    </div>
+    <CvDocument />
+  </div>
+</BaseLayout>
+
+<style>
+  .cv-page {
+    padding-block: var(--space-6) var(--section-gap);
+  }
+
+  .cv-page__actions {
+    justify-content: flex-end;
+    max-width: 52rem;
+    margin: 0 auto var(--space-5);
+  }
+
+  @media print {
+    .cv-page {
+      width: auto;
+      padding: 0;
+    }
+  }
+</style>

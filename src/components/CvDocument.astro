@@ -1,0 +1,293 @@
+---
+import {
+  getCertifications,
+  getEducation,
+  getProfile,
+  getProjects,
+  getSkills,
+  toCvProjects,
+} from "../lib/content.ts";
+
+const profile = await getProfile();
+const { ui } = profile;
+const skills = await getSkills();
+const education = await getEducation();
+const certifications = (await getCertifications()).filter(
+  ({ data }) => data.onCv,
+);
+const { all } = await getProjects();
+const projects = toCvProjects(all, ui.project);
+const contacts = profile.contact.links.filter((link) => !link.download);
+const [email, ...otherContacts] = contacts;
+---
+
+<article class="cv">
+  <header class="cv__header">
+    <h1>{profile.name}</h1>
+    <p class="cv__role">{profile.cvRole}</p>
+    <p class="cv__meta">
+      {profile.location} · {profile.remote} · {profile.languages}
+    </p>
+    <p class="cv__meta cv__contact">
+      {email && <a href={email.href}>{email.value}</a>}
+      <a href={`https://${profile.domain}`}>{profile.domain}</a>
+      {otherContacts.map((link) => (
+        <a href={link.href}>{link.value}</a>
+      ))}
+    </p>
+  </header>
+
+  <section aria-labelledby="cv-summary">
+    <h2 id="cv-summary">{ui.cvHeadings.summary}</h2>
+    <p>{profile.cvSummary}</p>
+  </section>
+
+  <section aria-labelledby="cv-skills">
+    <h2 id="cv-skills">{ui.cvHeadings.skills}</h2>
+    <ul class="cv__skills">
+      {skills.map(({ data }) => (
+        <li>
+          <strong>{data.group}:</strong> {data.items.join(", ")}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="cv-projects">
+    <h2 id="cv-projects">{ui.cvHeadings.projects}</h2>
+    {projects.map((project) => (
+      <div class="cv__item">
+        <h3>
+          {project.title} <span>— {project.type}</span>
+        </h3>
+        <p>{project.text}</p>
+        <p class="cv__item-meta">
+          {project.stack.join(", ")}
+          {project.links.map((link) => (
+            <>
+              {" · "}
+              {link.display ? `${link.label}: ` : ""}
+              <a href={link.href}>{link.display ?? link.label}</a>
+            </>
+          ))}
+        </p>
+      </div>
+    ))}
+  </section>
+
+  <section aria-labelledby="cv-education">
+    <h2 id="cv-education">{ui.cvHeadings.education}</h2>
+    {education.map(({ data }) => (
+      <div class="cv__item">
+        <h3>
+          {data.title} <span>— {data.status}</span>
+        </h3>
+        <p class="cv__item-meta">
+          {data.organization}
+          {data.titleEs && (
+            <>
+              {" · "}
+              <span lang="es">{data.titleEs}</span>
+            </>
+          )}
+        </p>
+      </div>
+    ))}
+  </section>
+
+  <section aria-labelledby="cv-certifications">
+    <h2 id="cv-certifications">{ui.cvHeadings.certifications}</h2>
+    <p class="cv__certs">
+      <strong>{certifications[0]?.data.issuer}:</strong>{" "}
+      {certifications.map(({ data }, index) => (
+        <>
+          {index > 0 && " · "}
+          <a href={data.url}>{data.title}</a>
+        </>
+      ))}
+    </p>
+  </section>
+</article>
+
+<style>
+  .cv {
+    --cv-text: var(--color-text);
+    --cv-muted: var(--color-muted);
+    --cv-accent: var(--color-glow);
+    --cv-rule: var(--color-border);
+    max-width: 52rem;
+    margin-inline: auto;
+    color: var(--cv-text);
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  h1 {
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+  }
+
+  .cv__header {
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--color-signal);
+  }
+
+  .cv__role {
+    margin-top: var(--space-1);
+    color: var(--cv-accent);
+    font-size: var(--text-body);
+    font-weight: var(--weight-semibold);
+  }
+
+  .cv__meta {
+    margin-top: var(--space-1);
+    color: var(--cv-muted);
+  }
+
+  .cv__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+  }
+
+  section {
+    margin-top: var(--space-5);
+  }
+
+  h2 {
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid var(--cv-rule);
+    color: var(--cv-accent);
+    font-size: var(--text-small);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-weight: var(--weight-semibold);
+  }
+
+  .cv__skills {
+    padding: 0;
+    list-style: none;
+  }
+
+  .cv__item + .cv__item {
+    margin-top: var(--space-3);
+  }
+
+  h3 {
+    font-size: var(--text-small);
+    letter-spacing: 0;
+    line-height: var(--leading-snug);
+  }
+
+  h3 span {
+    color: var(--cv-muted);
+    font-weight: var(--weight-regular);
+  }
+
+  .cv__item-meta {
+    color: var(--cv-muted);
+    font-size: var(--text-caption);
+  }
+
+  @media (max-width: 30rem) {
+    .cv__contact a {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @media print {
+    .cv {
+      --cv-text: #15121a;
+      --cv-muted: #4c4650;
+      --cv-accent: #a81732;
+      --cv-rule: #d9d3d6;
+      max-width: none;
+      font-size: 8.7pt;
+      line-height: 1.3;
+    }
+
+    h1 {
+      font-size: 20pt;
+      letter-spacing: -0.01em;
+    }
+
+    .cv__header {
+      padding-bottom: 6pt;
+      border-bottom-color: #a81732;
+    }
+
+    .cv__role {
+      margin-top: 1pt;
+      font-size: 10.5pt;
+    }
+
+    .cv__meta {
+      margin-top: 1.5pt;
+    }
+
+    .cv__contact {
+      gap: 0 9pt;
+      font-size: 7.8pt;
+    }
+
+    section {
+      margin-top: 6.5pt;
+    }
+
+    h2 {
+      margin-bottom: 3pt;
+      padding-bottom: 1.5pt;
+      font-size: 8.5pt;
+    }
+
+    h3 {
+      font-size: 8.7pt;
+    }
+
+    .cv__item {
+      break-inside: avoid;
+    }
+
+    .cv__item + .cv__item {
+      margin-top: 3.5pt;
+    }
+
+    .cv__item-meta {
+      font-size: 7.6pt;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+</style>
+
+<style is:global>
+  @page {
+    size: letter;
+    margin: 0.4in 0.55in;
+  }
+
+  @media print {
+    html,
+    body {
+      min-height: 0;
+      background: #fff;
+      color: #15121a;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    [data-print-hide] {
+      display: none !important;
+    }
+  }
+</style>
