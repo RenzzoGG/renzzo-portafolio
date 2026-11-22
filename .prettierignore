@@ -10,3 +10,6 @@ public/
 .claude/skills/
 .claude/agents/
 .claude/settings.local.json
+test-results/
+playwright-report/
+docs/reports/

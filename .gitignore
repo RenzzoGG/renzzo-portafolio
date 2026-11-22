@@ -36,3 +36,7 @@ assets-src/
 
 # ===== Impeccable state (never committed without approval) =====
 .impeccable/
+
+# ===== Playwright =====
+test-results/
+playwright-report/

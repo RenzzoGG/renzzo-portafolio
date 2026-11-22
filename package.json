@@ -17,7 +17,8 @@
     "check:contrast": "node scripts/check-contrast.ts",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run check:contrast && npm run build",
     "cv:pdf": "node scripts/cv-pdf.ts",
-    "og:image": "node scripts/og-image.ts"
+    "og:image": "node scripts/og-image.ts",
+    "test:e2e": "npm run build && playwright test"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
