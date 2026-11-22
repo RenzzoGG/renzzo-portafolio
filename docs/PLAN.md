@@ -51,7 +51,7 @@ Project brand colors (for the section color shifts) are listed in `docs/CONTENT.
 
 **Follow-ups done (approved 2026-11-22):** pinned skills installed (Emil ×8, Impeccable Markdown-only + 2 agents), deny rules added, Playwright MCP added at project scope, Stocktill data filled into CONTENT.md.
 
-## Phase 1: Design system & content
+## Phase 1: Design system & content ✅ (copy choice pending in `docs/COPY-REVIEW.md`)
 
 **Goals:** turn Signal into tokens and type, and lock the content model.
 
@@ -218,6 +218,7 @@ Every dependency must be justified here before it's added. Versions are pinned e
 | prettier                                                    | 3.10.1            | 0     | dev                     | Formatting (`format`, `format:check`).                                                                                                                           |
 | prettier-plugin-astro                                       | 1.1.2             | 0     | dev                     | Prettier support for `.astro`.                                                                                                                                   |
 | @fontsource-variable/geist, @fontsource-variable/geist-mono | 5.3.0             | 1     | dev (build-time asset)  | Self-hosted Geist fonts (OFL-1.1). No third-party font request. Only the Latin variable woff2 files are referenced, and Astro bundles them with hashed names.    |
+| @types/node                                                 | 24.19.2           | 1     | dev                     | Types for Node APIs used by the content schema and the contrast script. Matches the Node 24 in `.nvmrc`.                                                         |
 | @playwright/test                                            | 1.65.x (planned)  | 2     | dev                     | E2E, visual checks, CV PDF generation, OG/Upwork captures. Reuses the Playwright tooling already on the machine.                                                 |
 | three                                                       | 0.187.x (planned) | 4     | runtime (lazy, desktop) | WebGL for the LED face and curved screens. Imported only through dynamic `import()`.                                                                             |
 | gsap                                                        | 3.15.x (planned)  | 6     | runtime (lazy)          | Timeline-based glitch and section transitions. Deferred chunk. Already used in Pulse Theory.                                                                     |
