@@ -1,0 +1,73 @@
+---
+import { getProfile } from "../lib/content.ts";
+import LedSlot from "./LedSlot.astro";
+
+const { hero, heroStack, ui } = await getProfile();
+---
+
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero__copy">
+    <h1 id="hero-title">{hero.headline}</h1>
+    <p class="hero__subline">{hero.subline}</p>
+    <p class="hero__stack">{heroStack}</p>
+    <div class="actions">
+      <a class="btn" href="#work">
+        {ui.heroActions.primary}
+      </a>
+      <a class="btn btn--ghost" href="#contact">
+        {ui.heroActions.secondary}
+      </a>
+    </div>
+  </div>
+  <div class="hero__stage">
+    <LedSlot />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-7) var(--section-gap);
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .hero__subline {
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-5);
+    color: var(--color-text);
+    font-size: var(--text-lead);
+    line-height: var(--leading-snug);
+  }
+
+  .hero__stack {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-6);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+  }
+
+  .hero__stage {
+    width: min(100%, 26rem);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      align-items: center;
+      gap: var(--space-8);
+      padding-block-start: var(--space-8);
+    }
+
+    .hero__stage {
+      width: 100%;
+    }
+  }
+</style>

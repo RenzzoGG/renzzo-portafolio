@@ -1,0 +1,44 @@
+---
+/*
+ * Reserved stage for the LED face (Phases 3 and 4). The aspect ratio is fixed
+ * here so a canvas can replace the poster with zero layout shift.
+ */
+---
+
+<div class="led-slot" data-led-slot aria-hidden="true">
+  <div class="led-slot__poster"></div>
+</div>
+
+<style>
+  .led-slot {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-subtle);
+    background-image: radial-gradient(
+      circle,
+      var(--color-border) 0 1.5px,
+      transparent 2px
+    );
+    background-position: center;
+    background-size: 10px 10px;
+  }
+
+  .led-slot__poster {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      var(--color-glow) 0 2.25px,
+      transparent 2.75px
+    );
+    background-position: center;
+    background-size: 10px 10px;
+    --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500' preserveAspectRatio='none'%3E%3Cfilter id='b' filterUnits='userSpaceOnUse' x='0' y='0' width='400' height='500'%3E%3CfeGaussianBlur stdDeviation='9'/%3E%3C/filter%3E%3Cpath d='M-20 262H104L132 262L158 176L192 372L226 104L258 322L280 262H420' fill='none' stroke='%23fff' stroke-width='24' stroke-linejoin='round' filter='url(%23b)'/%3E%3C/svg%3E");
+    -webkit-mask: var(--wave) center / 100% 100% no-repeat;
+    mask: var(--wave) center / 100% 100% no-repeat;
+  }
+</style>
