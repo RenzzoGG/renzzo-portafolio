@@ -22,6 +22,22 @@ Working rules for this repository.
 - Don't install skills, MCP servers, hooks or global tools without explicit approval (see `docs/SKILLS-REVIEW.md`).
 - Sibling project repos in `~/proyectos/` are **read-only** references. Never modify them.
 
+## Tooling rules
+
+**Installed skills** (project scope, `.claude/skills/`, committed, byte-identical to the pinned source, excluded from Prettier):
+
+- **Emil Kowalski** (`emilkowalski/skills` @ `64eb3de`, MIT): `emil-design-eng`, `animate`, `choreograph`, `animation-performance`, `review-animations`, `remove-animations`, `mobile-native`, `apple-design`. Copied by hand. Never use the `npx skills` installer.
+- **Impeccable** (`pbakaus/impeccable` @ `b49177d`, v4.10.0, Apache-2.0): **Markdown only.** `SKILL.md` + `reference/`, plus the `impeccable-finish-reviewer` and `impeccable-motion-reviewer` agents in `.claude/agents/`. See `.claude/skills/impeccable/PINNED.md`.
+  - **Not installed, and must never be installed:** hooks, the engine binary, the launcher (`scripts/`), other agents, anything via `npx impeccable`.
+  - **Never use** live mode, `generate`, `generate-image`, or any sub-command or step that calls `scripts/impeccable <verb>` (context, detect, shot, font-fetch, concept-seed, comp-*, …) or needs network. If a task needs one, **skip it and tell Renzzo**. Use SKILL.md's "Launcher unavailable" path (read project docs directly).
+  - Telemetry is off: there's no engine to send it, and `DO_NOT_TRACK=1` is set in `.claude/settings.json` `env`.
+  - **Don't create `PRODUCT.md`, `DESIGN.md` or `.impeccable/`** without Renzzo's approval. `.impeccable/` is gitignored as a safety net.
+- Use Impeccable for visual design, critique and audit, and Emil's skills for motion implementation and review.
+
+**Deny rules** (`.claude/settings.json`, verified to block): `git push` (all forms), `rm -rf`-style deletes, reading `.env` / `.env.*`, `npx impeccable*`, `impeccable*`, `*/scripts/impeccable *`, `claude --permission-mode bypassPermissions*`, `claude --dangerously-skip-permissions*`, `codex*`. The user-level settings also deny `.env` reads. **No hooks** are registered in any settings file. Keep it that way unless Renzzo approves one.
+
+**MCP:** Playwright MCP at project scope (`.mcp.json`, committed), pinned to `@playwright/mcp@0.0.86`. Use it for visual checks once there's UI. Don't add other MCP servers without approval.
+
 ## Stack
 
 - Astro (static output) + TypeScript (strict). Three.js (desktop only, lazy-loaded after first paint) and GSAP (deferred chunk), each added in its own phase.

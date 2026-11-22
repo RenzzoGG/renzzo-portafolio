@@ -144,7 +144,14 @@ Impeccable would be the primary design skill, covering direction, critique, audi
 
 Suggested rule for CLAUDE.md: use Impeccable for visual design and critique, and Emil's `animate`/`choreograph`/`animation-performance` for motion implementation. Both respect `prefers-reduced-motion`, which matches our requirements.
 
-## Playwright MCP (proposal, not run)
+## Installed (approved 2026-11-22)
+
+- **Emil:** the 8 recommended folders, copied from `64eb3de`, verified identical with `diff -r`.
+- **Impeccable:** `SKILL.md` + `reference/` + finish-reviewer and motion-reviewer agents from `b49177d`. **No** `scripts/`, hooks, engine or npx. Provenance in `.claude/skills/impeccable/PINNED.md`.
+- **Deny rules and `DO_NOT_TRACK`:** in `.claude/settings.json`. Rules are in CLAUDE.md › Tooling rules.
+- **Playwright MCP:** added with the command below. `.mcp.json` is committed.
+
+## Playwright MCP
 
 ```bash
 claude mcp add --scope project playwright -- npx -y @playwright/mcp@0.0.86
