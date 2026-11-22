@@ -30,6 +30,9 @@
     heading: Let's work together
     intro: Have a project in mind? Reach me through any of these channels.
     links:
+      - label: Upwork (hire me here)
+        value: upwork.com/freelancers/renzzog
+        href: https://www.upwork.com/freelancers/renzzog
       - label: Email
         value: renzzo.gomez07@gmail.com
         href: mailto:renzzo.gomez07@gmail.com
@@ -41,7 +44,7 @@
         href: https://platzi.com/p/renzzo.gomez07/
       - label: Resume (PDF)
         value: renzzo-gracia-gomez-cv.pdf
-        href: /renzzo-gracia-gomez-cv.pdf?v=12
+        href: /renzzo-gracia-gomez-cv.pdf?v=13
         download: true
   footer: © {year} Renzzo Gracia Gomez · renzzogg.com
   ui:

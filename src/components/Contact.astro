@@ -1,6 +1,5 @@
 ---
 import { getProfile } from "../lib/content.ts";
-import ExternalLink from "./ExternalLink.astro";
 
 const { contact } = await getProfile();
 ---
@@ -19,13 +18,13 @@ const { contact } = await getProfile();
         );
         return (
           <li>
-            {link.href.startsWith("https://") ? (
-              <ExternalLink href={link.href}>{body}</ExternalLink>
-            ) : (
-              <a href={link.href} download={link.download ? "" : undefined}>
-                {body}
-              </a>
-            )}
+            <a
+              href={link.href}
+              rel={link.href.startsWith("https://") ? "me" : undefined}
+              download={link.download ? "" : undefined}
+            >
+              {body}
+            </a>
           </li>
         );
       })}

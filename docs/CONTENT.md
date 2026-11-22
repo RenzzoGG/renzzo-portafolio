@@ -96,12 +96,13 @@ Section link: "Let's talk →" (to #contact).
 - **Heading:** Let's work together
 - **Intro:** Have a project in mind? Reach me through any of these channels.
 
-| Label        | Value                       | Href                                          |
-| ------------ | --------------------------- | --------------------------------------------- |
-| Email        | renzzo.gomez07@gmail.com    | `mailto:renzzo.gomez07@gmail.com`             |
-| GitHub       | github.com/RenzzoGG         | https://github.com/RenzzoGG                   |
-| Platzi       | platzi.com/p/renzzo.gomez07 | https://platzi.com/p/renzzo.gomez07/          |
-| Resume (PDF) | renzzo-gracia-gomez-cv.pdf  | `/renzzo-gracia-gomez-cv.pdf?v=12` (download) |
+| Label                 | Value                          | Href                                          |
+| --------------------- | ------------------------------ | --------------------------------------------- |
+| Upwork (hire me here) | upwork.com/freelancers/renzzog | https://www.upwork.com/freelancers/renzzog    |
+| Email                 | renzzo.gomez07@gmail.com       | `mailto:renzzo.gomez07@gmail.com`             |
+| GitHub                | github.com/RenzzoGG            | https://github.com/RenzzoGG                   |
+| Platzi                | platzi.com/p/renzzo.gomez07    | https://platzi.com/p/renzzo.gomez07/          |
+| Resume (PDF)          | renzzo-gracia-gomez-cv.pdf     | `/renzzo-gracia-gomez-cv.pdf?v=13` (download) |
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
@@ -232,4 +233,5 @@ Since Phase 2, each project has one 16:10 master in `src/assets/projects/`, opti
 ### Link conventions (keep)
 
 - External links open in a new tab with `target="_blank" rel="noopener noreferrer"`, plus a visually hidden "(opens in new tab)" suffix.
+- **Exception:** Contact channels open in the same tab, with `rel="me"` on profile links (Upwork, GitHub, Platzi). CV profile links use `rel="me"` too.
 - Link labels on the old site: "Live demo" / "Live", "Code" / "Source", "Landing", "Landing source".

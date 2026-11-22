@@ -19,7 +19,8 @@ const certifications = (await getCertifications()).filter(
 const { all } = await getProjects();
 const projects = toCvProjects(all, ui.project);
 const contacts = profile.contact.links.filter((link) => !link.download);
-const [email, ...otherContacts] = contacts;
+const email = contacts.find((link) => link.href.startsWith("mailto:"));
+const profileLinks = contacts.filter((link) => link !== email);
 ---
 
 <article class="cv">
@@ -32,8 +33,10 @@ const [email, ...otherContacts] = contacts;
     <p class="cv__meta cv__contact">
       {email && <a href={email.href}>{email.value}</a>}
       <a href={`https://${profile.domain}`}>{profile.domain}</a>
-      {otherContacts.map((link) => (
-        <a href={link.href}>{link.value}</a>
+      {profileLinks.map((link) => (
+        <a href={link.href} rel="me">
+          {link.value}
+        </a>
       ))}
     </p>
   </header>

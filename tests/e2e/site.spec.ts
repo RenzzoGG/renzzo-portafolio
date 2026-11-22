@@ -92,7 +92,7 @@ test("project links are present and external links are safe", async ({
   for (const link of PROJECT_LINKS) expect(hrefs).toContain(link);
 
   const unsafe = await page
-    .locator('a[href^="https://"]')
+    .locator('a[href^="https://"]:not(#contact a)')
     .evaluateAll((links) =>
       links
         .filter(
@@ -196,9 +196,37 @@ test.describe("without JavaScript", () => {
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator(".case")).toHaveCount(4);
     await expect(page.locator(".row")).toHaveCount(4);
-    await expect(page.locator("#contact a")).toHaveCount(4);
+    await expect(page.locator("#contact a")).toHaveCount(5);
     await expect(page.locator("[data-motion-toggle]")).toBeHidden();
   });
+});
+
+test("Contact leads with Upwork, in the same tab, with rel=me", async ({
+  page,
+}) => {
+  const upwork = "https://www.upwork.com/freelancers/renzzog";
+  await page.goto("/");
+  const links = page.locator("#contact a");
+  await expect(links.first()).toHaveAttribute("href", upwork);
+  await expect(links.first()).toContainText("Upwork (hire me here)");
+  await expect(page.locator("#contact a[target]")).toHaveCount(0);
+  await expect(page.locator('#contact a[href^="https://"]')).toHaveCount(3);
+  await expect(
+    page.locator('#contact a[href^="https://"][rel="me"]'),
+  ).toHaveCount(3);
+  await expect(page.locator('#contact a[href^="mailto:"]')).not.toHaveAttribute(
+    "rel",
+  );
+
+  const jsonLd = await page
+    .locator('script[type="application/ld+json"]')
+    .textContent();
+  expect(JSON.parse(jsonLd ?? "{}").sameAs).toContain(upwork);
+
+  await page.goto("/cv/");
+  await expect(
+    page.locator(`.cv__contact a[href="${upwork}"]`),
+  ).toHaveAttribute("rel", "me");
 });
 
 test("SEO files and tags are correct", async ({ page, request }) => {
