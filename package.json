@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "astro check",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm run build"
+    "check:contrast": "node scripts/check-contrast.ts",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run check:contrast && npm run build"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
