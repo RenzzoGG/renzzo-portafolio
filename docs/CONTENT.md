@@ -117,6 +117,7 @@ Section link: "Let's talk →" (to #contact).
 - **CV actions:** Download CV (PDF) · View full CV
 - **CV headings:** Summary · Skills · Projects · Education · Certifications
 - **Motion toggle:** Motion · On · Off
+- **Tilt toggle (phones):** Tilt · On · Off
 - **New tab suffix (visually hidden):** (opens in new tab)
 
 ---

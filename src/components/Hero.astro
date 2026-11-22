@@ -2,10 +2,14 @@
 import { getProfile } from "../lib/content.ts";
 import LedSlot from "./LedSlot.astro";
 
-const { hero, heroStack, ui } = await getProfile();
+const { name, role, hero, heroStack, ui } = await getProfile();
 ---
 
-<section class="hero container" aria-labelledby="hero-title">
+<section class="hero container" aria-labelledby="hero-title" data-hero>
+  <div class="hero__identity">
+    <p class="hero__name">{name}</p>
+    <p class="hero__role">{role}</p>
+  </div>
   <div class="hero__copy">
     <h1 id="hero-title">{hero.headline}</h1>
     <p class="hero__subline">{hero.subline}</p>
@@ -25,6 +29,17 @@ const { hero, heroStack, ui } = await getProfile();
   </div>
   <div class="hero__stage">
     <LedSlot />
+    <button
+      class="hero__tilt"
+      type="button"
+      aria-pressed="false"
+      data-tilt-toggle
+      data-on={ui.tilt.on}
+      data-off={ui.tilt.off}
+      hidden
+    >
+      {ui.tilt.label}: <span data-tilt-state>{ui.tilt.off}</span>
+    </button>
   </div>
 </section>
 
@@ -33,6 +48,10 @@ const { hero, heroStack, ui } = await getProfile();
     display: grid;
     gap: var(--space-7);
     padding-block: var(--space-7) var(--section-gap);
+  }
+
+  .hero__identity {
+    display: none;
   }
 
   h1 {
@@ -58,19 +77,79 @@ const { hero, heroStack, ui } = await getProfile();
   }
 
   .hero__stage {
+    position: relative;
     width: min(100%, 26rem);
     margin-inline: auto;
   }
 
+  .hero__tilt {
+    position: absolute;
+    right: var(--space-2);
+    bottom: var(--space-2);
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    transition: transform var(--duration-instant) var(--ease-out);
+  }
+
+  .hero__tilt:active {
+    transform: scale(0.97);
+  }
+
+  /* Desktop: the face is the centerpiece, with text on either side. */
   @media (min-width: 64rem) {
     .hero {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      grid-template-areas: "identity stage copy";
+      grid-template-columns:
+        minmax(0, 1fr) minmax(0, min(38vw, calc((100svh - 9rem) * 0.8)))
+        minmax(0, 1.2fr);
       align-items: center;
-      gap: var(--space-8);
-      padding-block-start: var(--space-8);
+      gap: var(--space-6);
+      min-height: calc(100svh - 4.5rem);
+      padding-block: var(--space-5);
+    }
+
+    .hero__identity {
+      display: block;
+      grid-area: identity;
+    }
+
+    .hero__name {
+      font-size: var(--text-heading);
+      font-weight: var(--weight-semibold);
+      line-height: var(--leading-heading);
+      letter-spacing: var(--tracking-heading);
+      text-wrap: balance;
+    }
+
+    .hero__role {
+      margin-top: var(--space-2);
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+    }
+
+    .hero__copy {
+      grid-area: copy;
+    }
+
+    h1 {
+      font-size: clamp(2.25rem, 3.5vw, 3.75rem);
+      line-height: var(--leading-title);
+      letter-spacing: var(--tracking-title);
+    }
+
+    .hero__subline {
+      font-size: var(--text-body);
     }
 
     .hero__stage {
+      grid-area: stage;
       width: 100%;
     }
   }

@@ -80,4 +80,5 @@
       education: Education
       certifications: Certifications
     motion: { label: Motion, on: On, off: Off }
+    tilt: { label: Tilt, on: On, off: Off }
     newTab: (opens in new tab)

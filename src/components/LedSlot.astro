@@ -10,6 +10,7 @@ const style = `--poster: url("${posterUrl}")`;
 ---
 
 <div class="led-slot" data-led-slot aria-hidden="true" {style}>
+  <div class="led-slot__panel"></div>
   <div class="led-slot__glow">
     <div class="led-slot__poster"></div>
   </div>
@@ -26,18 +27,10 @@ const style = `--poster: url("${posterUrl}")`;
     aspect-ratio: 4 / 5;
     width: 100%;
     overflow: hidden;
-    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    background-color: var(--color-surface-subtle);
-    /* Unlit LEDs, aligned to the face's 90×112 grid. */
-    background-image: radial-gradient(
-      circle,
-      var(--color-border) 0 20%,
-      transparent 27%
-    );
-    background-size: calc(100% / 90) calc(100% / 112);
   }
 
+  .led-slot__panel,
   .led-slot__glow,
   .led-slot__poster,
   .led-slot__live,
@@ -46,6 +39,20 @@ const style = `--poster: url("${posterUrl}")`;
     inset: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .led-slot__panel {
+    border: 1px solid var(--color-border);
+    border-radius: inherit;
+    background-color: var(--color-surface-subtle);
+    /* Unlit LEDs, aligned to the face's 90×112 grid. */
+    background-image: radial-gradient(
+      circle,
+      var(--color-border) 0 20%,
+      transparent 27%
+    );
+    background-size: calc(100% / 90) calc(100% / 112);
+    transition: opacity var(--duration-slow) var(--ease-out);
   }
 
   .led-slot__glow {
@@ -69,6 +76,13 @@ const style = `--poster: url("${posterUrl}")`;
 
   .led-slot[data-face="live"] .led-slot__glow {
     opacity: 0;
+  }
+
+  /* The WebGL face takes over: the panel and poster fade as its frame fades in. */
+  .led-slot[data-world="live"] .led-slot__panel,
+  .led-slot[data-world="live"] .led-slot__glow {
+    opacity: 0;
+    transition-duration: var(--duration-slow);
   }
 
   /* All motion is CSS on baked canvases, so it stays off the main thread. */

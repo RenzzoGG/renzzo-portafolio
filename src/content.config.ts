@@ -173,6 +173,7 @@ const profile = defineCollection({
         certifications: text,
       }),
       motion: z.strictObject({ label: text, on: text, off: text }),
+      tilt: z.strictObject({ label: text, on: text, off: text }),
       newTab: text,
     }),
   }),
