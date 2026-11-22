@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
+// These tests cover the page itself, so they skip the WebGL world.
+test.use({ launchOptions: { args: ["--disable-webgl", "--disable-webgl2"] } });
+
 const PROJECT_LINKS = [
   "https://clearline.renzzogg.com",
   "https://github.com/RenzzoGG/clearline-dental",

@@ -1,4 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
+import { devices, expect, test, type Page } from "@playwright/test";
+
+// The 2D face is the phone path. Desktop runs the WebGL world (world.spec.ts).
+test.use({ ...devices["Pixel 7"] });
 
 const LIVE = '[data-led-slot][data-face="live"]';
 

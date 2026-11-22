@@ -2,7 +2,8 @@
  * Runs Lighthouse on the production build, mobile and desktop, and reports the
  * median of 5 runs. Each run uses a fresh browser. Run `npm run build` first.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { gzipSync } from "node:zlib";
 import { chromium } from "@playwright/test";
 import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
@@ -11,7 +12,7 @@ import { startServer } from "./serve-dist.ts";
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT = "docs/reports/phase-3/lighthouse.json";
+const REPORT = "docs/reports/phase-4/lighthouse.json";
 const CATEGORIES = [
   "performance",
   "accessibility",
@@ -62,6 +63,11 @@ async function runOnce(url: string, formFactor: "mobile" | "desktop") {
       cls: lhr.audits["cumulative-layout-shift"]?.numericValue ?? 0,
       tbt: lhr.audits["total-blocking-time"]?.numericValue ?? 0,
       lcpElement: findSnippet(lhr.audits["lcp-breakdown-insight"]?.details),
+      webglRequested: Object.values(
+        lhr.audits["network-requests"]?.details ?? {},
+      )
+        .flat()
+        .some((item) => JSON.stringify(item).includes("world.worker")),
       longTasks: (
         (
           lhr.audits["long-tasks"]?.details as
@@ -98,9 +104,38 @@ function criticalJsBytes() {
     }, 0);
 }
 
+/** Gzip sizes of what a desktop visit downloads, with WebGL reported on its own. */
+function desktopJs() {
+  const files = readdirSync("dist/_astro").filter((name) =>
+    name.endsWith(".js"),
+  );
+  const gz = (prefix: string) => {
+    const name = files.find((file) => file.startsWith(prefix));
+    return name
+      ? gzipSync(readFileSync(`dist/_astro/${name}`), { level: 9 }).length
+      : 0;
+  };
+  const html = readFileSync("dist/index.html", "utf8");
+  const inline = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)]
+    .filter(
+      ([, attrs]) => !attrs?.includes("ld+json") && !attrs?.includes("src="),
+    )
+    .map(([, , body]) => body ?? "")
+    .join("");
+  const webgl = gz("world.worker");
+  const other =
+    gz("LedSlot") + gz("host.") + gzipSync(inline, { level: 9 }).length;
+  return {
+    webglGzipBytes: webgl,
+    otherGzipBytes: other,
+    totalGzipBytes: webgl + other,
+  };
+}
+
 const server = await startServer(PORT);
 const summary: Record<string, unknown> = {
   criticalJsBytes: criticalJsBytes(),
+  desktopJs: desktopJs(),
 };
 try {
   for (const formFactor of ["mobile", "desktop"] as const) {
@@ -122,12 +157,13 @@ try {
       lcpElement: runs[0]?.lcpElement,
       failedAudits: [...new Set(runs.flatMap((run) => run.failed))],
       longTasksLastRun: runs.at(-1)?.longTasks,
+      webglRequested: runs.some((run) => run.webglRequested),
     };
   }
 } finally {
   server.close();
 }
 
-mkdirSync("docs/reports/phase-3", { recursive: true });
+mkdirSync("docs/reports/phase-4", { recursive: true });
 writeFileSync(REPORT, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 2));
