@@ -13,7 +13,14 @@ const { contact } = await getProfile();
         const body = (
           <>
             <span class="contact__label">{link.label}</span>
-            <span class="contact__value">{link.value}</span>
+            <span class="contact__value">
+              {link.value.split(/(?<=\/)/).map((part) => (
+                <>
+                  {part}
+                  <wbr />
+                </>
+              ))}
+            </span>
           </>
         );
         return (
@@ -87,7 +94,13 @@ const { contact } = await getProfile();
   }
 
   li:first-child .contact__value {
-    font-size: var(--text-subheading);
+    font-weight: var(--weight-semibold);
+  }
+
+  @media (min-width: 48rem) {
+    li:first-child .contact__value {
+      font-size: var(--text-subheading);
+    }
   }
 
   @media (hover: hover) {
