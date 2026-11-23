@@ -6,14 +6,25 @@
   position: relative;
 }
 
-.motion-ghost--caret::after {
+.type-word {
+  position: relative;
+  visibility: hidden;
+}
+
+.type-word--on {
+  visibility: visible;
+}
+
+/* Positioned, so the caret never changes where a line breaks. */
+.type-word--caret::before {
   content: "";
-  display: inline-block;
+  position: absolute;
+  top: 0.12em;
+  left: 0;
   width: 0.55em;
   height: 1em;
-  margin-inline-start: 0.12em;
   background: var(--color-glow);
-  vertical-align: -0.12em;
+  visibility: visible;
 }
 
 /* A CRT raster, shared by the tape preview and the service channels. */

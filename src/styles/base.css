@@ -50,6 +50,28 @@ li {
   text-wrap: pretty;
 }
 
+/* Hyphenated compounds such as "Row-Level" never split at their hyphen. */
+.nb {
+  white-space: nowrap;
+}
+
+/* Justified body text, only where the column is wide enough to avoid rivers. */
+@media (min-width: 64rem) {
+  .justify:not(.justify--wide) {
+    hyphens: auto;
+    hyphenate-limit-chars: 7 3 3;
+    text-align: justify;
+  }
+}
+
+@media (min-width: 80rem) {
+  .justify--wide {
+    hyphens: auto;
+    hyphenate-limit-chars: 7 3 3;
+    text-align: justify;
+  }
+}
+
 img,
 svg,
 canvas,

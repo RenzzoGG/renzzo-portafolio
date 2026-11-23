@@ -1,6 +1,7 @@
 ---
 import { getProfile, getProjects } from "../lib/content.ts";
 import HudMarks from "./HudMarks.astro";
+import NoBreak from "./NoBreak.astro";
 import SegmentDisplay from "./SegmentDisplay.astro";
 
 const { about, location, remote, languages, ui } = await getProfile();
@@ -48,7 +49,9 @@ const readouts = [
             {terminalCommand}
           </p>
           {paragraphs.map((paragraph) => (
-            <p data-type-line>{paragraph}</p>
+            <p class="justify" data-type-line>
+              <NoBreak text={paragraph} />
+            </p>
           ))}
         </div>
       </div>
@@ -224,14 +227,32 @@ const readouts = [
     }
   }
 
+  /*
+   * Heading, readouts and facts share the left column. The terminal keeps a
+   * comfortable measure on the right. The DOM order stays heading, bio, facts.
+   */
   @media (min-width: 64rem) {
     .about__inner {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 10fr);
+      --term-width: calc(68ch + 2 * var(--space-5) + 2px);
+
+      grid-template-columns: minmax(17rem, 1fr) minmax(0, var(--term-width));
+      grid-template-rows: auto 1fr;
+      column-gap: var(--space-7);
+      font-size: var(--text-body);
     }
 
     .about__panel {
-      grid-template-columns: minmax(0, 7fr) minmax(16rem, 3fr);
-      align-items: start;
+      display: contents;
+    }
+
+    .term {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .about__side {
+      grid-column: 1;
+      grid-row: 2;
     }
   }
 </style>

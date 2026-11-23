@@ -1,5 +1,6 @@
 ---
 import { getProfile, getServices } from "../lib/content.ts";
+import NoBreak from "./NoBreak.astro";
 import DotIcon from "./DotIcon.astro";
 import HudMarks from "./HudMarks.astro";
 
@@ -47,7 +48,9 @@ const pad = (value: number) => String(value).padStart(2, "0");
             </div>
           </div>
           <h3>{data.title}</h3>
-          <p>{data.text}</p>
+          <p class="justify justify--wide">
+            <NoBreak text={data.text} />
+          </p>
           <ul class="stack-list" aria-label={`${data.title} stack`}>
             {data.stack.map((item) => (
               <li>{item}</li>

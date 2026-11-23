@@ -6,6 +6,7 @@ import {
   type FeaturedProject,
 } from "../lib/content.ts";
 import ExternalLink from "./ExternalLink.astro";
+import NoBreak from "./NoBreak.astro";
 import SegmentDisplay from "./SegmentDisplay.astro";
 
 interface Props {
@@ -58,7 +59,9 @@ const texture = await getImage({
     </p>
     <h3 data-tune>{shortTitle(data.title)}</h3>
     <p class="case__type">{data.type}</p>
-    <p class="case__line">{data.oneLiner}</p>
+    <p class="case__line">
+      <NoBreak text={data.oneLiner} />
+    </p>
 
     <ul class="case__readouts">
       {data.readouts.map((readout) => (
@@ -72,7 +75,11 @@ const texture = await getImage({
     {data.panelNotes.length > 0 && (
       <ul class="case__stats">
         {data.panelNotes.map((note) => (
-          <li>{note}</li>
+          <li>
+            <span>
+              <NoBreak text={note} />
+            </span>
+          </li>
         ))}
       </ul>
     )}
@@ -93,7 +100,9 @@ const texture = await getImage({
         {data.caseStudy.map((item) => (
           <div>
             <dt>{item.label}</dt>
-            <dd>{item.text}</dd>
+            <dd>
+              <NoBreak text={item.text} />
+            </dd>
           </div>
         ))}
       </dl>
@@ -114,7 +123,11 @@ const texture = await getImage({
       </a>
     </div>
 
-    {data.disclaimer && <p class="case__note">{data.disclaimer}</p>}
+    {data.disclaimer && (
+      <p class="case__note">
+        <NoBreak text={data.disclaimer} />
+      </p>
+    )}
   </div>
 </article>
 

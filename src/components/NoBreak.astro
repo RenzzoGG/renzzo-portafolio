@@ -1,0 +1,13 @@
+---
+import { splitCompounds } from "../lib/text.ts";
+
+interface Props {
+  text: string;
+}
+
+const parts = splitCompounds(Astro.props.text);
+---
+
+{parts.map((part, index) =>
+  index % 2 ? <span class="nb">{part}</span> : part,
+)}

@@ -312,35 +312,39 @@ export function startMotion() {
   const typeIn = (block: HTMLElement) => {
     const lines = [...block.querySelectorAll<HTMLElement>("[data-type-line]")];
     const parts = lines.map((line) => {
-      const words = line.textContent.split(" ");
+      const words = line.textContent.trim().split(/\s+/);
       delete line.dataset.signalArmed;
       const ghost = document.createElement("span");
       ghost.className = "motion-ghost";
       ghost.setAttribute("aria-hidden", "true");
       ghost.style.color = getComputedStyle(line).color;
+      // Every word is laid out from the start, so justified lines never reflow.
+      const spans = words.map((word, index) => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.className = word.includes("-") ? "type-word nb" : "type-word";
+        ghost.append(span, index < words.length - 1 ? " " : "");
+        return span;
+      });
       line.dataset.signalBusy = "";
       line.append(ghost);
-      return { line, ghost, words };
+      return { spans };
     });
-    const total = parts.reduce((sum, part) => sum + part.words.length, 0);
+    const all = parts.flatMap((part) => part.spans);
+    const total = all.length;
     const state = { value: 0 };
     const paint = () => {
-      let left = Math.floor(state.value * total);
-      let caret = false;
-      for (const { ghost, words } of parts) {
-        const shown = Math.min(left, words.length);
-        left -= shown;
-        ghost.textContent = words.slice(0, shown).join(" ");
-        const typing: boolean = !caret && shown < words.length;
-        ghost.classList.toggle("motion-ghost--caret", typing);
-        if (typing) caret = true;
-      }
+      const shown = Math.floor(state.value * total);
+      all.forEach((span, index) => {
+        span.classList.toggle("type-word--on", index < shown);
+        span.classList.toggle("type-word--caret", index === shown);
+      });
     };
     const finish = () => {
       removeEventListener("pointerdown", skip);
       removeEventListener("keydown", skip);
-      for (const { line, ghost } of parts) {
-        ghost.remove();
+      for (const line of lines) {
+        line.querySelector(":scope > .motion-ghost")?.remove();
         delete line.dataset.signalBusy;
       }
       cleanups.delete(stop);

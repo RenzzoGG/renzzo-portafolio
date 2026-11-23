@@ -6,6 +6,7 @@ import {
   type FeaturedProject,
 } from "../lib/content.ts";
 import "../styles/detail.css";
+import NoBreak from "./NoBreak.astro";
 import ExternalLink from "./ExternalLink.astro";
 
 interface Props {
@@ -34,7 +35,9 @@ const pad = (value: number) => String(value).padStart(2, "0");
   </div>
   <h1 class="detail__title">{name}</h1>
   <p class="detail__type">{data.type}</p>
-  <p class="detail__line">{data.oneLiner}</p>
+  <p class="detail__line justify">
+    <NoBreak text={data.oneLiner} />
+  </p>
   <div class="detail__media">
     <Picture
       src={shot.src}
@@ -51,7 +54,9 @@ const pad = (value: number) => String(value).padStart(2, "0");
     <div>
       <ul class="detail__stats">
         {data.stats.map((stat) => (
-          <li>{stat}</li>
+          <li>
+            <NoBreak text={stat} />
+          </li>
         ))}
       </ul>
       <ul class="stack-list" aria-label={`${name} stack`}>
@@ -74,10 +79,16 @@ const pad = (value: number) => String(value).padStart(2, "0");
       {data.caseStudy.map((item) => (
         <div>
           <dt>{item.label}</dt>
-          <dd>{item.text}</dd>
+          <dd class="justify">
+            <NoBreak text={item.text} />
+          </dd>
         </div>
       ))}
     </dl>
   </div>
-  {data.disclaimer && <p class="detail__note">{data.disclaimer}</p>}
+  {data.disclaimer && (
+    <p class="detail__note justify">
+      <NoBreak text={data.disclaimer} />
+    </p>
+  )}
 </article>

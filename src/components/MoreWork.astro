@@ -2,6 +2,7 @@
 import { Picture } from "astro:assets";
 import { getProfile, getProjects } from "../lib/content.ts";
 import CassetteReel from "./CassetteReel.astro";
+import NoBreak from "./NoBreak.astro";
 import ExternalLink from "./ExternalLink.astro";
 
 const { ui } = await getProfile();
@@ -50,7 +51,9 @@ const { more } = await getProjects();
                   <span class="crt-raster" />
                 </div>
               )}
-              <p class="tape__summary">{data.summary}</p>
+              <p class="tape__summary justify">
+                <NoBreak text={data.summary} />
+              </p>
               <div class="row__links">
                 <ExternalLink href={data.links.live}>
                   {ui.project.live}
