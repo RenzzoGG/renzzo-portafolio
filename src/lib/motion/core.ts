@@ -12,8 +12,10 @@ const GLYPHS = "#%&*+/<=>\\_01";
 const KEEP = new Set([" ", "[", "]", "/"]);
 const DECODE_STEPS = 8;
 const DECODE_S = 0.32;
+const TUNE_S = 0.62;
 const COUNT_S = 0.9;
-const MIN_COUNT = 10;
+const TYPE_S = 2.4;
+const WAVE_MS = 760;
 const SCROLL_CALM_MS = 240;
 const BAND_DELAY_MS = 180;
 const DESKTOP = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
@@ -40,17 +42,34 @@ function decodeFrames(text: string) {
   };
 }
 
-function countFrames(text: string) {
-  const match = /^(\d+(?:\.\d+)?)(.*)$/s.exec(text);
-  const digits = match?.[1];
-  if (!match || !digits || Number(digits) < MIN_COUNT) return null;
-  const target = Number(digits);
-  const decimals = digits.split(".")[1]?.length ?? 0;
-  const rest = match[2] ?? "";
-  const ease = gsap.parseEase("power3.out");
-  return (progress: number) =>
-    (target * ease(progress)).toFixed(decimals).padStart(digits.length, "0") +
-    rest;
+/** Groups LED digits into numbers, so "20/20" counts as two values. */
+function segmentRuns(display: HTMLElement) {
+  const runs: { cells: SVGElement[]; target: number }[] = [];
+  let run: (typeof runs)[number] | null = null;
+  for (const cell of display.querySelectorAll<SVGElement>("svg")) {
+    const digit = cell.dataset.d;
+    if (digit === undefined) {
+      run = null;
+      continue;
+    }
+    if (!run) {
+      run = { cells: [], target: 0 };
+      runs.push(run);
+    }
+    run.cells.push(cell);
+    run.target = run.target * 10 + Number(digit);
+  }
+  return (progress: number) => {
+    for (const { cells, target } of runs) {
+      const text = String(Math.round(target * progress)).padStart(
+        cells.length,
+        "0",
+      );
+      cells.forEach((cell, index) => {
+        cell.dataset.d = text[index] ?? "0";
+      });
+    }
+  };
 }
 
 /** Survives a Motion toggle, so text already seen never replays. */
@@ -193,17 +212,209 @@ export function startMotion() {
     },
     armText,
   );
+
+  /** In the drum a panel stays hidden until its project is active or focused. */
+  const whenShown = (element: HTMLElement, play: () => void) => {
+    const host = element.closest<HTMLElement>(".case");
+    if (
+      !host ||
+      document.documentElement.dataset.worldLive === undefined ||
+      host.hasAttribute("data-active") ||
+      host.contains(document.activeElement)
+    ) {
+      play();
+      return;
+    }
+    const release = () => {
+      watcher.disconnect();
+      host.removeEventListener("focusin", go);
+      cleanups.delete(release);
+    };
+    const go = () => {
+      release();
+      play();
+    };
+    const watcher = new MutationObserver(() => {
+      if (host.hasAttribute("data-active")) go();
+    });
+    watcher.observe(host, {
+      attributes: true,
+      attributeFilter: ["data-active"],
+    });
+    host.addEventListener("focusin", go);
+    cleanups.add(release);
+  };
+
   onEnter(
-    "[data-count]",
+    "[data-tune]",
+    6,
+    (element) => {
+      whenShown(element, () => {
+        overlay(element, TUNE_S, decodeFrames(element.textContent));
+      });
+    },
+    armText,
+  );
+
+  const countUp = (display: HTMLElement) => {
+    delete display.dataset.signalArmed;
+    const paint = segmentRuns(display);
+    const state = { value: 0 };
+    paint(0);
+    const finish = () => {
+      paint(1);
+      cleanups.delete(stop);
+    };
+    const tween = gsap.to(state, {
+      value: 1,
+      duration: COUNT_S,
+      ease: "power3.out",
+      onUpdate: () => {
+        paint(state.value);
+      },
+      onComplete: finish,
+    });
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    cleanups.add(stop);
+  };
+  onEnter(
+    "[data-seg]",
     8,
     (element) => {
-      const frames = countFrames(element.textContent);
-      if (frames) overlay(element, COUNT_S, frames);
+      whenShown(element, () => {
+        countUp(element);
+      });
     },
-    (element) => {
-      if (countFrames(element.textContent)) armText(element);
+    armText,
+  );
+
+  onEnter("[data-wave]", 8, (element) => {
+    whenShown(element, () => {
+      element.dataset.waving = "";
+      const finish = () => {
+        clearTimeout(timer);
+        delete element.dataset.waving;
+        cleanups.delete(finish);
+      };
+      const timer = window.setTimeout(finish, WAVE_MS);
+      cleanups.add(finish);
+    });
+  });
+
+  /** Types whole words, so the bio is readable in about two seconds. */
+  const typeIn = (block: HTMLElement) => {
+    const lines = [...block.querySelectorAll<HTMLElement>("[data-type-line]")];
+    const parts = lines.map((line) => {
+      const words = line.textContent.split(" ");
+      delete line.dataset.signalArmed;
+      const ghost = document.createElement("span");
+      ghost.className = "motion-ghost";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.style.color = getComputedStyle(line).color;
+      line.dataset.signalBusy = "";
+      line.append(ghost);
+      return { line, ghost, words };
+    });
+    const total = parts.reduce((sum, part) => sum + part.words.length, 0);
+    const state = { value: 0 };
+    const paint = () => {
+      let left = Math.floor(state.value * total);
+      let caret = false;
+      for (const { ghost, words } of parts) {
+        const shown = Math.min(left, words.length);
+        left -= shown;
+        ghost.textContent = words.slice(0, shown).join(" ");
+        const typing: boolean = !caret && shown < words.length;
+        ghost.classList.toggle("motion-ghost--caret", typing);
+        if (typing) caret = true;
+      }
+    };
+    const finish = () => {
+      removeEventListener("pointerdown", skip);
+      removeEventListener("keydown", skip);
+      for (const { line, ghost } of parts) {
+        ghost.remove();
+        delete line.dataset.signalBusy;
+      }
+      cleanups.delete(stop);
+    };
+    const tween = gsap.to(state, {
+      value: 1,
+      duration: TYPE_S,
+      ease: "none",
+      onUpdate: paint,
+      onComplete: finish,
+    });
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    const skip = stop;
+    addEventListener("pointerdown", skip);
+    addEventListener("keydown", skip);
+    paint();
+    cleanups.add(stop);
+  };
+  onEnter("[data-type]", 12, typeIn, (block) => {
+    for (const line of block.querySelectorAll<HTMLElement>(
+      "[data-type-line]",
+    )) {
+      armText(line);
+    }
+  });
+
+  /** One quick pass down the log. Delays shrink, so it reads as a wave. */
+  const logLines = (block: HTMLElement) => [
+    ...block.querySelectorAll<HTMLElement>("[data-log-line]"),
+  ];
+  onEnter(
+    "[data-log]",
+    8,
+    (block) => {
+      const lines = logLines(block);
+      const finish = () => {
+        gsap.set(lines, { clearProps: "opacity,transform" });
+        cleanups.delete(stop);
+      };
+      const tween = gsap.fromTo(
+        lines,
+        { opacity: 0, x: -6 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.24,
+          ease: "power2.out",
+          stagger: { amount: 0.44, ease: "power2.out" },
+          onComplete: finish,
+        },
+      );
+      const stop = () => {
+        tween.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (block) => {
+      const lines = logLines(block);
+      for (const line of lines) line.style.opacity = "0";
+      cleanups.add(() => {
+        for (const line of lines) line.style.removeProperty("opacity");
+      });
     },
   );
+
+  // Touch has no hover, so each channel powers on once as it enters view.
+  if (matchMedia("(hover: none)").matches) {
+    onEnter("[data-channel]", 14, (element) => {
+      element.dataset.on = "";
+      cleanups.add(() => {
+        delete element.dataset.on;
+      });
+    });
+  }
 
   if (matchMedia(DESKTOP).matches) {
     // ScrollTrigger's setup can interrupt a native smooth scroll, so wait for calm.

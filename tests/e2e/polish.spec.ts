@@ -206,7 +206,7 @@ test("text in the bottom of the viewport never rests invisible", async ({
   await expect
     .poll(() => page.locator("[data-signal-armed]").count())
     .toBeGreaterThan(0);
-  const stat = page.locator("#pulse-theory [data-count]").last();
+  const stat = page.locator("#pulse-theory [data-seg]").last();
   await stat.evaluate((element) => {
     const top = element.getBoundingClientRect().top + scrollY;
     window.scrollTo({ top: top - innerHeight + 24, behavior: "instant" });

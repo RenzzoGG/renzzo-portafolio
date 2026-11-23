@@ -1,0 +1,131 @@
+/*
+ * Shared pieces of the Signal set pieces. The final state is the default, so
+ * every rule here only adds motion where motion is allowed.
+ */
+[data-tune] {
+  position: relative;
+}
+
+.motion-ghost--caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-inline-start: 0.12em;
+  background: var(--color-glow);
+  vertical-align: -0.12em;
+}
+
+/* A CRT raster, shared by the tape preview and the service channels. */
+.crt-raster {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgb(11 10 12 / 0.28) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(ellipse at center, transparent 55%, rgb(11 10 12 / 0.6));
+  pointer-events: none;
+}
+
+@keyframes tag-light {
+  0%,
+  100% {
+    color: inherit;
+  }
+
+  35% {
+    color: var(--wave-color, var(--color-glow));
+  }
+}
+
+@keyframes crt-track {
+  from {
+    transform: translateY(-120%);
+  }
+
+  to {
+    transform: translateY(620%);
+  }
+}
+
+@keyframes crt-jitter {
+  0%,
+  91%,
+  100% {
+    transform: none;
+  }
+
+  93% {
+    transform: translateX(-3px);
+  }
+
+  96% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes crt-on {
+  0% {
+    opacity: 0.9;
+    transform: scale(1, 0.006);
+    filter: brightness(4);
+  }
+
+  38% {
+    opacity: 1;
+    transform: scale(1, 0.012);
+    filter: brightness(4);
+  }
+
+  72% {
+    transform: scale(1, 1.03);
+    filter: brightness(1.6);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes btn-glitch {
+  0% {
+    text-shadow:
+      -2px 0 var(--color-glow),
+      2px 0 var(--color-signal);
+  }
+
+  40% {
+    text-shadow:
+      2px 0 var(--color-glow),
+      -1px 0 var(--color-signal);
+  }
+
+  75% {
+    text-shadow:
+      -1px 0 var(--color-glow),
+      1px 0 var(--color-signal);
+  }
+
+  100% {
+    text-shadow: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .btn:hover {
+    animation: btn-glitch 220ms steps(1, end);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) [data-waving] > li {
+    animation: tag-light 420ms var(--ease-out) both;
+    animation-delay: min(calc(var(--i, 0) * 26ms), 280ms);
+  }
+}

@@ -94,6 +94,9 @@ export const CONTRAST_PAIRS: ContrastPair[] = [
   ...across("--color-signal", ["--color-bone"], "body"),
   ...across("--color-border-strong", ["--color-bone"], "ui"),
   ...across("--color-bone", ["--color-ink"], "body"),
+  ...across("--color-glow", ["--color-ink"], "body"),
+  ...across("--color-muted", ["--color-ink"], "body"),
+  ...across("--color-ink", ["--color-text"], "body"),
   ...ACCENTS.flatMap((accent) => [
     ...across(`--accent-${accent}-text`, SURFACES, "body"),
     ...across(`--accent-${accent}-on`, [`--accent-${accent}`], "body"),

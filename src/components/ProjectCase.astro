@@ -6,6 +6,7 @@ import {
   type FeaturedProject,
 } from "../lib/content.ts";
 import ExternalLink from "./ExternalLink.astro";
+import SegmentDisplay from "./SegmentDisplay.astro";
 
 interface Props {
   project: FeaturedProject;
@@ -55,21 +56,34 @@ const texture = await getImage({
     <p class="case__counter" aria-hidden="true">
       {pad(number)} / {pad(total)}
     </p>
-    <h3>{shortTitle(data.title)}</h3>
+    <h3 data-tune>{shortTitle(data.title)}</h3>
     <p class="case__type">{data.type}</p>
     <p class="case__line">{data.oneLiner}</p>
 
-    <ul class="case__stats">
-      {data.stats.map((stat) => (
+    <ul class="case__readouts">
+      {data.readouts.map((readout) => (
         <li>
-          <span data-count={/^\d/.test(stat) ? "" : undefined}>{stat}</span>
+          <SegmentDisplay value={readout.value} unit={readout.unit} />{" "}
+          <span class="case__readout-label">{readout.label}</span>
         </li>
       ))}
     </ul>
 
-    <ul class="stack-list" aria-label={`${shortTitle(data.title)} stack`}>
-      {data.stack.map((item) => (
-        <li>{item}</li>
+    {data.panelNotes.length > 0 && (
+      <ul class="case__stats">
+        {data.panelNotes.map((note) => (
+          <li>{note}</li>
+        ))}
+      </ul>
+    )}
+
+    <ul
+      class="stack-list case__stack"
+      aria-label={`${shortTitle(data.title)} stack`}
+      data-wave
+    >
+      {data.stack.map((item, index) => (
+        <li style={`--i:${index}`}>{item}</li>
       ))}
     </ul>
 
@@ -130,7 +144,36 @@ const texture = await getImage({
 
   h3 {
     color: var(--accent-text);
-    font-size: var(--text-heading);
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+    text-wrap: balance;
+  }
+
+  .case__readouts {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .case__readouts li {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .case__readout-label {
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .case__stack {
+    --wave-color: var(--color-signal);
+
+    margin-top: var(--space-4);
   }
 
   .case__type {

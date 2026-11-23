@@ -28,6 +28,7 @@
   --color-on-signal: var(--color-text);
   --color-focus-ring: var(--color-glow);
   --color-selection: #5c1524;
+  --color-led-off: #2b1218; /* Unlit LED segments. Decorative, carries no text. */
 
   /*
    * Project accents.

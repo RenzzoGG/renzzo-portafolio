@@ -1,10 +1,6 @@
 /* Text and UI motion. Every rule leaves the page final when motion is off. */
-:where([data-decode], [data-count]) {
+:where([data-decode]) {
   position: relative;
-}
-
-[data-count] {
-  font-variant-numeric: tabular-nums;
 }
 
 [data-signal-busy],

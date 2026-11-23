@@ -1,0 +1,118 @@
+---
+interface Props {
+  value: string;
+  unit?: string | undefined;
+}
+
+const { value, unit } = Astro.props;
+const SEGMENTS = {
+  a: "2.2,0.8 9.8,0.8 8.4,2.4 3.6,2.4",
+  b: "10.6,1.4 10.6,9.4 9.2,8.6 9.2,2.8",
+  c: "10.6,10.6 10.6,18.6 9.2,17.2 9.2,11.4",
+  d: "2.2,19.2 9.8,19.2 8.4,17.6 3.6,17.6",
+  e: "1.4,10.6 2.8,11.4 2.8,17.2 1.4,18.6",
+  f: "1.4,1.4 2.8,2.8 2.8,8.6 1.4,9.4",
+  g: "2.4,10 3.6,9.2 8.4,9.2 9.6,10 8.4,10.8 3.6,10.8",
+};
+const spoken = unit
+  ? `${value}${/^[a-z]/i.test(unit) ? " " : ""}${unit}`
+  : value;
+---
+
+<span class="readout">
+  <span class="visually-hidden">{spoken}</span>
+  <span class="seg" data-seg aria-hidden="true">
+    {[...value].map((char) => {
+      if (char === ".") {
+        return (
+          <svg class="seg__mark seg__mark--dot" viewBox="0 0 4 20">
+            <circle cx="2" cy="18" r="1.5" />
+          </svg>
+        );
+      }
+      if (char === "/") {
+        return (
+          <svg class="seg__mark seg__mark--slash" viewBox="0 0 8 20">
+            <polygon points="6,1 7.6,1 2,19 0.4,19" />
+          </svg>
+        );
+      }
+      return (
+        <svg class="seg__digit" viewBox="0 0 12 20" data-d={char}>
+          {Object.entries(SEGMENTS).map(([name, points]) => (
+            <polygon class={`s-${name}`} points={points} />
+          ))}
+        </svg>
+      );
+    })}
+    {unit && <span class="seg__unit">{unit}</span>}
+  </span>
+</span>
+
+<style>
+  .readout {
+    display: inline-flex;
+    flex: none;
+  }
+
+  .seg {
+    --seg-height: 2rem;
+
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 0.125rem;
+    min-height: calc(var(--seg-height) + var(--space-3));
+    padding: calc(var(--space-3) / 2) var(--space-2);
+    border-radius: var(--radius-xs);
+    background: var(--color-ink);
+    color: var(--color-glow);
+    box-shadow: inset 0 1px 6px rgb(0 0 0 / 0.8);
+  }
+
+  svg {
+    display: block;
+    flex: none;
+    height: var(--seg-height);
+    fill: var(--color-glow);
+    transform: skewX(-5deg);
+  }
+
+  .seg__digit {
+    width: calc(var(--seg-height) * 0.6);
+  }
+
+  .seg__mark--dot {
+    width: calc(var(--seg-height) * 0.2);
+  }
+
+  .seg__mark--slash {
+    width: calc(var(--seg-height) * 0.4);
+  }
+
+  .seg__digit polygon {
+    transition: fill var(--duration-instant) linear;
+  }
+
+  /* Each rule lists the segments that are dark for that digit. */
+  [data-d="0"] .s-g,
+  [data-d="1"] :is(.s-a, .s-d, .s-e, .s-f, .s-g),
+  [data-d="2"] :is(.s-c, .s-f),
+  [data-d="3"] :is(.s-e, .s-f),
+  [data-d="4"] :is(.s-a, .s-d, .s-e),
+  [data-d="5"] :is(.s-b, .s-e),
+  [data-d="6"] .s-b,
+  [data-d="7"] :is(.s-d, .s-e, .s-f, .s-g),
+  [data-d="9"] .s-e,
+  .seg[data-signal-armed] :is(polygon, circle) {
+    fill: var(--color-led-off);
+  }
+
+  .seg__unit {
+    margin-inline-start: var(--space-1);
+    color: var(--color-glow);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-medium);
+    line-height: 1.2;
+  }
+</style>
