@@ -2,6 +2,7 @@
  * Serves dist/ with gzip and long-lived caching for hashed assets, close to
  * what production does. Used by the CV PDF, E2E tests and Lighthouse.
  * Run directly: node scripts/serve-dist.ts [port]
+ * A hosted preview sets PORT and HOST=0.0.0.0. Locally it stays on loopback.
  */
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { createServer, type Server } from "node:http";
@@ -47,7 +48,7 @@ function resolveFile(pathname: string) {
   return target;
 }
 
-export function startServer(port: number): Promise<Server> {
+export function startServer(port: number, host = "127.0.0.1"): Promise<Server> {
   const server = createServer((request, response) => {
     const { pathname } = new URL(request.url ?? "/", "http://localhost");
     let file: string | null;
@@ -93,12 +94,13 @@ export function startServer(port: number): Promise<Server> {
 
   return new Promise((done, fail) => {
     server.once("error", fail);
-    server.listen(port, "127.0.0.1", () => done(server));
+    server.listen(port, host, () => done(server));
   });
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
-  const port = Number(process.argv[2] ?? 4330);
-  await startServer(port);
-  console.log(`Serving dist/ at http://127.0.0.1:${port}`);
+  const port = Number(process.argv[2] ?? process.env.PORT ?? 4330);
+  const host = process.env.HOST ?? "127.0.0.1";
+  await startServer(port, host);
+  console.log(`Serving dist/ at http://${host}:${port}`);
 }
