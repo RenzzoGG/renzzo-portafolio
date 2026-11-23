@@ -19,6 +19,10 @@ const WAVE_MS = 760;
 const SCROLL_CALM_MS = 240;
 const BAND_DELAY_MS = 180;
 const DESKTOP = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+const ACT_RISE = 14;
+const ACT_S = 0.46;
+const ACT_DELAY = { body: 0.12, detail: 0.24 };
+const ACT_STAGGER = 0.07;
 
 const glyph = () =>
   GLYPHS[Math.floor(Math.random() * GLYPHS.length)] ?? GLYPHS.charAt(0);
@@ -406,6 +410,93 @@ export function startMotion() {
     },
   );
 
+  // Section entrances: the HUD draws in, then the heading, body and details.
+  const desktop = matchMedia(DESKTOP).matches;
+  const hudParts = (hud: HTMLElement) => ({
+    marks: [
+      ...hud.querySelectorAll<HTMLElement>(
+        ":scope > span:not(.hud__label, .hud__line)",
+      ),
+    ],
+    // On desktop, ScrollTrigger already draws this line with the scroll.
+    line: desktop ? null : hud.querySelector<HTMLElement>(".hud__line"),
+  });
+  onEnter(
+    ".hud",
+    6,
+    (hud) => {
+      const { marks, line } = hudParts(hud);
+      const finish = () => {
+        gsap.set([...marks, line].filter(Boolean), { clearProps: "transform" });
+        cleanups.delete(stop);
+      };
+      const timeline = gsap.timeline({ onComplete: finish });
+      timeline.to(marks, {
+        scale: 1,
+        rotate: 0,
+        duration: 0.36,
+        ease: "power3.out",
+        stagger: 0.08,
+      });
+      if (line) {
+        timeline.to(line, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0);
+      }
+      const stop = () => {
+        timeline.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (hud) => {
+      const { marks, line } = hudParts(hud);
+      gsap.set(marks, { scale: 0, rotate: -90 });
+      if (line) gsap.set(line, { scaleX: 0 });
+      cleanups.add(() => {
+        gsap.set([...marks, line].filter(Boolean), { clearProps: "transform" });
+      });
+    },
+  );
+  onEnter(
+    "[data-act-item]",
+    8,
+    (item) => {
+      const siblings = [...(item.parentElement?.children ?? [])];
+      const order = siblings.indexOf(item) % 3;
+      const base =
+        item.dataset.actItem === "detail" ? ACT_DELAY.detail : ACT_DELAY.body;
+      const finish = () => {
+        gsap.set(item, { clearProps: "opacity,transform" });
+        cleanups.delete(stop);
+      };
+      const tween = gsap.to(item, {
+        opacity: 1,
+        y: 0,
+        duration: ACT_S,
+        delay: base + order * ACT_STAGGER,
+        ease: "power3.out",
+        onComplete: finish,
+      });
+      const stop = () => {
+        tween.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (item) => {
+      gsap.set(item, { opacity: 0, y: ACT_RISE });
+      cleanups.add(() => {
+        gsap.set(item, { clearProps: "opacity,transform" });
+      });
+    },
+  );
+  // Without the world, each seam plays one short burst of static.
+  onEnter("[data-seam]", 12, (seam) => {
+    seam.dataset.on = "";
+    cleanups.add(() => {
+      delete seam.dataset.on;
+    });
+  });
+
   // Touch has no hover, so each channel powers on once as it enters view.
   if (matchMedia("(hover: none)").matches) {
     onEnter("[data-channel]", 14, (element) => {
@@ -416,7 +507,7 @@ export function startMotion() {
     });
   }
 
-  if (matchMedia(DESKTOP).matches) {
+  if (desktop) {
     // ScrollTrigger's setup can interrupt a native smooth scroll, so wait for calm.
     let timer = 0;
     const load = () => {
