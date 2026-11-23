@@ -8,6 +8,7 @@ import {
   shortTitle,
   toCvProjects,
 } from "../lib/content.ts";
+import NoBreak from "./NoBreak.astro";
 
 const profile = await getProfile();
 const { ui } = profile;
@@ -43,7 +44,9 @@ const profileLinks = contacts.filter((link) => link !== email);
 
   <section aria-labelledby="cv-summary">
     <h2 id="cv-summary">{ui.cvHeadings.summary}</h2>
-    <p>{profile.cvSummary}</p>
+    <p>
+      <NoBreak text={profile.cvSummary} />
+    </p>
   </section>
 
   <section aria-labelledby="cv-skills">
@@ -51,7 +54,8 @@ const profileLinks = contacts.filter((link) => link !== email);
     <ul class="cv__skills">
       {skills.map(({ data }) => (
         <li>
-          <strong>{data.group}:</strong> {data.items.join(", ")}
+          <strong>{data.group}:</strong>{" "}
+          <NoBreak text={data.items.join(", ")} />
         </li>
       ))}
     </ul>
@@ -64,16 +68,21 @@ const profileLinks = contacts.filter((link) => link !== email);
         <h3>
           {shortTitle(project.title)} <span>— {project.type}</span>
         </h3>
-        <p>{project.text}</p>
+        <p>
+          <NoBreak text={project.text} />
+        </p>
         <p class="cv__item-meta">
-          {project.stack.join(", ")}
-          {project.links.map((link) => (
-            <>
-              {" · "}
-              {link.display ? `${link.label}: ` : ""}
-              <a href={link.href}>{link.display ?? link.label}</a>
-            </>
-          ))}
+          <NoBreak text={project.stack.join(", ")} />
+          {"\u00A0· "}
+          <span class="cv__links">
+            {project.links.map((link, index) => (
+              <>
+                {index > 0 && " · "}
+                {link.display ? `${link.label}: ` : ""}
+                <a href={link.href}>{link.display ?? link.label}</a>
+              </>
+            ))}
+          </span>
         </p>
       </div>
     ))}
@@ -105,7 +114,7 @@ const profileLinks = contacts.filter((link) => link !== email);
       <strong>{certifications[0]?.data.issuer}:</strong>{" "}
       {certifications.map(({ data }, index) => (
         <>
-          {index > 0 && " · "}
+          {index > 0 && "\u00A0· "}
           <a href={data.url}>{data.title}</a>
         </>
       ))}
@@ -200,6 +209,13 @@ const profileLinks = contacts.filter((link) => link !== email);
     font-size: var(--text-caption);
   }
 
+  /* A project's links wrap as one group, so "Source" is never left alone. */
+  @media (min-width: 30rem) {
+    .cv__links {
+      white-space: nowrap;
+    }
+  }
+
   @media (max-width: 30rem) {
     .cv__contact a {
       overflow-wrap: anywhere;
@@ -237,8 +253,13 @@ const profileLinks = contacts.filter((link) => link !== email);
     }
 
     .cv__contact {
-      gap: 0 6pt;
-      font-size: 7.5pt;
+      gap: 0 7pt;
+      font-size: 7.1pt;
+      letter-spacing: -0.015em;
+    }
+
+    .cv__links {
+      white-space: nowrap;
     }
 
     section {

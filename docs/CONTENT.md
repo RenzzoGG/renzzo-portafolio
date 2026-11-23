@@ -102,7 +102,7 @@ Section link: "Let's talk →" (to #contact).
 | Email                 | renzzo.gomez07@gmail.com       | `mailto:renzzo.gomez07@gmail.com`             |
 | GitHub                | github.com/RenzzoGG            | https://github.com/RenzzoGG                   |
 | Platzi                | platzi.com/p/renzzo.gomez07    | https://platzi.com/p/renzzo.gomez07/          |
-| Resume (PDF)          | renzzo-gracia-gomez-cv.pdf     | `/renzzo-gracia-gomez-cv.pdf?v=13` (download) |
+| Resume (PDF)          | renzzo-gracia-gomez-cv.pdf     | `/renzzo-gracia-gomez-cv.pdf?v=14` (download) |
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
