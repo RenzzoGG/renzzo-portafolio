@@ -96,3 +96,13 @@ Working rules for this repository.
 3. Commits made (hash and message).
 4. Problems or open questions.
 5. Suggested next steps.
+
+## Session handoff
+
+Keep `docs/HANDOFF.md` current. **Rewrite it at the end of every phase or work session, and whenever Renzzo says "handoff"**, then commit it locally (never push). It must contain:
+
+- The current phase and its status (done / in progress / blocked).
+- What was just finished, with commit hashes.
+- The exact next step: what to do or what prompt is pending.
+- Open questions or decisions waiting for Renzzo.
+- Anything that is **not in git** and must be copied by hand to another machine (e.g. `assets-src/face.webp`).
