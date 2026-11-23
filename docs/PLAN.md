@@ -259,6 +259,40 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Lighthouse median of 5 on mobile and desktop. Mobile stays at 100, and all budgets are reported.
 - Before/after screenshots of every section on desktop and mobile, plus a full-scroll video, in `docs/reports/phase-6-5/`.
 
+## Phase 6.6: One continuous journey
+
+**Goals:** LED readouts that sit lightly on bone, no blank screen at any scroll position, and one continuous trip from the hero to the Contact curtain.
+
+**Deliverables**
+
+- **Readouts on bone:** no black box. Lit segments in signal, unlit segments as a faint ink ghost, a hairline border, and 2–3 displays in a wrapping row. The black style stays on dark backgrounds.
+- **Dead zones:** the drum's exit space shrinks from 160vh to about 40vh and the canvas no longer fades out or rests between sections.
+- **Continuous world (desktop):** the scene runs behind every section, with moods of bone (Work), dark signal (More work to CV) and crimson (Contact).
+- **Boundary transitions:**
+
+| Journey | Boundary          | Transition                                  | Camera     |
+| ------- | ----------------- | ------------------------------------------- | ---------- |
+| 5–6     | Work → More work  | Bone dissolves into LED static that darkens | Pull back  |
+| 6–7     | More work → About | Dive through the wall into the streams      | Dive       |
+| 7–8     | About → Services  | Channel change: static and slices           | Side pan   |
+| 8–9     | Services → Skills | Signal cut and re-tune: vertical roll       | Tilt       |
+| 9–10    | Skills → CV       | CRT power-off to a glowing line, and back   | Pull back  |
+| 10–11   | CV → Contact      | Climax: collapse, pulse, curtain rises      | Long dive  |
+
+- **Choreography:** HUD, then heading, body and details, staggered.
+- **Seams:** static gradients between section colors for mobile, no JS, reduced motion, Motion off and WebGL failure. Mobile adds a short CSS static burst.
+
+**Decisions**
+
+- **Text contrast never depends on the canvas.** Over the live scene, text blocks sit on ink panels, with AA checked against the worst case of bone behind them.
+- **No new dependencies and no extra render pass.** Transitions are uniforms in the existing analog pass.
+
+**Acceptance checks**
+
+- `npm run check` and all E2E tests pass, including a full-page scroll test that fails on any near-uniform viewport on desktop, mobile and reduced motion.
+- Lighthouse median of 5 on mobile and desktop. Mobile stays at 100, critical JS ≤ 20 KB, WebGL JS ≤ 250 KB gzip.
+- Screenshots at every boundary (mid-transition and settled) and a full-scroll video in `docs/reports/phase-6-6/`.
+
 ## Phase 7: Performance & QA
 
 **Goals:** prove the budgets and quality across devices.
