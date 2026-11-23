@@ -168,7 +168,7 @@ export function actAt(value: number): Act {
       bump(5.22, 5.95, value),
       bump(7.1, 7.9, value),
       0.35 * bump(8.1, 8.9, value),
-      0.25 * bump(10.1, 10.5, value),
+      0.25 * bump(10.1, 10.55, value),
     ),
     slice: Math.max(
       bump(7.05, 7.95, value),
