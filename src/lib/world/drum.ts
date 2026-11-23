@@ -99,6 +99,9 @@ void main() {
   tube *= mix(0.88, 1.0, tubeEdge);
   // Neighbors recede into the ground, so the active screen always leads.
   tube = mix(uGround, tube, mix(0.42, 1.0, uFocus));
+  // WCAG 2.3.1: on a fast scroll the screens wash toward the ground, so light and
+  // dark projects swapping in the same spot can't add up to a flash.
+  tube = mix(tube, uGround, 0.72 * smoothstep(0.2, 0.75, v));
 
   float frame = smoothstep(-0.009, -0.003, d);
   tube = mix(tube, uAccent, frame);
