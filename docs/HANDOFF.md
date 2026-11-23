@@ -6,52 +6,47 @@ Last updated: 2026-11-22. Rewritten at the end of every phase or work session, a
 
 | Item           | Status                                                                                 |
 | -------------- | -------------------------------------------------------------------------------------- |
-| Current phase  | **Phase 4: Desktop hero. Done**, with two manual checks pending                        |
-| Next phase     | **Phase 5: The signal tunnel and Featured Work. Not started**, waiting for Renzzo      |
+| Current phase  | **Phase 5: The signal tunnel and Featured Work. Done**, with manual GPU checks pending |
+| Next phase     | **Phase 6: World and polish. Not started**, waiting for Renzzo                         |
 | Blocked        | Nothing is blocked                                                                     |
 | Branch         | `redesign`                                                                             |
 | `main`         | Untouched at `93d9b4d`                                                                 |
-| Remote         | **Local commits are not pushed.** `origin/redesign` stops at `33a1eec`. Renzzo pushes. |
-| Latest results | `npm run check` passes, 36/36 E2E tests pass                                           |
+| Remote         | **Local commits are not pushed.** `origin/redesign` stops at `c08ef66`. Renzzo pushes. |
+| Latest results | `npm run check` passes, 53/53 E2E tests pass                                           |
 | Lighthouse     | Mobile 100/100/100/100 and desktop 100/100/100/100 (median of 5)                       |
-| Bundle sizes   | WebGL 135.2 KB gzip, total desktop JS 139.4 KB gzip, critical JS 5.5 KB minified       |
+| Bundle sizes   | WebGL 138.9 KB gzip, total desktop JS 144.5 KB gzip, critical JS 6.1 KB minified       |
+| Textures       | 123.9 KB total for the 4 project AVIFs (budget 800 KB)                                 |
 
 ## Just finished
 
-Phase 4 commits, oldest first:
+Phase 5 commits, oldest first:
 
-- `2915a3a` docs(plan): record Phase 4 approvals and pin Three.js
-- `b8af0d8` feat(hero): center the LED face in a three-column desktop layout
-- `55d8791` feat(world): add worker-rendered WebGL hero with disruption and analog pass
-- `838ad76` test(e2e): prove WebGL gating, fallbacks and FPS overlay exclusion
-- `2cd976d` fix(world): apply motion review on burst, crossfade, focus and head turn
-- `947d362` perf(face): shorten 2D baking tasks to keep mobile at 100
-- `89e5da1` docs(world): mark Phase 4 done and document the FPS overlay
-
-Latest work, after Phase 4:
-
-- `d59bfa0` docs(handoff): add session handoff and its CLAUDE.md rule
-
-Also unpushed, from just before Phase 4:
-
-- `d51af06` docs(reference): add technical analysis of the reference site
-- `91b17cf` docs(plan): revise phases 4-6 for the signal world
+- `d03c288` feat(tokens): add bone surface, work index label and Phase 5 decisions
+- `588467f` feat(work): add bone stage, synced index and stacked VHS cards
+- `854019e` feat(world): add signal tunnel, CRT project drum and bone shift
+- `c91e113` fix(world): apply motion review on tunnel, drum, exit and Motion access
 
 The commit that refreshes this handoff is unpushed too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
 
+Decisions made in this phase are recorded in `docs/PLAN.md`. The main ones: Featured Work now comes before About, GSAP moved to Phase 6, and no dependency was added.
+
+Impeccable's motion reviewer ran once and its nine fixes are applied. It was not re-run on the fixed version.
+
 ## Exact next step
 
-1. **Renzzo:** check real performance. Run `npm run dev`, open the printed URL with `/?fps` in Chrome on Windows, then run `npx astro dev stop`. Target: 60 fps.
-2. **Renzzo:** test the Tilt button on a real phone, especially iOS.
-3. **Renzzo:** push `redesign` when happy.
-4. **Then send this prompt:** `Start Phase 5 exactly as defined in docs/PLAN.md.` No more detailed Phase 5 prompt is pending yet.
+1. **Renzzo:** check the journey on a real GPU. Run `npm run dev`, open the printed URL with `/?fps` in Chrome on Windows, scroll from the hero to the end of Featured Work, then run `npx astro dev stop`. Target: 60 fps.
+2. **Renzzo:** while there, judge the feel: scroll damping, fast-scroll VHS strength, reverse scrolling and texture pop-in.
+3. **Renzzo:** optionally run `/review-animations`.
+4. **Renzzo:** push `redesign` when happy.
+5. **Then send this prompt:** `Start Phase 6 exactly as defined in docs/PLAN.md.`
 
 ## Waiting for Renzzo
 
-- **FPS result:** if it's below 60 fps on a real GPU, tune Phase 4 before starting Phase 5.
+- **FPS result:** software rendering can't measure it. This includes the Phase 4 hero check, which is still pending.
+- **VHS velocity:** the distortion reaches full strength at a lower pixel speed in the drum than in the tunnel. Tune `FAST_SCROLL` in `src/lib/world/scene.ts` only if it feels wrong on a real GPU.
 - **Phone tilt result:** it has only been checked in emulation.
-- **`/review-animations`:** optional. Only Renzzo can start this skill. Impeccable's motion reviewer already ran, and its six fixes are applied.
-- **Old preview server:** an `astro preview` that Claude didn't start (PID 41613 on this machine) holds port 4321 and isn't responding, so dev uses 4322. Stop it with `npx astro preview stop` if it isn't needed.
+- **`/review-animations`:** only Renzzo can start this skill, so it did not run in Phase 5.
+- **Old preview server:** an `astro preview` that Claude didn't start (PID 41613 on this machine) may still hold port 4321. Stop it with `npx astro preview stop` if it isn't needed.
 
 ## Not in git: copy by hand to another machine
 
@@ -61,7 +56,7 @@ The commit that refreshes this handoff is unpushed too. `git log origin/redesign
 
 **Optional:**
 
-- `docs/reports/` (74 MB, gitignored): screenshots, the Phase 4 video, Lighthouse reports, face previews and reference captures.
+- `docs/reports/` (gitignored): screenshots, videos, Lighthouse reports, face previews and reference captures. Phase 5 is in `docs/reports/phase-5/`, with `desktop/`, `mobile/`, `phase-5-journey.webm` and `lighthouse.json`.
 - `.claude/settings.local.json`: machine-specific Claude Code settings. Never commit it.
 
 **Reinstall instead of copying:**

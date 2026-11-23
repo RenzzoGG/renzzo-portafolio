@@ -169,7 +169,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - The HTML text never receives the analog effect and keeps AA contrast over the moving scene.
 - **Frame rate is checked by Renzzo on a real GPU** with a dev-only overlay, because this development environment has no hardware GPU. Target: 60 fps.
 
-## Phase 5: The signal tunnel and Featured Work
+## Phase 5: The signal tunnel and Featured Work ✅ (real-GPU feel check pending with Renzzo)
 
 **Goals:** the face-to-tunnel transition and the project drum.
 
