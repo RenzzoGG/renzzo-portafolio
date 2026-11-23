@@ -110,3 +110,58 @@
 :root[data-world-live] .services__head .btn--ghost:not(:hover) {
   background: var(--panel);
 }
+
+/*
+ * Pinned content leaves with its section. The keyframes are scrubbed by scroll
+ * (paused, with a negative delay), so both directions play the same short glitch.
+ * Opacity only ever falls, and focus always brings the content back.
+ */
+@keyframes section-release {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    clip-path: inset(0);
+  }
+
+  30% {
+    opacity: 0.72;
+    translate: -3px 0;
+    clip-path: inset(0 0 8% 0);
+  }
+
+  55% {
+    opacity: 0.42;
+    translate: 4px -0.5rem;
+    clip-path: inset(6% 0 22% 0);
+  }
+
+  80% {
+    opacity: 0.14;
+    translate: -2px -1rem;
+    clip-path: inset(18% 0 38% 0);
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -1.25rem;
+    clip-path: inset(50% 0);
+  }
+}
+
+:root[data-world-live][data-work-leaving]
+  :is(.work__rail, .case[data-active] .case__body):not(:focus-within) {
+  transition: none;
+  pointer-events: none;
+  animation: section-release 1s linear paused both;
+  animation-delay: calc(var(--work-exit, 0) * -1s);
+}
+
+:root[data-world-live][data-shelf-leaving] .shelf__monitor {
+  animation: section-release 1s linear paused both;
+  animation-delay: calc(var(--shelf-exit, 0) * -1s);
+}
+
+:root[data-world-live][data-work-leaving] .case:focus-within .case__body {
+  opacity: 1;
+  translate: none;
+}

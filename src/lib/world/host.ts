@@ -1,5 +1,10 @@
 import faceUrl from "../../assets/face/face.bin?url";
-import { buildStops, journeyAt, type JourneyStop } from "./journey.ts";
+import {
+  buildStops,
+  journeyAt,
+  releaseAt,
+  type JourneyStop,
+} from "./journey.ts";
 import type {
   DrumLayout,
   FromWorld,
@@ -134,6 +139,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   const requested = new Set<number>();
   let stops: JourneyStop[] = [];
   let journey = 0;
+  const released = { work: 0, shelf: 0 };
   const showStats =
     import.meta.env.DEV && new URLSearchParams(location.search).has("fps");
 
@@ -213,9 +219,21 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     });
   };
 
+  /** Written only when it changes, so a held page does no style work. */
+  const setRelease = (name: "work" | "shelf", amount: number) => {
+    const value = Math.round(amount * 1000) / 1000;
+    if (released[name] === value) return;
+    released[name] = value;
+    root.style.setProperty(`--${name}-exit`, String(value));
+    root.toggleAttribute(`data-${name}-leaving`, value > 0);
+  };
+
   const applyJourney = () => {
     journey = journeyAt(scrollY, stops);
     link?.send({ type: "journey", value: journey });
+    const release = releaseAt(journey);
+    setRelease("work", release.work);
+    setRelease("shelf", release.shelf);
     // Textures stream in for the project in view and its neighbors.
     if (journey >= 1) {
       const position = journey - 2;
@@ -304,6 +322,11 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     delete slot.dataset.world;
     delete root.dataset.worldLive;
     root.removeAttribute("data-motion-pinned");
+    for (const name of ["work", "shelf"] as const) {
+      released[name] = 0;
+      root.style.removeProperty(`--${name}-exit`);
+      root.removeAttribute(`data-${name}-leaving`);
+    }
   };
 
   const makeCanvas = () => {

@@ -1,6 +1,11 @@
 import { devices, expect, test, type Page } from "@playwright/test";
 import sharp from "sharp";
-import { actAt, buildStops, journeyAt } from "../../src/lib/world/journey.ts";
+import {
+  actAt,
+  buildStops,
+  journeyAt,
+  type JourneyStop,
+} from "../../src/lib/world/journey.ts";
 
 const WORLD = '[data-led-slot][data-world="live"]';
 const STEP = 0.35;
@@ -107,6 +112,185 @@ test("no moment between sections leaves the scene empty", () => {
     );
     expect(shown, `journey ${value.toFixed(2)}`).toBeGreaterThan(0.02);
   }
+});
+
+/** Reads the same layout the world uses, so tests can scroll to a journey value. */
+async function readStops(page: Page) {
+  const layout = await page.evaluate(() => {
+    const top = (element: Element) =>
+      element.getBoundingClientRect().top + scrollY;
+    const hero = document.querySelector<HTMLElement>("[data-hero]");
+    const stage = document.querySelector<HTMLElement>("[data-work-stage]");
+    if (!hero || !stage) throw new Error("Missing hero or stage");
+    return {
+      heroBottom: top(hero) + hero.offsetHeight,
+      cases: [...document.querySelectorAll<HTMLElement>("[data-texture]")].map(
+        (item) => ({ top: top(item), height: item.offsetHeight }),
+      ),
+      stageBottom: top(stage) + stage.offsetHeight,
+      viewport: innerHeight,
+      sections: [...document.querySelectorAll("[data-act]")].map(top),
+      maxScroll: document.documentElement.scrollHeight - innerHeight,
+    };
+  });
+  return buildStops(layout);
+}
+
+function scrollForJourney(value: number, stops: JourneyStop[]) {
+  for (let index = 1; index < stops.length; index += 1) {
+    const start = stops[index - 1];
+    const end = stops[index];
+    if (start && end && value >= start.value && value <= end.value) {
+      if (end.value === start.value) return start.scroll;
+      const span = (value - start.value) / (end.value - start.value);
+      return start.scroll + (end.scroll - start.scroll) * span;
+    }
+  }
+  throw new Error(`No scroll position for journey ${value}`);
+}
+
+/** Pinned content still painted inside the viewport, with its real opacity. */
+async function visiblePinned(page: Page, selectors: string[]) {
+  return page.evaluate((list) => {
+    const shown: string[] = [];
+    for (const selector of list) {
+      for (const element of document.querySelectorAll(selector)) {
+        const box = element.getBoundingClientRect();
+        if (box.bottom <= 0 || box.top >= innerHeight || box.width === 0) {
+          continue;
+        }
+        let opacity = 1;
+        for (
+          let node: Element | null = element;
+          node;
+          node = node.parentElement
+        ) {
+          opacity *= Number(getComputedStyle(node).opacity);
+        }
+        if (opacity > 0.04) {
+          shown.push(`${selector} (opacity ${opacity.toFixed(2)})`);
+        }
+      }
+    }
+    return shown;
+  }, selectors);
+}
+
+/**
+ * Share of the upper frame that is still the bone page color. The lower part is
+ * left out because the next section's bone tape labels are already arriving.
+ */
+async function boneShare(shot: Buffer) {
+  const image = sharp(shot);
+  const { width = 0, height = 0 } = await image.metadata();
+  const { data, info } = await image
+    .extract({ left: 0, top: 0, width, height: Math.round(height * 0.75) })
+    .resize(160, undefined, { kernel: "nearest" })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let bone = 0;
+  for (let index = 0; index < data.length; index += 3) {
+    if (
+      (data[index] ?? 0) > 215 &&
+      (data[index + 1] ?? 0) > 210 &&
+      (data[index + 2] ?? 0) > 205
+    ) {
+      bone += 1;
+    }
+  }
+  return bone / (info.width * info.height);
+}
+
+const PINNED_TRANSITIONS = [
+  {
+    name: "Featured Work to More work",
+    selectors: [".work__rail", ".case__body"],
+    journeys: [5.4, 5.55, 5.7, 5.85],
+  },
+  {
+    name: "More work to About",
+    selectors: [".shelf__monitor"],
+    journeys: [6.4, 6.6, 6.8],
+  },
+];
+
+test.describe("pinned content leaves with its section", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  for (const { name, selectors, journeys } of PINNED_TRANSITIONS) {
+    for (const direction of ["down", "up"] as const) {
+      test(`${name}, scrolling ${direction}`, async ({ page }) => {
+        await page.goto("/");
+        await page.locator(WORLD).waitFor({ timeout: 60_000 });
+        const stops = await readStops(page);
+        const order = direction === "down" ? journeys : [...journeys].reverse();
+        // Start on the far side, so each sample is reached in this direction.
+        const startAt = direction === "down" ? 4.99 : 7;
+        await page.evaluate(
+          (y) => {
+            window.scrollTo({ top: y, behavior: "instant" });
+          },
+          scrollForJourney(startAt, stops),
+        );
+        await page.waitForTimeout(SETTLE_MS);
+
+        const leftovers: string[] = [];
+        for (const journey of order) {
+          await page.evaluate(
+            (y) => {
+              window.scrollTo({ top: y, behavior: "instant" });
+            },
+            scrollForJourney(journey, stops),
+          );
+          await page.waitForTimeout(SETTLE_MS);
+          for (const item of await visiblePinned(page, selectors)) {
+            leftovers.push(`journey ${journey}: ${item}`);
+          }
+          if (journey >= 5.75 && journey < 6) {
+            const share = await boneShare(await page.screenshot());
+            if (share > 0.03) {
+              leftovers.push(
+                `journey ${journey}: ${(share * 100).toFixed(1)}% bone`,
+              );
+            }
+          }
+        }
+        expect(leftovers, "pinned content during the transition").toEqual([]);
+      });
+    }
+  }
+
+  test("focus keeps a released panel reachable", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(WORLD).waitFor({ timeout: 60_000 });
+    const stops = await readStops(page);
+    await page.evaluate(
+      (y) => {
+        window.scrollTo({ top: y, behavior: "instant" });
+      },
+      scrollForJourney(5.7, stops),
+    );
+    const link = page.locator(".case").last().locator(".actions a").first();
+    await link.focus();
+    await expect(link).toBeFocused();
+    await expect(link).toBeInViewport();
+    await expect
+      .poll(() =>
+        link.evaluate((element) => {
+          let opacity = 1;
+          for (
+            let node: Element | null = element;
+            node;
+            node = node.parentElement
+          ) {
+            opacity *= Number(getComputedStyle(node).opacity);
+          }
+          return opacity;
+        }),
+      )
+      .toBeGreaterThan(0.95);
+  });
 });
 
 test.describe("no blank viewport", () => {

@@ -133,10 +133,19 @@ export interface Act {
   tilt: number;
 }
 
+/**
+ * How far pinned content has left its section, 0 to 1. It finishes before the
+ * static of that boundary builds, so nothing floats over the transition.
+ */
+export const releaseAt = (value: number) => ({
+  work: smoothstep(5, 5.22, value),
+  shelf: smoothstep(6, 6.25, value),
+});
+
 /** Every layer and effect of the trip, as a pure function of the journey. */
 export function actAt(value: number): Act {
   return {
-    bone: between(1.36, 1.6, 5.2, 5.72, value),
+    bone: between(1.36, 1.6, 5.3, 5.74, value),
     wall: Math.max(
       1 - smoothstep(0.25, 0.85, value),
       between(5.4, 5.9, 6.3, 6.8, value),
@@ -148,7 +157,7 @@ export function actAt(value: number): Act {
     dots: between(8.4, 8.8, 9.2, 9.5, value),
     curtain: smoothstep(10.45, 10.98, value),
     noise: Math.max(
-      bump(5.05, 5.95, value),
+      bump(5.22, 5.95, value),
       bump(7.1, 7.9, value),
       0.35 * bump(8.1, 8.9, value),
       0.6 * bump(10.1, 10.55, value),
