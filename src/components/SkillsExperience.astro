@@ -1,15 +1,10 @@
 ---
-import {
-  getCertifications,
-  getEducation,
-  getProfile,
-  getSkills,
-} from "../lib/content.ts";
+import { getCertifications, getEducation, getProfile } from "../lib/content.ts";
 import ExternalLink from "./ExternalLink.astro";
 import HudMarks from "./HudMarks.astro";
+import SkillsBoard from "./SkillsBoard.astro";
 
 const { ui, platzi } = await getProfile();
-const skills = await getSkills();
 const education = await getEducation();
 const certifications = await getCertifications();
 ---
@@ -25,38 +20,38 @@ const certifications = await getCertifications();
     {ui.headings.skills}
   </h2>
   <div class="grid">
-    <dl class="skills">
-      {skills.map(({ data }) => (
-        <div>
-          <dt>{data.group}</dt>
-          <dd>{data.items.join(", ")}</dd>
-        </div>
-      ))}
-    </dl>
+    <SkillsBoard />
 
-    <div class="side">
-      <div>
-        <h3>{ui.headings.education}</h3>
-        {education.map(({ data }) => (
-          <div class="edu">
-            <p class="edu__title">{data.title}</p>
-            {data.titleEs && <p lang="es">{data.titleEs}</p>}
-            <p>
-              {data.organization} · {data.status}
-            </p>
-          </div>
-        ))}
+    <div class="log">
+      <div class="log__bar" aria-hidden="true">
+        {ui.sets.logTitle}
       </div>
-      <div>
-        <h3>{ui.headings.certifications}</h3>
-        <ul class="certs">
-          {certifications.map(({ data }) => (
-            <li>{data.title}</li>
+      <div class="log__body" data-log>
+        <div>
+          <h3>{ui.headings.education}</h3>
+          {education.map(({ data }) => (
+            <div class="edu" data-log-line data-prefix={ui.sets.logStudying}>
+              <p class="edu__title">{data.title}</p>
+              {data.titleEs && <p lang="es">{data.titleEs}</p>}
+              <p>
+                {data.organization} · {data.status}
+              </p>
+            </div>
           ))}
-        </ul>
-        <ExternalLink class="platzi" href={platzi.url}>
-          {platzi.label}
-        </ExternalLink>
+        </div>
+        <div>
+          <h3>{ui.headings.certifications}</h3>
+          <ul class="certs">
+            {certifications.map(({ data }) => (
+              <li data-log-line data-prefix={ui.sets.logCertified}>
+                {data.title}
+              </li>
+            ))}
+          </ul>
+          <ExternalLink class="platzi" href={platzi.url}>
+            {platzi.label}
+          </ExternalLink>
+        </div>
       </div>
     </div>
   </div>
@@ -69,87 +64,85 @@ const certifications = await getCertifications();
     margin-top: var(--space-6);
   }
 
-  .skills {
-    display: grid;
-    align-content: start;
+  .log {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-subtle);
   }
 
-  .skills > div {
-    display: grid;
-    gap: var(--space-1);
-    padding-block: var(--space-4);
-    border-top: 1px solid var(--color-border);
-  }
-
-  dt {
-    font-weight: var(--weight-medium);
-  }
-
-  dd {
+  .log__bar {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
     color: var(--color-muted);
-    line-height: var(--leading-snug);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
   }
 
-  .side {
+  .log__body {
     display: grid;
-    align-content: start;
-    gap: var(--space-6);
+    gap: var(--space-5);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    line-height: var(--leading-snug);
   }
 
   h3 {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-sans);
     font-size: var(--text-subheading);
   }
 
+  [data-prefix]::before {
+    content: attr(data-prefix) " " / "";
+    color: var(--color-glow);
+  }
+
   .edu {
-    margin-top: var(--space-3);
     color: var(--color-muted);
-    font-size: var(--text-small);
-    line-height: var(--leading-snug);
+  }
+
+  .edu p {
+    display: block;
+    padding-inline-start: 2ch;
   }
 
   .edu__title {
     color: var(--color-text);
-    font-size: var(--text-body);
     font-weight: var(--weight-medium);
   }
 
   .certs {
-    margin-block: var(--space-3);
+    display: grid;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
     padding: 0;
     list-style: none;
-    color: var(--color-muted);
-    font-size: var(--text-small);
-    line-height: 1.7;
+    color: var(--color-text);
+  }
+
+  .certs li::after {
+    content: " ✓" / "";
+    color: var(--color-glow);
   }
 
   .platzi {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
+    font-family: var(--font-sans);
     font-size: var(--text-small);
     text-decoration-line: underline;
-  }
-
-  @media (min-width: 48rem) {
-    .skills > div {
-      grid-template-columns: 11rem minmax(0, 1fr);
-      gap: var(--space-5);
-    }
-
-    .certs {
-      columns: 2;
-      column-gap: var(--space-5);
-    }
   }
 
   @media (min-width: 64rem) {
     .grid {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
       gap: var(--space-8);
-    }
-
-    .certs {
-      columns: 1;
     }
   }
 </style>

@@ -148,7 +148,7 @@ test("keyboard reaches every control with a visible focus ring", async ({
   await page.goto("/");
   const total = await page
     .locator(
-      ":is(a[href], button:not([hidden]):not([disabled]), summary):not(dialog *)",
+      ':is(a[href], button:not([hidden]):not([disabled]), summary):not(dialog *):not([role="tab"][tabindex="-1"])',
     )
     .count();
   const seen = new Set<string>();
