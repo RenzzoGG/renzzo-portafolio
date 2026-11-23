@@ -303,12 +303,31 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - A bundle-size check script that fails if critical JS > 20 KB, mobile deferred motion JS > 50 KB gzip, WebGL JS > 250 KB gzip, project textures > 800 KB or face data > 60 KB.
 - An accessibility pass: axe via Playwright, keyboard, screen reader spot check, 200% zoom, 320 px width.
 - Cross-browser checks: Chromium, Firefox, WebKit (Playwright), plus a real phone check.
-- Optional: an Impeccable `detect` / `audit` pass.
+- Optional: an Impeccable `detect` / `audit` pass. **Skipped:** `CLAUDE.md` forbids the engine. The Markdown-only finish and motion reviewer agents ran instead.
+- **Added by Renzzo:** sticky release at section boundaries, uncropped previews, justified text, realistic cassette reels, a rebalanced About, WCAG 2.3.1 verification, the Work index fix, CV polish and real-device preparation (`docs/DEVICE-TESTING.md`).
 
 **Acceptance checks**
 
 - Lighthouse mobile is 100/100/100/100 (median). Desktop Performance is ≥ 90, with Accessibility, Best Practices and SEO at 100.
 - Zero axe violations. All budgets are green.
+- No visual effect exceeds three flashes per second (method below).
+
+### Photosensitivity method (WCAG 2.3.1)
+
+`tests/e2e/photosensitivity.spec.ts` and `tests/support/flash.ts`.
+
+- **Capture:** real rendered frames at an exact 60 fps. A paused Playwright clock advances timers, `requestAnimationFrame` and CSS animations one frame at a time, with the world on the main-thread renderer, because software GL can't hold 60 fps in real time. Frames are PNG, since JPEG chroma subsampling would hide red cells.
+- **Flash definition:** a pair of opposing transitions. General: a relative luminance change of at least 10% of maximum, with the darker side below 0.80. Saturated red: either side has R / (R + G + B) ≥ 0.8, and (R − G − B) × 320 changes by more than 20. Crimson qualifies, so the red rule matters here.
+- **Area and time:** any 341×256 rectangle at 1024×768, 25% of it, in any sliding one-second window. More than three flashes fails.
+- **Two measures:** `concurrent` follows the WCAG definition, where the area must change in the same direction at the same moment. `pixel` ignores phase and can only overstate the risk, so it is the stricter guard on the canvas transitions.
+- **Scenarios:** calibration controls (5 Hz white and red must fail, 2 Hz must pass), a slow sweep of every boundary, fast scroll, scroll jitter at the strongest effects, tape hover and mobile seam bursts.
+- **Design rules that came from it:** static cells re-roll at most twice a second on their own clocks, whatever the scroll speed. Bone cells darken once. Seam bursts only fade. Dense dots and streams never slide across the screen while lit.
+
+**Limits**
+
+- This is an automated analyzer modeled on WCAG. It is **not a certified PEAT or Harding result**.
+- **Native page movement is reported, not gated.** A synthetic fling slides light and dark page blocks past each other, and the concurrent measure counts that as flashes on the full page (see `docs/reports/phase-7/photosensitivity.json`, entries with `gated: false`). No effect causes it, and it is the same on any page with light and dark blocks.
+- Frames come from software rendering, so a real-GPU and real-phone comfort check is still needed.
 
 ## Phase 8: Launch
 

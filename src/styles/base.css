@@ -60,16 +60,7 @@ li {
  * Plain wrapping: "pretty" pulls words down and stretches the line above.
  */
 @media (min-width: 64rem) {
-  .justify:not(.justify--wide) {
-    hyphens: auto;
-    hyphenate-limit-chars: 7 3 3;
-    text-align: justify;
-    text-wrap: wrap;
-  }
-}
-
-@media (min-width: 80rem) {
-  .justify--wide {
+  .justify {
     hyphens: auto;
     hyphenate-limit-chars: 7 3 3;
     text-align: justify;
