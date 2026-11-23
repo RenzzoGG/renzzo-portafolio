@@ -1,0 +1,18 @@
+---
+interface Props {
+  index: number;
+  total: number;
+}
+
+const { index, total } = Astro.props;
+const pad = (value: number) => String(value).padStart(2, "0");
+---
+
+<div class="hud" aria-hidden="true">
+  <span>+</span>
+  <span class="hud__label" data-decode>
+    {pad(index)} / {pad(total)}
+  </span>
+  <span class="hud__line" data-hud-line></span>
+  <span>+</span>
+</div>

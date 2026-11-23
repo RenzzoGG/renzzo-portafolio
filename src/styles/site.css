@@ -88,6 +88,7 @@ main:focus {
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
+    translate var(--duration-fast) var(--ease-out),
     transform var(--duration-instant) var(--ease-out);
 }
 

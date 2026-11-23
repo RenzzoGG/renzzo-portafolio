@@ -1,5 +1,6 @@
 ---
 import { getProfile, getProjects } from "../lib/content.ts";
+import "../styles/detail.css";
 import "../styles/work.css";
 import MoreWork from "./MoreWork.astro";
 import ProjectCase from "./ProjectCase.astro";
@@ -13,7 +14,11 @@ const { featured } = await getProjects();
 <section class="work" id="work" aria-labelledby="work-title">
   <div class="work__stage" data-tone="bone" data-work-stage>
     <div class="container work__grid">
-      <h2 class="section-title work__title" id="work-title">
+      <h2
+        class="section-title work__title"
+        id="work-title"
+        data-glitch={ui.headings.work}
+      >
         {ui.headings.work}
       </h2>
       <div class="work__rail">
@@ -21,7 +26,12 @@ const { featured } = await getProjects();
       </div>
       <div class="work__cases" data-screens>
         {featured.map((project, index) => (
-          <ProjectCase {project} reverse={index % 2 === 1} />
+          <ProjectCase
+            {project}
+            reverse={index % 2 === 1}
+            number={index + 1}
+            total={featured.length}
+          />
         ))}
       </div>
     </div>
@@ -32,3 +42,12 @@ const { featured } = await getProjects();
     </div>
   </div>
 </section>
+<dialog
+  class="detail-dialog"
+  aria-label={ui.project.caseStudy}
+  data-detail-dialog
+></dialog>
+
+<script>
+  import "../lib/ui/detail.ts";
+</script>

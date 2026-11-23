@@ -10,9 +10,12 @@ import ExternalLink from "./ExternalLink.astro";
 interface Props {
   project: FeaturedProject;
   reverse: boolean;
+  number: number;
+  total: number;
 }
 
-const { project, reverse } = Astro.props;
+const { project, reverse, number, total } = Astro.props;
+const pad = (value: number) => String(value).padStart(2, "0");
 const { data } = project;
 const { ui } = await getProfile();
 const shot = data.screenshots[0];
@@ -49,13 +52,18 @@ const texture = await getImage({
   </div>
 
   <div class="case__body">
+    <p class="case__counter" aria-hidden="true" data-decode>
+      {pad(number)} / {pad(total)}
+    </p>
     <h3>{shortTitle(data.title)}</h3>
     <p class="case__type">{data.type}</p>
     <p class="case__line">{data.oneLiner}</p>
 
     <ul class="case__stats">
       {data.stats.map((stat) => (
-        <li>{stat}</li>
+        <li>
+          <span data-count={/^\d/.test(stat) ? "" : undefined}>{stat}</span>
+        </li>
       ))}
     </ul>
 
@@ -86,6 +94,10 @@ const texture = await getImage({
         {ui.project.source}
         <span class="visually-hidden">: {shortTitle(data.title)}</span>
       </ExternalLink>
+      <a class="btn btn--ghost" href={`/work/${project.id}/`} data-detail-link>
+        {ui.project.caseStudy}
+        <span class="visually-hidden">: {shortTitle(data.title)}</span>
+      </a>
     </div>
 
     {data.disclaimer && <p class="case__note">{data.disclaimer}</p>}

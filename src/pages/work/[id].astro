@@ -1,0 +1,35 @@
+---
+import type { GetStaticPaths } from "astro";
+import ProjectDetail from "../../components/ProjectDetail.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getProfile,
+  getProjects,
+  shortTitle,
+  type FeaturedProject,
+} from "../../lib/content.ts";
+
+export const getStaticPaths = (async () => {
+  const { featured } = await getProjects();
+  return featured.map((project, index) => ({
+    params: { id: project.id },
+    props: { project, number: index + 1, total: featured.length },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: FeaturedProject;
+  number: number;
+  total: number;
+}
+
+const { project, number, total } = Astro.props;
+const { name } = await getProfile();
+---
+
+<BaseLayout
+  title={`${shortTitle(project.data.title)} — ${name}`}
+  description={project.data.summary}
+>
+  <ProjectDetail {project} {number} {total} />
+</BaseLayout>

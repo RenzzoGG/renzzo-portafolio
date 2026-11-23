@@ -48,6 +48,14 @@
   background: var(--color-bone);
 }
 
+.work__rail::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: var(--accent);
+  transition: background-color var(--duration-slow) var(--ease-out);
+}
+
 .work-index__label {
   color: var(--color-muted);
   font-family: var(--font-mono);
@@ -186,7 +194,7 @@
   }
 
   .work-index__name {
-    position: static;
+    position: relative;
     width: auto;
     height: auto;
     overflow: visible;
@@ -254,5 +262,17 @@
 
   :root[data-world-live] .case__media {
     opacity: 0;
+  }
+
+  /* The text panel hands over with the drum, and focus always keeps it visible. */
+  :root[data-world-live] .case__body {
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      translate var(--duration-slow) var(--ease-out);
+  }
+
+  :root[data-world-live] .case:not([data-active], :focus-within) .case__body {
+    opacity: 0;
+    translate: 0 1rem;
   }
 }

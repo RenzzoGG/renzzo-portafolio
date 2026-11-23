@@ -6,6 +6,7 @@ import {
   getSkills,
 } from "../lib/content.ts";
 import ExternalLink from "./ExternalLink.astro";
+import HudMarks from "./HudMarks.astro";
 
 const { ui, platzi } = await getProfile();
 const skills = await getSkills();
@@ -14,7 +15,13 @@ const certifications = await getCertifications();
 ---
 
 <section class="section container" id="skills" aria-labelledby="skills-title">
-  <h2 class="section-title" id="skills-title">
+  <HudMarks index={4} total={6} />
+  <h2
+    class="section-title"
+    id="skills-title"
+    data-reveal
+    data-glitch={ui.headings.skills}
+  >
     {ui.headings.skills}
   </h2>
   <div class="grid">

@@ -1,5 +1,6 @@
 ---
 import { getCvLink, getProfile } from "../lib/content.ts";
+import HudMarks from "./HudMarks.astro";
 
 const profile = await getProfile();
 const { ui } = profile;
@@ -7,7 +8,8 @@ const cv = getCvLink(profile);
 ---
 
 <section class="section container cv-block" id="cv" aria-labelledby="cv-title">
-  <h2 class="section-title" id="cv-title">
+  <HudMarks index={5} total={6} />
+  <h2 class="section-title" id="cv-title" data-glitch={ui.headings.cv}>
     {ui.headings.cv}
   </h2>
   <div class="actions">

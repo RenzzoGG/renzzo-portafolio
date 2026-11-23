@@ -1,12 +1,16 @@
 ---
 import { getProfile } from "../lib/content.ts";
+import HudMarks from "./HudMarks.astro";
 
 const { contact } = await getProfile();
 ---
 
 <section class="contact" id="contact" aria-labelledby="contact-title">
   <div class="container">
-    <h2 id="contact-title">{contact.heading}</h2>
+    <HudMarks index={6} total={6} />
+    <h2 id="contact-title" data-reveal data-glitch={contact.heading}>
+      {contact.heading}
+    </h2>
     <p class="contact__intro">{contact.intro}</p>
     <ul>
       {contact.links.map((link) => {
@@ -42,8 +46,15 @@ const { contact } = await getProfile();
 <style>
   .contact {
     padding-block: var(--section-gap);
+    --color-muted: var(--color-text);
+
     background: var(--color-signal);
     color: var(--color-text);
+  }
+
+  /* The curtain replaces this fill. Bone text passes on it and on dark. */
+  :global(:root[data-world-live]) .contact {
+    background: transparent;
   }
 
   h2 {

@@ -1,5 +1,6 @@
 ---
 import { getProfile } from "../lib/content.ts";
+import HudMarks from "./HudMarks.astro";
 
 const { about, location, remote, languages, ui } = await getProfile();
 // Paragraph breaks only: the approved wording stays in one profile field.
@@ -12,11 +13,19 @@ const facts = [
 ---
 
 <section class="about" id="about" aria-labelledby="about-title">
+  <div class="container">
+    <HudMarks index={2} total={6} />
+  </div>
   <div class="container about__inner">
-    <h2 class="section-title" id="about-title">
+    <h2
+      class="section-title"
+      id="about-title"
+      data-reveal
+      data-glitch={ui.headings.about}
+    >
       {ui.headings.about}
     </h2>
-    <div>
+    <div class="about__panel">
       <div class="about__text">
         {paragraphs.map((paragraph) => (
           <p>{paragraph}</p>
@@ -43,6 +52,16 @@ const facts = [
   .about__inner {
     display: grid;
     gap: var(--space-5);
+  }
+
+  /* The streams pass behind this panel, so body text never depends on them. */
+  :global(:root[data-world-live]) .about {
+    background: transparent;
+  }
+
+  :global(:root[data-world-live]) .about__panel {
+    padding: var(--space-6);
+    background: var(--color-surface);
   }
 
   .about__text {

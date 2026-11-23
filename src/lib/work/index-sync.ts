@@ -4,7 +4,12 @@ const links = [
 ];
 const cases = links.map((link) => document.getElementById(link.hash.slice(1)));
 
+const stage = document.querySelector<HTMLElement>("[data-work-stage]");
+
 const activate = (active: number) => {
+  // The stage takes the project's accent, for its non-text marks.
+  const accent = cases[active]?.dataset.accent;
+  if (stage && accent) stage.dataset.accent = accent;
   links.forEach((link, index) => {
     if (index === active) link.setAttribute("aria-current", "true");
     else link.removeAttribute("aria-current");

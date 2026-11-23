@@ -1,5 +1,6 @@
 ---
 import { getProfile, getServices } from "../lib/content.ts";
+import HudMarks from "./HudMarks.astro";
 
 const { ui, servicesLink } = await getProfile();
 const services = await getServices();
@@ -7,8 +8,14 @@ const services = await getServices();
 
 <section class="services" id="services" aria-labelledby="services-title">
   <div class="container">
+    <HudMarks index={3} total={6} />
     <div class="services__head">
-      <h2 class="section-title" id="services-title">
+      <h2
+        class="section-title"
+        id="services-title"
+        data-reveal
+        data-glitch={ui.headings.services}
+      >
         {ui.headings.services}
       </h2>
       <a class="btn btn--ghost" href={servicesLink.href}>
