@@ -86,3 +86,17 @@
     motion: { label: Motion, on: On, off: Off }
     tilt: { label: Tilt, on: On, off: Off }
     newTab: (opens in new tab)
+    sets:
+      terminalTitle: "renzzo@signal: ~/about"
+      terminalCommand: $ cat about.txt
+      counters:
+        projects: projects live
+        tests: automated tests · Stocktill
+        testsValue: "742"
+        lighthouse: Lighthouse · Pulse Theory
+        lighthouseValue: "100"
+      channel: CH
+      skillsTabs: Skill categories
+      logTitle: "renzzo@signal: ~/education"
+      logStudying: "> studying:"
+      logCertified: "> certified:"

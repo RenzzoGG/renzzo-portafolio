@@ -233,6 +233,32 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Menu and project detail pass a keyboard walkthrough.
 - Budgets hold: Lighthouse mobile 100/100/100/100. Desktop Performance in the 90s, with Accessibility, Best Practices and SEO at 100.
 
+## Phase 6.5: Signal set pieces (approved 2026-11-23)
+
+**Goals:** give every lower section its own set piece in the signal/VHS/LED identity, with all content still real, accessible HTML.
+
+**Deliverables**
+
+- **Project panel:** display title that tunes in, 7-segment LED readouts that count up, a stack tag wave, and a button glitch.
+- **More work:** a VHS tape shelf with printed labels and a CRT preview on hover or focus. Links are always visible.
+- **About:** a terminal that types the bio by word, LED counters and stronger signal streams.
+- **Services:** three CRT channels with the old-TV turn-on and animated LED dot-matrix icons.
+- **Skills:** an LED matrix board driven by accessible tabs, over plain lists.
+- **Education and certifications:** a terminal log revealed line by line.
+
+**Decisions**
+
+- **CSS first, small JS only where state is needed.** Mobile motion was already 31.2 KB of its 50 KB budget. No new dependencies.
+- **Real text never moves into decoration.** LED digits, CRT layers, the matrix canvas and terminal chrome are `aria-hidden`.
+- **Tabs live outside the motion gate,** so they work with reduced motion and Motion off.
+- **742 is attributed to Stocktill** and not labelled "in CI". Prose and the CV keep "700+", so the PDF doesn't change.
+
+**Acceptance checks**
+
+- `npm run check` and all E2E tests pass, with new tests for tabs, shelf keyboard access and reduced-motion states.
+- Lighthouse median of 5 on mobile and desktop. Mobile stays at 100, and all budgets are reported.
+- Before/after screenshots of every section on desktop and mobile, plus a full-scroll video, in `docs/reports/phase-6-5/`.
+
 ## Phase 7: Performance & QA
 
 **Goals:** prove the budgets and quality across devices.

@@ -39,12 +39,24 @@ const projectSchema = ({ image }: SchemaContext) => {
       accent: z.enum(ACCENTS),
       oneLiner: text,
       stats: z.array(text).min(1),
+      // LED displays on the project panel. Digits and "/" only in `value`.
+      readouts: z
+        .array(
+          z.strictObject({
+            value: z.string().regex(/^\d+(?:[./]\d+)?$/),
+            unit: text.optional(),
+            label: text,
+          }),
+        )
+        .min(1),
+      panelNotes: z.array(text).default([]),
       caseStudy: z.array(z.strictObject({ label: text, text })).min(1),
     }),
     z.strictObject({
       ...projectBase,
       tier: z.literal("more"),
       accent: z.enum(ACCENTS).optional(),
+      year: z.number().int().min(2000),
     }),
   ]);
 };
@@ -59,6 +71,7 @@ const skills = defineCollection({
   schema: z.strictObject({
     id: text,
     group: text,
+    tab: text,
     order: z.number().int().positive(),
     items: z.array(text).min(1),
   }),
@@ -179,6 +192,22 @@ const profile = defineCollection({
       motion: z.strictObject({ label: text, on: text, off: text }),
       tilt: z.strictObject({ label: text, on: text, off: text }),
       newTab: text,
+      sets: z.strictObject({
+        terminalTitle: text,
+        terminalCommand: text,
+        counters: z.strictObject({
+          projects: text,
+          tests: text,
+          testsValue: z.string().regex(/^\d+$/),
+          lighthouse: text,
+          lighthouseValue: z.string().regex(/^\d+$/),
+        }),
+        channel: text,
+        skillsTabs: text,
+        logTitle: text,
+        logStudying: text,
+        logCertified: text,
+      }),
     }),
   }),
 });

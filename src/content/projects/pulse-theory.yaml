@@ -15,6 +15,13 @@ stats:
   - Lighthouse 100 on mobile and desktop (median of 5 runs)
   - 14.9 KB critical JS (min)
   - 51.8 KB motion chunk (gzip)
+readouts:
+  - {
+      value: "100",
+      label: "Lighthouse on mobile and desktop (median of 5 runs)",
+    }
+  - { value: "14.9", unit: KB, label: critical JS (min) }
+  - { value: "51.8", unit: KB, label: motion chunk (gzip) }
 caseStudy:
   - label: Goal
     text: Built to turn visitors into free-consultation bookings.

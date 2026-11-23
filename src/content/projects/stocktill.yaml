@@ -22,6 +22,10 @@ summary: Point of sale and inventory for many stores on one platform, where each
 cvLine: "Multi-tenant POS where each business only sees its own data. Barcode checkout on desktop and mobile; owner/admin/cashier roles enforced with PostgreSQL RLS; Stripe billing with a free trial; 700+ tests (Vitest, pgTAP, Playwright) in GitHub Actions on every push; Docker."
 disclaimer: Stocktill is a fictional brand created for a portfolio project.
 stats: [700+ tests in CI, RLS on 20/20 tables, 3 roles]
+readouts:
+  - { value: "742", label: automated tests }
+  - { value: "20/20", label: tables with RLS }
+  - { value: "3", label: roles }
 caseStudy:
   - label: Problem
     text: "Small shops run the counter on spreadsheets: stock drifts, cashiers can see margins they shouldn't, and nobody knows who changed what."

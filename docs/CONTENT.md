@@ -122,6 +122,26 @@ Section link: "Let's talk →" (to #contact).
 - **Tilt toggle (phones):** Tilt · On · Off
 - **New tab suffix (visually hidden):** (opens in new tab)
 
+### Signal set pieces (Phase 6.5, approved 2026-11-23)
+
+- **Terminal:** `renzzo@signal: ~/about` · `$ cat about.txt`
+- **Education log:** `renzzo@signal: ~/education` · `> studying:` · `> certified:`
+- **Service channels:** CH 01 · CH 02 · CH 03. Each card reuses the "Let's talk →" link.
+- **Skill tabs:** Front-end · Back-end · Testing · DevOps · Libraries · Tools (group label: Skill categories). Panels keep the full group names.
+- **About counters:** 8 projects live (computed from the published projects) · 742 automated tests · Stocktill · 100 Lighthouse · Pulse Theory.
+- **LED readouts:**
+
+| Project   | Readouts                                                                                                          | Text lines                               |
+| --------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Clearline | 98% backend test coverage                                                                                         | Overlap-proof bookings · JWT roles       |
+| Pulse     | 100 Lighthouse on mobile and desktop (median of 5 runs) · 14.9 KB critical JS (min) · 51.8 KB motion chunk (gzip) | None                                     |
+| Fernwick  | 300+ pytest tests                                                                                                 | PostgreSQL Row-Level Security · JWT auth |
+| Stocktill | 742 automated tests · 20/20 tables with RLS · 3 roles                                                             | None                                     |
+
+**742 source:** Stocktill's report at commit `178d43b` (2026-11-14): 267 unit + 385 pgTAP assertions + 62 integration + 28 E2E, without the 7 smoke tests. The E2E tests were listed, not run, for that count, so 742 is never labelled "in CI". Prose, stats and the CV keep "700+".
+
+**Cassette year:** 2026 for all four More work projects, from their GitHub repository creation dates (October 2026).
+
 ---
 
 ## Projects

@@ -14,6 +14,9 @@ summary: "Quote management system for a cleaning business: requests sent from th
 cvLine: "Quote system for a cleaning business: landing form → FastAPI + PostgreSQL API → React dashboard. Read-only public demo isolated by Row-Level Security; JWT auth; 300+ pytest tests."
 disclaimer: Fernwick Home Cleaning is a fictional cleaning business, built as a portfolio project.
 stats: [300+ pytest tests, PostgreSQL Row-Level Security, JWT auth]
+readouts:
+  - { value: "300", unit: "+", label: pytest tests }
+panelNotes: [PostgreSQL Row-Level Security, JWT auth]
 caseStudy:
   - label: Flow
     text: Requests sent from the landing page are saved through a FastAPI + PostgreSQL API.

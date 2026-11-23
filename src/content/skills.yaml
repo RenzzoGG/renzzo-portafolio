@@ -1,5 +1,6 @@
 - id: front-end
   group: Front-end
+  tab: Front-end
   order: 1
   items:
     [
@@ -17,6 +18,7 @@
     ]
 - id: back-end
   group: Back-end
+  tab: Back-end
   order: 2
   items:
     [
@@ -36,10 +38,12 @@
     ]
 - id: testing
   group: Testing
+  tab: Testing
   order: 3
   items: [Vitest, Playwright, pytest, pgTAP]
 - id: devops
   group: DevOps & deployment
+  tab: DevOps
   order: 4
   items:
     [
@@ -51,9 +55,11 @@
     ]
 - id: libraries
   group: Libraries
+  tab: Libraries
   order: 5
   items: [GSAP, Motion, Chart.js, jsPDF, SheetJS]
 - id: tools
   group: Tools & workflow
+  tab: Tools
   order: 6
   items: [Git, GitHub, Vite, Linux (WSL)]
