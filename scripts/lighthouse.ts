@@ -12,7 +12,7 @@ import { startServer } from "./serve-dist.ts";
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT_DIR = "docs/reports/phase-6-5";
+const REPORT_DIR = "docs/reports/phase-6-6";
 const REPORT = `${REPORT_DIR}/lighthouse.json`;
 const CATEGORIES = [
   "performance",
