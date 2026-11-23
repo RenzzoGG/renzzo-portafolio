@@ -12,7 +12,8 @@ import { startServer } from "./serve-dist.ts";
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT = "docs/reports/phase-6/lighthouse.json";
+const REPORT_DIR = "docs/reports/phase-6-5";
+const REPORT = `${REPORT_DIR}/lighthouse.json`;
 const CATEGORIES = [
   "performance",
   "accessibility",
@@ -121,10 +122,19 @@ function desktopJs() {
     .map(([, , body]) => body ?? "")
     .join("");
   const webgl = gz("world.worker");
+  // Deferred code a phone downloads: GSAP with our motion, plus the skills tabs.
+  const mobileMotion = gz("core.") + gz("tabs.");
   const other =
-    gz("LedSlot") + gz("host.") + gzipSync(inline, { level: 9 }).length;
+    gz("LedSlot") +
+    gz("host.") +
+    gz("SkillsBoard") +
+    gz("index.astro") +
+    mobileMotion +
+    gz("desktop.") +
+    gzipSync(inline, { level: 9 }).length;
   return {
     webglGzipBytes: webgl,
+    mobileMotionGzipBytes: mobileMotion,
     otherGzipBytes: other,
     totalGzipBytes: webgl + other,
   };
@@ -162,6 +172,6 @@ try {
   server.close();
 }
 
-mkdirSync("docs/reports/phase-6", { recursive: true });
+mkdirSync(REPORT_DIR, { recursive: true });
 writeFileSync(REPORT, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 2));

@@ -233,7 +233,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Menu and project detail pass a keyboard walkthrough.
 - Budgets hold: Lighthouse mobile 100/100/100/100. Desktop Performance in the 90s, with Accessibility, Best Practices and SEO at 100.
 
-## Phase 6.5: Signal set pieces (approved 2026-11-23)
+## Phase 6.5: Signal set pieces ✅ (real-GPU feel check pending with Renzzo)
 
 **Goals:** give every lower section its own set piece in the signal/VHS/LED identity, with all content still real, accessible HTML.
 
