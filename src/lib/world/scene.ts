@@ -15,6 +15,7 @@ import { createGridWall } from "./grid-wall.ts";
 import { smoothstep } from "./journey.ts";
 import { createPost } from "./post.ts";
 import type { DrumLayout, SlotRect, View, WorldStats } from "./protocol.ts";
+import { createSignalField } from "./signal-field.ts";
 import { createTunnel } from "./tunnel.ts";
 
 const FOV = 30;
@@ -98,9 +99,16 @@ export function createScene(options: SceneOptions): WorldScene {
   const post = createPost();
   const tunnel = createTunnel(face);
   const drum = createDrum(options.drum, SCREENS);
+  const signal = createSignalField(face);
 
   const scene = new Scene();
-  scene.add(wall.mesh, faceLayer.mesh, tunnel.mesh, ...drum.meshes);
+  scene.add(
+    wall.mesh,
+    faceLayer.mesh,
+    tunnel.mesh,
+    signal.mesh,
+    ...drum.meshes,
+  );
   const camera = new PerspectiveCamera(FOV, 1, 10, 20000);
   const target = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -152,6 +160,7 @@ export function createScene(options: SceneOptions): WorldScene {
     camera.updateProjectionMatrix();
     wall.resize(width, height);
     tunnel.resize(width, height, baseZ);
+    signal.resize(width, height);
     drum.resize(view);
     faceLayer.uniforms.uTunnel.value.set(
       tunnel.uniforms.uRadius.value,
@@ -259,6 +268,16 @@ export function createScene(options: SceneOptions): WorldScene {
       ground,
     );
     post.uniforms.uBone.value = bone;
+
+    const stream =
+      smoothstep(6, 6.25, journey) * (1 - smoothstep(6.8, 7, journey));
+    const curtain = smoothstep(8.05, 8.95, journey);
+    signal.mesh.visible = stream > 0 || curtain > 0;
+    signal.uniforms.uStream.value = stream;
+    signal.uniforms.uCurtain.value = curtain;
+    signal.uniforms.uTravel.value = journey * 0.5 + time * 0.012;
+    signal.setQuality(quality);
+    post.uniforms.uCurtain.value = curtain;
     post.uniforms.uSafeAmount.value = 1 - smoothstep(0.78, 1, journey);
 
     const aspect = slot.height / slot.width;
@@ -402,6 +421,7 @@ export function createScene(options: SceneOptions): WorldScene {
       faceLayer.dispose();
       wall.dispose();
       tunnel.dispose();
+      signal.dispose();
       drum.dispose();
       post.dispose();
       field.dispose();

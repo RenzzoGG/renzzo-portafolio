@@ -1,8 +1,8 @@
 import faceUrl from "../../assets/face/face.bin?url";
 import {
   buildStops,
+  canvasOpacity,
   journeyAt,
-  smoothstep,
   type JourneyStop,
 } from "./journey.ts";
 import type {
@@ -138,6 +138,8 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     "[data-signal-tunnel]",
   );
   const cases = [...document.querySelectorAll<HTMLElement>("[data-texture]")];
+  const aboutPart = document.querySelector<HTMLElement>("#about");
+  const contactPart = document.querySelector<HTMLElement>("#contact");
   const requested = new Set<number>();
   const showing = new Set<Element>([hero]);
   let stops: JourneyStop[] = [];
@@ -217,6 +219,11 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
       })),
       stageBottom: stage ? top(stage) + stage.offsetHeight : 0,
       viewport: window.innerHeight,
+      about: aboutPart
+        ? { top: top(aboutPart), height: aboutPart.offsetHeight }
+        : undefined,
+      contact: contactPart ? { top: top(contactPart) } : undefined,
+      maxScroll: root.scrollHeight - window.innerHeight,
     });
   };
 
@@ -239,8 +246,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
       });
     }
     if (canvas && live) {
-      // Past the drum the page is dark again, and the frozen frame must go.
-      canvas.style.opacity = String(1 - smoothstep(5.82, 6, journey));
+      canvas.style.opacity = String(canvasOpacity(journey));
     }
   };
 
@@ -294,7 +300,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   const syncActive = () => {
     link?.send({ type: "active", active: onScreen && !document.hidden });
   };
-  // The world runs from the hero to the end of Featured Work, then rests.
+  // The world runs on the sections that show it, and rests between them.
   const visibility = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (entry.isIntersecting) showing.add(entry.target);
@@ -410,7 +416,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   addEventListener("scroll", onScroll, { passive: true });
   addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", syncActive);
-  for (const part of [hero, tunnelSpace, stage]) {
+  for (const part of [hero, tunnelSpace, stage, aboutPart, contactPart]) {
     if (part) visibility.observe(part);
   }
   resizes.observe(document.body);

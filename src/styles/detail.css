@@ -113,7 +113,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   :root:not([data-motion="off"]) .detail-dialog[open] {
-    animation: detail-slices 320ms steps(5, end) both;
+    animation: detail-slices 320ms steps(5, end) backwards;
   }
 }
 

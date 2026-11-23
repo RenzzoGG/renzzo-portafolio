@@ -39,11 +39,13 @@ uniform vec4 uSafe; // slot center x, slot half width, fade width, header line (
 uniform float uSafeAmount;
 uniform float uCopyLine; // bottom of the hero text, in UV
 uniform float uBone;
+uniform float uCurtain;
 in vec2 vUv;
 out vec4 color;
 
 const vec3 BASE = vec3(0.043, 0.039, 0.047);
 const vec3 BONE = vec3(0.949, 0.933, 0.918);
+const vec3 SIGNAL = vec3(0.761, 0.114, 0.227);
 
 float random(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -84,6 +86,7 @@ void main() {
   // The ground shifts to bone behind the screens. Dark keeps the hero's look.
   vec3 ground = mix(BASE, BONE, uBone) * (1.0 - cover) + scene;
   vec3 result = mix(BASE + scene, ground, step(0.0001, uBone));
+  result = mix(result, max(SIGNAL * 0.82, scene), uCurtain);
   float scan = 0.5 + 0.5 * sin(vUv.y * uResolution.y * 1.5708);
   // Project screens must stay readable, so bone softens the tube effects.
   result *= 1.0 - 0.34 * amount * (1.0 - scan) * (1.0 - 0.62 * uBone);
@@ -101,6 +104,8 @@ void main() {
   // Bone stays the exact page color, so the HTML panels sit on it with no seam.
   result = mix(result, ground, uBone * (1.0 - cover));
 
+  // Bone text keeps AA: nothing in the curtain is brighter than signal.
+  result = mix(result, min(result, SIGNAL), uCurtain);
   color = vec4(clamp(result, 0.0, 1.0), 1.0);
 }
 `;
@@ -121,6 +126,7 @@ export function createPost() {
     uSafeAmount: { value: 1 },
     uCopyLine: { value: 0 },
     uBone: { value: 0 },
+    uCurtain: { value: 0 },
   };
   const material = new RawShaderMaterial({
     glslVersion: GLSL3,

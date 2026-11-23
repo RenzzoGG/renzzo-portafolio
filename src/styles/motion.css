@@ -29,6 +29,27 @@ html:has(dialog[open]) {
   scrollbar-gutter: stable;
 }
 
+/* The curtain sits behind the page, so plain sections keep a solid ground. */
+:root[data-world-live] :is(#skills, #cv) {
+  background: var(--color-bg);
+  box-shadow: 0 0 0 100vmax var(--color-bg);
+  clip-path: inset(0 -100vmax);
+}
+
+:root[data-world-live] footer {
+  position: relative;
+  background: var(--color-bg);
+}
+
+/* The pinned Motion button must never cover focused links or the footer. */
+:root[data-motion-pinned] {
+  scroll-padding-bottom: 5rem;
+}
+
+:root[data-motion-pinned] footer {
+  padding-inline-start: 11rem;
+}
+
 .hud {
   display: flex;
   flex-basis: 100%;

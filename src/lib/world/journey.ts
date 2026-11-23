@@ -1,6 +1,7 @@
 /**
  * Turns native scroll into one number for the whole trip:
- * 0–1 face pull-back, 1–2 tunnel, 2–5 drum (one per project), 5–6 back to dark.
+ * 0–1 face pull-back, 1–2 tunnel, 2–5 drum (one per project), 5–6 back to dark,
+ * 6–7 About streams, 7–8 rest (world paused), 8–9 Contact curtain.
  * Each project holds its value while it's on screen, whatever its height.
  */
 export interface JourneyStop {
@@ -13,6 +14,9 @@ export interface JourneyLayout {
   cases: { top: number; height: number }[];
   stageBottom: number;
   viewport: number;
+  about?: { top: number; height: number };
+  contact?: { top: number };
+  maxScroll?: number;
 }
 
 export function buildStops(layout: JourneyLayout): JourneyStop[] {
@@ -37,6 +41,14 @@ export function buildStops(layout: JourneyLayout): JourneyStop[] {
     });
   }
   raw.push({ scroll: stageBottom - viewport, value: 2 + cases.length });
+  const { about, contact, maxScroll } = layout;
+  if (about && contact && maxScroll !== undefined) {
+    const base = 2 + cases.length;
+    raw.push({ scroll: about.top - viewport, value: base });
+    raw.push({ scroll: about.top + about.height, value: base + 1 });
+    raw.push({ scroll: contact.top - viewport, value: base + 2 });
+    raw.push({ scroll: Math.min(contact.top, maxScroll), value: base + 3 });
+  }
 
   // Scroll positions must only grow, even on very short viewports.
   let floor = -1;
@@ -61,6 +73,14 @@ export function journeyAt(scroll: number, stops: JourneyStop[]): number {
     }
   }
   return last.value;
+}
+
+/** The canvas only shows where the world is on screen. */
+export function canvasOpacity(value: number) {
+  if (value < 6) return 1 - smoothstep(5.82, 6, value);
+  if (value < 7)
+    return smoothstep(6, 6.16, value) * (1 - smoothstep(6.84, 7, value));
+  return smoothstep(8, 8.18, value);
 }
 
 export const smoothstep = (from: number, to: number, value: number) => {
