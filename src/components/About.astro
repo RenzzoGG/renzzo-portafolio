@@ -149,7 +149,7 @@ const readouts = [
 
   .term__body p {
     position: relative;
-    max-width: 68ch;
+    max-width: 56ch;
   }
 
   .term__command {
@@ -233,7 +233,7 @@ const readouts = [
    */
   @media (min-width: 64rem) {
     .about__inner {
-      --term-width: calc(68ch + 2 * var(--space-5) + 2px);
+      --term-width: calc(56ch + 2 * var(--space-5) + 2px);
 
       grid-template-columns: minmax(17rem, 1fr) minmax(0, var(--term-width));
       grid-template-rows: auto 1fr;
@@ -250,9 +250,16 @@ const readouts = [
       grid-row: 1 / span 2;
     }
 
+    /* The readouts share the spare height, so the panel has no dead strip. */
     .about__side {
       grid-column: 1;
       grid-row: 2;
+      grid-template-rows: 1fr auto;
+      align-content: stretch;
+    }
+
+    .about__counters {
+      align-content: space-between;
     }
   }
 </style>
