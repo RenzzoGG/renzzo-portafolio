@@ -73,6 +73,8 @@
       landing: Landing
       landingSource: Landing source
       details: How it's built
+      caseStudy: Case study
+      back: Back to work
     cvActions: { download: Download CV (PDF), view: View full CV }
     cvHeadings:
       summary: Summary
@@ -80,6 +82,7 @@
       projects: Projects
       education: Education
       certifications: Certifications
+    menu: { open: Menu, close: Close }
     motion: { label: Motion, on: On, off: Off }
     tilt: { label: Tilt, on: On, off: Off }
     newTab: (opens in new tab)

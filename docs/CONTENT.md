@@ -114,7 +114,8 @@ Section link: "Let's talk →" (to #contact).
 - **Section headings:** About · Featured work · More work · Skills · Education · Certifications · Services · CV
 - **Featured work index:** Selected work
 - **About facts:** Location · Work · Languages
-- **Project:** Live demo · Source · Landing · Landing source · How it's built
+- **Project:** Live demo · Source · Landing · Landing source · How it's built · Case study · Back to work
+- **Menu:** Menu · Close
 - **CV actions:** Download CV (PDF) · View full CV
 - **CV headings:** Summary · Skills · Projects · Education · Certifications
 - **Motion toggle:** Motion · On · Off

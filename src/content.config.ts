@@ -164,6 +164,8 @@ const profile = defineCollection({
         landing: text,
         landingSource: text,
         details: text,
+        caseStudy: text,
+        back: text,
       }),
       cvActions: z.strictObject({ download: text, view: text }),
       cvHeadings: z.strictObject({
@@ -173,6 +175,7 @@ const profile = defineCollection({
         education: text,
         certifications: text,
       }),
+      menu: z.strictObject({ open: text, close: text }),
       motion: z.strictObject({ label: text, on: text, off: text }),
       tilt: z.strictObject({ label: text, on: text, off: text }),
       newTab: text,
