@@ -1,28 +1,34 @@
 ---
 import { getProfile, getProjects } from "../lib/content.ts";
+import "../styles/work.css";
 import MoreWork from "./MoreWork.astro";
 import ProjectCase from "./ProjectCase.astro";
+import WorkIndex from "./WorkIndex.astro";
 
 const { ui } = await getProfile();
 const { featured } = await getProjects();
 ---
 
-<section class="section container" id="work" aria-labelledby="work-title">
-  <h2 class="section-title" id="work-title">
-    {ui.headings.work}
-  </h2>
-  <div class="work__cases" data-screens>
-    {featured.map((project, index) => (
-      <ProjectCase {project} reverse={index % 2 === 1} />
-    ))}
+<div class="signal-tunnel" data-signal-tunnel aria-hidden="true"></div>
+<section class="work" id="work" aria-labelledby="work-title">
+  <div class="work__stage" data-tone="bone" data-work-stage>
+    <div class="container work__grid">
+      <h2 class="section-title work__title" id="work-title">
+        {ui.headings.work}
+      </h2>
+      <div class="work__rail">
+        <WorkIndex projects={featured} />
+      </div>
+      <div class="work__cases" data-screens>
+        {featured.map((project, index) => (
+          <ProjectCase {project} reverse={index % 2 === 1} />
+        ))}
+      </div>
+    </div>
   </div>
-  <MoreWork />
+  <div class="work__more">
+    <div class="container">
+      <MoreWork />
+    </div>
+  </div>
 </section>
-
-<style>
-  .work__cases {
-    display: grid;
-    gap: var(--section-gap);
-    margin-block: var(--space-7) var(--section-gap);
-  }
-</style>

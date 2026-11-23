@@ -89,6 +89,11 @@ if (slot && host) {
   };
 
   function sync() {
+    // Without a world, the tunnel's reserved scroll space collapses.
+    root.toggleAttribute(
+      "data-world-failed",
+      worldFailed || (motionAllowed() && desktopDevice() && !hasWebGL2()),
+    );
     if (wantsWorld()) {
       if (!world && !worldLoading) void startWorld();
     } else if (world) {
