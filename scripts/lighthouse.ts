@@ -12,7 +12,7 @@ import { startServer } from "./serve-dist.ts";
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT = "docs/reports/phase-5/lighthouse.json";
+const REPORT = "docs/reports/phase-6/lighthouse.json";
 const CATEGORIES = [
   "performance",
   "accessibility",
@@ -162,6 +162,6 @@ try {
   server.close();
 }
 
-mkdirSync("docs/reports/phase-5", { recursive: true });
+mkdirSync("docs/reports/phase-6", { recursive: true });
 writeFileSync(REPORT, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 2));

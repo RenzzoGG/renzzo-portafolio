@@ -31,13 +31,48 @@ function magnetic(button: HTMLElement) {
   };
 }
 
+/** Plays once per pointer entry, only for a pointer that's really moving. */
+function glitch(heading: HTMLElement) {
+  let played = false;
+  const move = (event: PointerEvent) => {
+    if (
+      played ||
+      (!event.movementX && !event.movementY) ||
+      document.documentElement.dataset.scrolling !== undefined ||
+      heading.querySelector(".reveal-line-mask")
+    ) {
+      return;
+    }
+    played = true;
+    heading.dataset.glitching = "";
+  };
+  const leave = () => {
+    played = false;
+  };
+  const end = () => {
+    delete heading.dataset.glitching;
+  };
+  heading.addEventListener("pointermove", move);
+  heading.addEventListener("pointerleave", leave);
+  heading.addEventListener("animationend", end);
+  return () => {
+    heading.removeEventListener("pointermove", move);
+    heading.removeEventListener("pointerleave", leave);
+    heading.removeEventListener("animationend", end);
+    end();
+  };
+}
+
 export function startDesktop() {
-  const stops = [...document.querySelectorAll<HTMLElement>(".btn")].map(
-    magnetic,
-  );
+  const stops = [
+    ...[...document.querySelectorAll<HTMLElement>(".btn")].map(magnetic),
+    ...[...document.querySelectorAll<HTMLElement>("[data-glitch]")].map(glitch),
+  ];
 
   const context = gsap.context(() => {
     for (const line of gsap.utils.toArray<HTMLElement>("[data-hud-line]")) {
+      // A rule already on screen stays final instead of jumping backward.
+      if (line.getBoundingClientRect().top < window.innerHeight) continue;
       gsap.fromTo(
         line,
         { scaleX: 0 },

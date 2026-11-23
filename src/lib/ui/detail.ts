@@ -7,11 +7,23 @@ const dialog = document.querySelector<HTMLDialogElement>(
 );
 const homeTitle = document.title;
 let opening = false;
+let returnTo: number | null = null;
+
+/** Traversal would otherwise jump to a hash the reader has already left. */
+const restoreScroll = () => {
+  if (returnTo === null) return;
+  scrollTo({ top: returnTo, behavior: "instant" });
+  returnTo = null;
+  // Back to auto only after the traversal, or it scrolls to the old hash.
+  setTimeout(() => {
+    history.scrollRestoration = "auto";
+  }, 400);
+};
 const isDetailPath = () => /^\/work\/[^/]+\/?$/.test(location.pathname);
 
 async function show(url: string) {
   if (!dialog) return;
-  const response = await fetch(url);
+  const response = await fetch(url, { signal: AbortSignal.timeout(4000) });
   if (!response.ok) throw new Error("Project page unavailable");
   const page = new DOMParser().parseFromString(
     await response.text(),
@@ -48,11 +60,14 @@ if (dialog) {
     // A double click must not stack two history entries.
     if (opening) return;
     opening = true;
+    returnTo = scrollY;
+    history.scrollRestoration = "manual";
     show(link.href)
       .then(() => {
         history.pushState({ detail: true }, "", link.href);
       })
       .catch(() => {
+        history.scrollRestoration = "auto";
         location.href = link.href; // The static route always works.
       })
       .finally(() => {
@@ -73,8 +88,9 @@ if (dialog) {
           location.reload();
         });
       }
-    } else if (dialog.open) {
-      dialog.close();
+    } else {
+      if (dialog.open) dialog.close();
+      restoreScroll();
     }
   });
 }

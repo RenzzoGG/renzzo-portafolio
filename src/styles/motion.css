@@ -120,10 +120,8 @@ html:has(dialog[open]) {
     width: fit-content;
   }
 
-  :root:not([data-motion="off"], [data-scrolling])
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::before,
-  :root:not([data-motion="off"], [data-scrolling])
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
+  :root:not([data-motion="off"]) [data-glitching]::before,
+  :root:not([data-motion="off"]) [data-glitching]::after {
     content: attr(data-glitch) / "";
     position: absolute;
     inset: 0;
@@ -131,24 +129,18 @@ html:has(dialog[open]) {
     animation: 260ms steps(1, end) both;
   }
 
-  :root:not([data-motion="off"], [data-scrolling])
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::before {
+  :root:not([data-motion="off"]) [data-glitching]::before {
     color: var(--color-glow);
     animation-name: glitch-top;
   }
 
-  :root:not([data-motion="off"], [data-scrolling])
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
+  :root:not([data-motion="off"]) [data-glitching]::after {
     color: var(--color-signal);
     animation-name: glitch-bottom;
   }
 
-  :root:not([data-motion="off"], [data-scrolling])
-    .contact
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::before,
-  :root:not([data-motion="off"], [data-scrolling])
-    .contact
-    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
+  :root:not([data-motion="off"]) .contact [data-glitching]::before,
+  :root:not([data-motion="off"]) .contact [data-glitching]::after {
     color: var(--color-bg);
   }
 }

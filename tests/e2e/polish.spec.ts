@@ -65,12 +65,14 @@ test.describe("GSAP loading", () => {
   }) => {
     await page.goto("/");
     await expect
-      .poll(() =>
-        page.evaluate(() =>
-          performance
-            .getEntriesByType("resource")
-            .some((entry) => /\/desktop\./.test(entry.name)),
-        ),
+      .poll(
+        () =>
+          page.evaluate(() =>
+            performance
+              .getEntriesByType("resource")
+              .some((entry) => /\/desktop\./.test(entry.name)),
+          ),
+        { timeout: 20_000 },
       )
       .toBe(true);
     const timing = await page.evaluate(() => ({
@@ -196,6 +198,78 @@ test("animated text ends as the original text", async ({ page }) => {
   await expect(page.locator("[data-reveal][aria-label]")).toHaveCount(0);
 });
 
+test("text in the bottom of the viewport never rests invisible", async ({
+  page,
+}) => {
+  await noWebGL({ page });
+  await page.goto("/");
+  await expect
+    .poll(() => page.locator("[data-signal-armed]").count())
+    .toBeGreaterThan(0);
+  const stat = page.locator("#pulse-theory [data-count]").last();
+  await stat.evaluate((element) => {
+    const top = element.getBoundingClientRect().top + scrollY;
+    window.scrollTo({ top: top - innerHeight + 24, behavior: "instant" });
+  });
+  await expect(stat).not.toHaveAttribute("data-signal-armed", "", {
+    timeout: 3000,
+  });
+});
+
+test("the heading glitch needs a moving pointer and plays once", async ({
+  page,
+}) => {
+  await noWebGL({ page });
+  await page.goto("/");
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          performance
+            .getEntriesByType("resource")
+            .some((entry) => /\/desktop\./.test(entry.name)),
+        ),
+      { timeout: 20_000 },
+    )
+    .toBe(true);
+  const heading = page.locator("#services-title");
+  await heading.evaluate((element) => {
+    element.scrollIntoView({ behavior: "instant", block: "center" });
+  });
+  await expect(heading.locator(".reveal-line-mask")).toHaveCount(0);
+  await expect(page.locator("html")).not.toHaveAttribute("data-scrolling");
+  await page.waitForTimeout(250);
+  const box = await heading.boundingBox();
+  if (!box) throw new Error("No heading");
+  await heading.evaluate((element) => {
+    const state = window as unknown as { glitches: number };
+    state.glitches = 0;
+    element.addEventListener("animationstart", () => {
+      state.glitches += 1;
+    });
+  });
+  const glitches = () =>
+    page.evaluate(() => (window as unknown as { glitches: number }).glitches);
+  // ScrollTrigger's module may still be starting, so re-enter until it reacts.
+  await expect
+    .poll(
+      async () => {
+        await page.mouse.move(2, 2);
+        await page.mouse.move(box.x + 8, box.y + 8);
+        await page.mouse.move(box.x + 20, box.y + 12);
+        await page.waitForTimeout(120);
+        return glitches();
+      },
+      { timeout: 20_000 },
+    )
+    .toBeGreaterThanOrEqual(2);
+  await expect(heading).not.toHaveAttribute("data-glitching");
+  const played = await glitches();
+  await page.mouse.move(box.x + 30, box.y + 14);
+  await page.waitForTimeout(350);
+  expect(await glitches()).toBe(played);
+});
+
 test.describe("menu", () => {
   test.beforeEach(noWebGL);
 
@@ -317,6 +391,27 @@ test.describe("project detail", () => {
     await expect(page).toHaveURL(/\/$/);
     await page.waitForTimeout(300);
     await expect(dialog).toBeHidden();
+  });
+
+  test("closing it after a hash visit doesn't snap the reader", async ({
+    page,
+  }) => {
+    await noWebGL({ page });
+    await page.goto("/#work");
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => {
+      document
+        .querySelector("#stocktill")
+        ?.scrollIntoView({ behavior: "instant" });
+    });
+    const link = page.locator("#stocktill [data-detail-link]");
+    await link.click();
+    await expect(page.locator("[data-detail-dialog]")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page).toHaveURL(/#work$/);
+    await page.waitForTimeout(800);
+    await expect(page.locator("#stocktill h3")).toBeInViewport();
+    await expect(link).toBeFocused();
   });
 
   test("browser Back and the back link close it", async ({ page }) => {

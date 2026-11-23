@@ -21,7 +21,7 @@ const { ui } = await getProfile();
     {projects.map((project, index) => (
       <li>
         <a class="work-index__link" href={`#${project.id}`} data-index-link>
-          <span class="work-index__number" aria-hidden="true" data-decode>
+          <span class="work-index__number" aria-hidden="true">
             [{String(index + 1).padStart(2, "0")}]
           </span>
           <span class="work-index__name">{shortTitle(project.data.title)}</span>

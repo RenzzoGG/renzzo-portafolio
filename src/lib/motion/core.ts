@@ -15,6 +15,7 @@ const DECODE_S = 0.32;
 const COUNT_S = 0.9;
 const MIN_COUNT = 10;
 const SCROLL_CALM_MS = 240;
+const BAND_DELAY_MS = 180;
 const DESKTOP = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
 
 const glyph = () =>
@@ -52,6 +53,9 @@ function countFrames(text: string) {
     rest;
 }
 
+/** Survives a Motion toggle, so text already seen never replays. */
+const played = new WeakSet<Element>();
+
 export function startMotion() {
   const cleanups = new Set<() => void>();
   let stopped = false;
@@ -63,29 +67,43 @@ export function startMotion() {
     play: (element: HTMLElement) => void,
     arm?: (element: HTMLElement) => void,
   ) => {
+    const timers = new Set<number>();
     const items = [...document.querySelectorAll<HTMLElement>(selector)].filter(
       (item) => {
         const box = item.getBoundingClientRect();
-        return box.width > 1 && box.top > window.innerHeight;
+        return (
+          !played.has(item) && box.width > 1 && box.top > window.innerHeight
+        );
       },
     );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            observer.unobserve(entry.target);
-            play(entry.target as HTMLElement);
-          }
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target as HTMLElement;
+        observer.unobserve(element);
+        played.add(element);
+        // Past the trigger line it plays now. In the bottom band it plays
+        // shortly after, so text can never rest invisible on screen.
+        const line = window.innerHeight * (1 - marginPercent / 100);
+        if (entry.boundingClientRect.top <= line) {
+          play(element);
+        } else {
+          const timer = window.setTimeout(() => {
+            timers.delete(timer);
+            play(element);
+          }, BAND_DELAY_MS);
+          timers.add(timer);
         }
-      },
-      { rootMargin: `0px 0px -${String(marginPercent)}% 0px` },
-    );
+      }
+    });
     for (const item of items) {
       arm?.(item);
       observer.observe(item);
     }
     cleanups.add(() => {
       observer.disconnect();
+      for (const timer of timers) clearTimeout(timer);
+      timers.clear();
     });
   };
 
