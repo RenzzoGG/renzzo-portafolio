@@ -1,9 +1,12 @@
 ---
 import { getProfile, getServices } from "../lib/content.ts";
+import DotIcon from "./DotIcon.astro";
 import HudMarks from "./HudMarks.astro";
 
 const { ui, servicesLink } = await getProfile();
 const services = await getServices();
+const ICONS = ["rack", "page", "fix"] as const;
+const pad = (value: number) => String(value).padStart(2, "0");
 ---
 
 <section class="services" id="services" aria-labelledby="services-title">
@@ -23,8 +26,21 @@ const services = await getServices();
       </a>
     </div>
     <ul class="services__list">
-      {services.map(({ data }) => (
-        <li>
+      {services.map(({ data }, index) => (
+        <li class="channel" data-channel>
+          <div class="channel__monitor" aria-hidden="true">
+            <div class="channel__screen">
+              <div class="channel__picture">
+                <span class="channel__icon">
+                  <DotIcon name={ICONS[index] ?? "rack"} />
+                </span>
+              </div>
+              <span class="crt-raster" />
+              <span class="channel__number">
+                {ui.sets.channel} {pad(index + 1)}
+              </span>
+            </div>
+          </div>
           <h3>{data.title}</h3>
           <p>{data.text}</p>
           <ul class="stack-list" aria-label={`${data.title} stack`}>
@@ -32,6 +48,10 @@ const services = await getServices();
               <li>{item}</li>
             ))}
           </ul>
+          <a class="channel__link" href={servicesLink.href}>
+            {servicesLink.label}
+            <span class="visually-hidden">: {data.title}</span>
+          </a>
         </li>
       ))}
     </ul>
@@ -53,16 +73,61 @@ const services = await getServices();
   }
 
   .services__list {
+    display: grid;
+    gap: var(--space-6);
     margin-top: var(--space-6);
     padding: 0;
     list-style: none;
   }
 
-  .services__list > li {
+  .channel {
     display: grid;
-    gap: var(--space-2);
-    padding-block: var(--space-5);
-    border-top: 1px solid var(--color-border-strong);
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .channel__monitor {
+    margin-bottom: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-raised);
+    box-shadow: 0 22px 36px -26px rgb(0 0 0 / 0.95);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .channel__screen {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-ink);
+  }
+
+  .channel__picture {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0.58;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+
+  .channel__number {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: 3;
+    color: var(--color-glow);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.08em;
+  }
+
+  .channel__icon {
+    width: clamp(4.5rem, 34%, 6.5rem);
+    aspect-ratio: 1;
   }
 
   h3 {
@@ -75,11 +140,69 @@ const services = await getServices();
     line-height: var(--leading-snug);
   }
 
-  @media (min-width: 64rem) {
-    .services__list > li {
-      grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
-      gap: var(--space-6);
-      align-items: start;
+  .channel__link {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 2.75rem;
+    font-size: var(--text-small);
+    text-decoration-line: underline;
+  }
+
+  .channel:is(:hover, :focus-within, [data-on]) .channel__monitor {
+    border-color: var(--color-glow);
+  }
+
+  .channel:is(:hover, :focus-within, [data-on]) .channel__picture {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-motion="off"]))
+      .channel:is(:hover, :focus-within, [data-on])
+      .channel__picture {
+      animation: crt-on 420ms var(--ease-out) both;
+    }
+
+    :global(:root:not([data-motion="off"]))
+      .channel:is(:hover, :focus-within, [data-on])
+      .channel__icon
+      :global(.dot-icon__a) {
+      animation: dot-a 1.3s steps(1, end) 420ms infinite;
+    }
+
+    :global(:root:not([data-motion="off"]))
+      .channel:is(:hover, :focus-within, [data-on])
+      .channel__icon
+      :global(.dot-icon__b) {
+      animation: dot-b 1.3s steps(1, end) 420ms infinite;
+    }
+  }
+
+  @keyframes dot-a {
+    0% {
+      stroke: var(--color-led-off);
+    }
+
+    50% {
+      stroke: var(--color-glow);
+    }
+  }
+
+  @keyframes dot-b {
+    0% {
+      stroke: var(--color-glow);
+    }
+
+    50% {
+      stroke: var(--color-led-off);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .services__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-5);
     }
   }
 </style>

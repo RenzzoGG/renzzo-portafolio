@@ -1,0 +1,87 @@
+---
+/** An 11×11 LED icon. "#" is always lit, "a" and "b" alternate as two frames. */
+interface Props {
+  name: "rack" | "page" | "fix";
+}
+
+const ICONS = {
+  rack: [
+    "###########",
+    "#a.......##",
+    "###########",
+    "...........",
+    "###########",
+    "#b.......##",
+    "###########",
+    "...........",
+    "###########",
+    "#a.......##",
+    "###########",
+  ],
+  page: [
+    "###########",
+    "#.#.#.....#",
+    "###########",
+    "#.........#",
+    "#.aaaaaaa.#",
+    "#.........#",
+    "#.bbbbbbb.#",
+    "#.........#",
+    "#.aaaa....#",
+    "#.........#",
+    "###########",
+  ],
+  fix: [
+    "..#######..",
+    ".#.......#.",
+    "#.........#",
+    "#..a...ab.#",
+    "#...a.ab..#",
+    "#.b..ab...#",
+    "#..baba...#",
+    "#..ab..a..#",
+    "#.........#",
+    ".#.......#.",
+    "..#######..",
+  ],
+};
+
+const { name } = Astro.props;
+const path = (mark: string) =>
+  ICONS[name]
+    .flatMap((row, y) =>
+      [...row].flatMap((cell, x) =>
+        cell === mark ? [`M${x + 0.5} ${y + 0.5}h0`] : [],
+      ),
+    )
+    .join("");
+---
+
+<svg class="dot-icon" viewBox="0 0 11 11" aria-hidden="true">
+  <path class="dot-icon__base" d={path("#")}></path>
+  <path class="dot-icon__a" d={path("a")}></path>
+  <path class="dot-icon__b" d={path("b")}></path>
+</svg>
+
+<style>
+  .dot-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 0.72;
+  }
+
+  .dot-icon__base {
+    stroke: var(--color-signal);
+  }
+
+  .dot-icon__a {
+    stroke: var(--color-glow);
+  }
+
+  .dot-icon__b {
+    stroke: var(--color-led-off);
+  }
+</style>
