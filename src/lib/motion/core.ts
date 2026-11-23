@@ -10,10 +10,11 @@ gsap.registerPlugin(SplitText);
 
 const GLYPHS = "#%&*+/<=>\\_01";
 const KEEP = new Set([" ", "[", "]", "/"]);
-const DECODE_STEPS = 22;
-const DECODE_S = 0.5;
+const DECODE_STEPS = 8;
+const DECODE_S = 0.32;
 const COUNT_S = 0.9;
 const MIN_COUNT = 10;
+const SCROLL_CALM_MS = 240;
 const DESKTOP = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
 
 const glyph = () =>
@@ -93,6 +94,7 @@ export function startMotion() {
     duration: number,
     frame: (progress: number) => string,
   ) => {
+    delete element.dataset.signalArmed;
     const ghost = document.createElement("span");
     ghost.className = "motion-ghost";
     ghost.setAttribute("aria-hidden", "true");
@@ -138,7 +140,8 @@ export function startMotion() {
     };
     const tween = gsap.from(split.lines, {
       yPercent: 108,
-      duration: 0.8,
+      // Contact is the closing beat, so it keeps the longest entrance.
+      duration: element.closest(".contact") ? 0.8 : 0.6,
       stagger: 0.09,
       ease: "expo.out",
       onComplete: finish,
@@ -157,20 +160,54 @@ export function startMotion() {
       element.style.removeProperty("opacity");
     });
   });
-  onEnter("[data-decode]", 6, (element) => {
-    overlay(element, DECODE_S, decodeFrames(element.textContent));
-  });
-  onEnter("[data-count]", 35, (element) => {
-    const frames = countFrames(element.textContent);
-    if (frames) overlay(element, COUNT_S, frames);
-  });
+  // Armed below the viewport, so text a reader has seen never flips back.
+  const armText = (element: HTMLElement) => {
+    element.dataset.signalArmed = "";
+    cleanups.add(() => {
+      delete element.dataset.signalArmed;
+    });
+  };
+  onEnter(
+    "[data-decode]",
+    6,
+    (element) => {
+      overlay(element, DECODE_S, decodeFrames(element.textContent));
+    },
+    armText,
+  );
+  onEnter(
+    "[data-count]",
+    8,
+    (element) => {
+      const frames = countFrames(element.textContent);
+      if (frames) overlay(element, COUNT_S, frames);
+    },
+    (element) => {
+      if (countFrames(element.textContent)) armText(element);
+    },
+  );
 
   if (matchMedia(DESKTOP).matches) {
-    void import("./desktop.ts")
-      .then(({ startDesktop }) => {
-        if (!stopped) cleanups.add(startDesktop());
-      })
-      .catch(() => undefined);
+    // ScrollTrigger's setup can interrupt a native smooth scroll, so wait for calm.
+    let timer = 0;
+    const load = () => {
+      removeEventListener("scroll", wait);
+      void import("./desktop.ts")
+        .then(({ startDesktop }) => {
+          if (!stopped) cleanups.add(startDesktop());
+        })
+        .catch(() => undefined);
+    };
+    const wait = () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(load, SCROLL_CALM_MS);
+    };
+    addEventListener("scroll", wait, { passive: true });
+    wait();
+    cleanups.add(() => {
+      clearTimeout(timer);
+      removeEventListener("scroll", wait);
+    });
   }
 
   return () => {

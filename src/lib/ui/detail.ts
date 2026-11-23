@@ -6,6 +6,7 @@ const dialog = document.querySelector<HTMLDialogElement>(
   "[data-detail-dialog]",
 );
 const homeTitle = document.title;
+let opening = false;
 const isDetailPath = () => /^\/work\/[^/]+\/?$/.test(location.pathname);
 
 async function show(url: string) {
@@ -44,12 +45,18 @@ if (dialog) {
     const link = target.closest<HTMLAnchorElement>("[data-detail-link]");
     if (!link) return;
     event.preventDefault();
+    // A double click must not stack two history entries.
+    if (opening) return;
+    opening = true;
     show(link.href)
       .then(() => {
         history.pushState({ detail: true }, "", link.href);
       })
       .catch(() => {
         location.href = link.href; // The static route always works.
+      })
+      .finally(() => {
+        opening = false;
       });
   });
 

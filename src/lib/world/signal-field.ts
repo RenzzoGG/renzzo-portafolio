@@ -54,8 +54,8 @@ void main() {
   float stream = inLine * onRow * uStream * (0.2 + aSize * 0.8);
   vec2 streamAt = vec2(aCell.x - 0.5, fract(aCell.y + uTravel) - 0.5) * uView * vec2(1.0, 1.04);
 
-  // The curtain falls from the top, and each dot drops into its place.
-  float delay = (1.0 - aCell.y) * 0.58 + hash(aCell.x * 97.0 + aCell.y * 41.0) * 0.08;
+  // Contact rises from the bottom, so the dots land there first.
+  float delay = aCell.y * 0.58 + hash(aCell.x * 97.0 + aCell.y * 41.0) * 0.08;
   float land = smoothstep(delay, delay + 0.34, uCurtain);
   vec2 curtainAt = (aCell - 0.5) * uView;
   curtainAt.y += (1.0 - land) * (1.0 - land) * uView.y * 0.42;

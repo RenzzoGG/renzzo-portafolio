@@ -358,10 +358,14 @@ test.describe("fallbacks", () => {
       await expect(page.locator("[data-signal-tunnel]")).toBeHidden();
       await expect(page.locator(".world-canvas")).toHaveCount(0);
       expect(seen).toEqual([]);
-      const running = await page
-        .locator("[data-work-stage]")
-        .evaluate((stage) => stage.getAnimations({ subtree: true }).length);
-      expect(running).toBe(0);
+      // A zero-length color transition may still be finishing for one frame.
+      await expect
+        .poll(() =>
+          page
+            .locator("[data-work-stage]")
+            .evaluate((stage) => stage.getAnimations({ subtree: true }).length),
+        )
+        .toBe(0);
     });
   });
 });

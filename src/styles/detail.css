@@ -98,7 +98,7 @@
 }
 
 .detail-dialog {
-  width: 100%;
+  width: 100vw;
   max-width: none;
   height: 100dvh;
   max-height: none;

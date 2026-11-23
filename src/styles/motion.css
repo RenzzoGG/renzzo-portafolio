@@ -7,7 +7,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-[data-signal-busy] {
+[data-signal-busy],
+[data-signal-armed] {
   color: transparent !important;
 }
 
@@ -116,10 +117,13 @@ html:has(dialog[open]) {
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   :root:not([data-motion="off"]) [data-glitch] {
     position: relative;
+    width: fit-content;
   }
 
-  :root:not([data-motion="off"]) [data-glitch]:hover::before,
-  :root:not([data-motion="off"]) [data-glitch]:hover::after {
+  :root:not([data-motion="off"], [data-scrolling])
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::before,
+  :root:not([data-motion="off"], [data-scrolling])
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
     content: attr(data-glitch) / "";
     position: absolute;
     inset: 0;
@@ -127,18 +131,24 @@ html:has(dialog[open]) {
     animation: 260ms steps(1, end) both;
   }
 
-  :root:not([data-motion="off"]) [data-glitch]:hover::before {
+  :root:not([data-motion="off"], [data-scrolling])
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::before {
     color: var(--color-glow);
     animation-name: glitch-top;
   }
 
-  :root:not([data-motion="off"]) [data-glitch]:hover::after {
+  :root:not([data-motion="off"], [data-scrolling])
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
     color: var(--color-signal);
     animation-name: glitch-bottom;
   }
 
-  :root:not([data-motion="off"]) .contact [data-glitch]:hover::before,
-  :root:not([data-motion="off"]) .contact [data-glitch]:hover::after {
+  :root:not([data-motion="off"], [data-scrolling])
+    .contact
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::before,
+  :root:not([data-motion="off"], [data-scrolling])
+    .contact
+    [data-glitch]:not(:has(.reveal-line-mask)):hover::after {
     color: var(--color-bg);
   }
 }
@@ -190,5 +200,9 @@ html:has(dialog[open]) {
 @media print {
   [data-reveal] {
     opacity: 1 !important;
+  }
+
+  [data-signal-armed] {
+    color: inherit !important;
   }
 }

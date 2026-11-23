@@ -48,6 +48,7 @@ const scrollThrough = async (page: Page) => {
 const expectFinalState = async (page: Page) => {
   await expect(page.locator(".motion-ghost")).toHaveCount(0);
   await expect(page.locator("[data-signal-busy]")).toHaveCount(0);
+  await expect(page.locator("[data-signal-armed]")).toHaveCount(0);
   await expect(page.locator(".reveal-line")).toHaveCount(0);
   const hidden = await page
     .locator("[data-reveal]")
@@ -286,7 +287,6 @@ test.describe("project detail", () => {
         ?.scrollIntoView({ behavior: "instant" });
     });
     const link = page.locator("#pulse-theory [data-detail-link]");
-    const y = await page.evaluate(() => scrollY);
     await link.click();
     const dialog = page.locator("[data-detail-dialog]");
     await expect(dialog).toBeVisible();
@@ -298,9 +298,25 @@ test.describe("project detail", () => {
     await expect(dialog).toBeHidden();
     await expect(page).toHaveURL(/\/$/);
     await expect(link).toBeFocused();
-    expect(Math.abs((await page.evaluate(() => scrollY)) - y)).toBeLessThan(
-      120,
-    );
+    await expect(page.locator("#pulse-theory h3")).toBeInViewport();
+  });
+
+  test("a double click opens once, and Escape leaves the route", async ({
+    page,
+  }) => {
+    await noWebGL({ page });
+    await page.goto("/");
+    const before = await page.evaluate(() => history.length);
+    const link = page.locator("#clearline-dental [data-detail-link]");
+    await link.dblclick();
+    const dialog = page.locator("[data-detail-dialog]");
+    await expect(dialog).toBeVisible();
+    expect(await page.evaluate(() => history.length)).toBe(before + 1);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(page).toHaveURL(/\/$/);
+    await page.waitForTimeout(300);
+    await expect(dialog).toBeHidden();
   });
 
   test("browser Back and the back link close it", async ({ page }) => {

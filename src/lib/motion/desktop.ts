@@ -70,7 +70,22 @@ export function startDesktop() {
   });
   resizes.observe(document.body);
 
+  // Content moving under a still cursor isn't hover intent, so no glitch.
+  const root = document.documentElement;
+  let settle = 0;
+  const onScroll = () => {
+    root.dataset.scrolling = "";
+    clearTimeout(settle);
+    settle = window.setTimeout(() => {
+      delete root.dataset.scrolling;
+    }, 160);
+  };
+  addEventListener("scroll", onScroll, { passive: true });
+
   return () => {
+    removeEventListener("scroll", onScroll);
+    clearTimeout(settle);
+    delete root.dataset.scrolling;
     clearTimeout(timer);
     resizes.disconnect();
     context.revert();
