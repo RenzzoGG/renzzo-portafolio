@@ -8,10 +8,13 @@ import {
 } from "three";
 import type { LedFace } from "../face/decode.ts";
 import { createField } from "./displacement.ts";
+import { createDrum } from "./drum.ts";
 import { createFaceLayer } from "./face-layer.ts";
 import { createGridWall } from "./grid-wall.ts";
+import { smoothstep } from "./journey.ts";
 import { createPost } from "./post.ts";
-import type { SlotRect, View, WorldStats } from "./protocol.ts";
+import type { DrumLayout, SlotRect, View, WorldStats } from "./protocol.ts";
+import { createTunnel } from "./tunnel.ts";
 
 const FOV = 30;
 const MAX_DPR = 2;
@@ -23,12 +26,19 @@ const SLOW_WINDOW_MS = 1200;
 const MAX_YAW = 0.2;
 const MAX_PITCH = 0.12;
 const DISRUPT_FORCE = 3.2;
+const SCREENS = 4;
+const JOURNEY_FOLLOW = 8;
+const PULL_BACK = 0.34;
+/** Journey units per second that count as the fastest scroll. */
+const FAST_SCROLL = 1.5;
 
 export interface SceneOptions {
   canvas: HTMLCanvasElement | OffscreenCanvas;
   face: LedFace;
   view: View;
   slot: SlotRect;
+  journey: number;
+  drum: DrumLayout;
   onFirstFrame: () => void;
   onFailed: () => void;
   onStats?: (stats: WorldStats) => void;
@@ -37,6 +47,9 @@ export interface SceneOptions {
 export interface WorldScene {
   setView(view: View, slot: SlotRect): void;
   setSlot(slot: SlotRect): void;
+  setJourney(value: number): void;
+  setDrum(drum: DrumLayout): void;
+  loadTexture(index: number, url: string): void;
   setPointer(x: number, y: number, inside: boolean): void;
   setActive(active: boolean): void;
   dispose(): void;
@@ -72,16 +85,19 @@ export function createScene(options: SceneOptions): WorldScene {
   });
   renderer.outputColorSpace = LinearSRGBColorSpace;
   renderer.autoClear = true;
-  renderer.setClearColor(0x000000, 1);
+  // Alpha 0 lets the analog pass tell covered pixels from empty ground.
+  renderer.setClearColor(0x000000, 0);
 
   const field = createField(renderer);
   const wall = createGridWall();
   const faceLayer = createFaceLayer(face, field.texture);
   faceLayer.uniforms.uFieldOn.value = field.supported ? 1 : 0;
   const post = createPost();
+  const tunnel = createTunnel(face);
+  const drum = createDrum(options.drum, SCREENS);
 
   const scene = new Scene();
-  scene.add(wall.mesh, faceLayer.mesh);
+  scene.add(wall.mesh, faceLayer.mesh, tunnel.mesh, ...drum.meshes);
   const camera = new PerspectiveCamera(FOV, 1, 10, 20000);
   const target = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -109,6 +125,11 @@ export function createScene(options: SceneOptions): WorldScene {
   let aimY = 0;
   let yaw = { value: 0, velocity: 0 };
   let pitch = { value: 0, velocity: 0 };
+  let journeyTarget = options.journey;
+  let journey = options.journey;
+  let speed = 0;
+  let baseZ = 1000;
+  const slotCenter = new Vector2();
 
   function applySize() {
     const dpr = Math.min(view.dpr, dprLimit);
@@ -121,20 +142,29 @@ export function createScene(options: SceneOptions): WorldScene {
     wall.uniforms.uWidth.value = width * dpr;
     camera.aspect = width / height;
     // One world unit equals one CSS pixel on the z = 0 plane.
-    camera.position.z = height / 2 / Math.tan((FOV * Math.PI) / 360);
-    camera.far = camera.position.z * 6;
+    baseZ = height / 2 / Math.tan((FOV * Math.PI) / 360);
+    camera.position.z = baseZ;
+    camera.far = baseZ * 7;
     camera.updateProjectionMatrix();
     wall.resize(width, height);
+    tunnel.resize(width, height, baseZ);
+    drum.resize(view);
+    faceLayer.uniforms.uTunnel.value.set(
+      tunnel.uniforms.uRadius.value,
+      tunnel.uniforms.uLength.value,
+      baseZ,
+    );
     applySlot();
   }
 
   function applySlot() {
     const { uniforms } = faceLayer;
     uniforms.uSize.value.set(slot.width, slot.height);
-    uniforms.uCenter.value.set(
+    slotCenter.set(
       slot.x + slot.width / 2 - view.width / 2,
       view.height / 2 - (slot.y + slot.height / 2),
     );
+    uniforms.uCenter.value.copy(slotCenter);
     const centerX = (slot.x + slot.width / 2) / view.width;
     wall.uniforms.uFocus.value.set(centerX, slot.width / view.width / 2);
     post.uniforms.uSafe.value.set(
@@ -180,10 +210,53 @@ export function createScene(options: SceneOptions): WorldScene {
       11,
     );
 
+    // Native scroll stays in charge. The camera only eases toward it.
+    const previous = journey;
+    journey += (journeyTarget - journey) * (1 - Math.exp(-dt * JOURNEY_FOLLOW));
+    if (Math.abs(journeyTarget - journey) < 0.0002) journey = journeyTarget;
+    const rate = dt > 0 ? Math.abs(journey - previous) / dt : 0;
+    speed += (rate / FAST_SCROLL - speed) * (1 - Math.exp(-dt * 10));
+    const velocity = Math.min(1, speed);
+
+    const leaving = smoothstep(0, 0.55, journey);
+    const arrived = smoothstep(1.35, 1.9, journey);
+    camera.position.z =
+      baseZ * (1 + PULL_BACK * smoothstep(0, 1, journey) * (1 - arrived));
+
     const { uniforms } = faceLayer;
+    const flow = Math.max(0, Math.min(1, (journey - 0.1) / 1));
+    uniforms.uFlow.value = flow;
+    uniforms.uCenter.value.copy(slotCenter).multiplyScalar(1 - leaving);
+    faceLayer.mesh.visible = journey < 1.25;
+    wall.mesh.visible = journey < 0.9;
+    wall.uniforms.uFade.value = 1 - smoothstep(0.25, 0.85, journey);
+
+    const fade = 1 - smoothstep(1.4, 1.62, journey);
+    tunnel.mesh.visible = journey > 0.14 && fade > 0;
+    tunnel.uniforms.uForm.value = smoothstep(0.16, 1, journey);
+    tunnel.uniforms.uFade.value = fade;
+    tunnel.uniforms.uTravel.value = journey * 0.55 + time * 0.012;
+    tunnel.uniforms.uStretch.value = velocity;
+    tunnel.uniforms.uTime.value = time;
+    tunnel.uniforms.uCameraZ.value = camera.position.z;
+    tunnel.setQuality(quality);
+    drum.setQuality(quality);
+    drum.update(
+      renderer,
+      journey,
+      velocity,
+      time,
+      dt,
+      tunnel.uniforms.uLength.value * 0.7,
+    );
+
+    post.uniforms.uBone.value =
+      smoothstep(1.36, 1.6, journey) * (1 - smoothstep(5.2, 5.85, journey));
+    post.uniforms.uSafeAmount.value = 1 - smoothstep(0.78, 1, journey);
+
     const aspect = slot.height / slot.width;
     if (field.supported) {
-      field.update(pointer, DISRUPT_FORCE * hover, dt, aspect);
+      field.update(pointer, DISRUPT_FORCE * hover * (1 - leaving), dt, aspect);
       uniforms.uField.value = field.texture;
     }
     uniforms.uPointer.value.copy(pointer);
@@ -277,6 +350,15 @@ export function createScene(options: SceneOptions): WorldScene {
       slot = nextSlot;
       applySlot();
     },
+    setJourney(value) {
+      journeyTarget = value;
+    },
+    setDrum(next) {
+      drum.setLayout(next);
+    },
+    loadTexture(index, url) {
+      void drum.load(index, url);
+    },
     setPointer(x, y, inside) {
       // Leaving isn't a cursor position, so the burst fades where it is.
       if (!inside) {
@@ -312,6 +394,8 @@ export function createScene(options: SceneOptions): WorldScene {
       canvas.removeEventListener("webglcontextlost", lost);
       faceLayer.dispose();
       wall.dispose();
+      tunnel.dispose();
+      drum.dispose();
       post.dispose();
       field.dispose();
       target.dispose();

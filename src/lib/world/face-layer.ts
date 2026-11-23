@@ -9,6 +9,7 @@ import {
   OneFactor,
   RawShaderMaterial,
   Vector2,
+  Vector3,
   type Texture,
 } from "three";
 import type { LedFace } from "../face/decode.ts";
@@ -31,6 +32,8 @@ uniform float uAssemble;
 uniform float uTime;
 uniform float uFieldOn;
 uniform float uRadius;
+uniform float uFlow;
+uniform vec3 uTunnel; // radius, length, camera z
 uniform sampler2D uField;
 in vec3 position;
 in vec2 aGrid;
@@ -80,6 +83,16 @@ void main() {
   float radius = dotRadius * unit * mix(1.0, 0.44, energy);
   float streak = min(amount * uSize.x * 0.34, unit * (1.2 + seed * 1.8));
   float split = energy * unit * 0.4;
+
+  // Scroll peels the face from its edge inward, and each dot joins the tunnel.
+  float reach = length(aGrid) / 0.72;
+  float leave = (1.0 - min(reach, 1.0)) * 0.34 + seed * 0.2;
+  float flow = smoothstep(leave, leave + 0.44, uFlow);
+  if (flow > 0.0) {
+    vec2 outward = normalize(aGrid + vec2(0.0001));
+    dir = normalize(mix(dir, outward, min(flow * 4.0, 1.0)));
+    streak += flow * (1.0 - flow) * 4.0 * unit * (1.6 + seed * 2.4);
+  }
   float pad = unit * 0.2 + split;
 
   // The quad stretches along the push, so a dot becomes a streak.
@@ -105,6 +118,15 @@ void main() {
   point = vec3(cy * point.x + sy * point.z, point.y, -sy * point.x + cy * point.z);
   point = vec3(point.x, cx * point.y - sx * point.z, sx * point.y + cx * point.z);
 
+  vec3 placed = vec3(uCenter + point.xy, point.z);
+  if (flow > 0.0) {
+    float angle = atan(aGrid.y, aGrid.x) + flow * (0.9 + seed * 0.9);
+    vec3 wall = vec3(cos(angle) * uTunnel.x, sin(angle) * uTunnel.x,
+      uTunnel.z - 60.0 - fract(seed * 7.3) * uTunnel.y * 0.8);
+    placed = mix(placed, wall, flow * flow);
+    light *= 1.0 - smoothstep(0.8, 1.0, flow);
+  }
+
   vQuad = local;
   vDot = radius;
   vStreak = streak;
@@ -112,7 +134,7 @@ void main() {
   vEnergy = energy;
   vLight = light;
   gl_Position = projectionMatrix * modelViewMatrix
-    * vec4(uCenter + point.xy + offset, point.z, 1.0);
+    * vec4(placed.xy + offset, placed.z, 1.0);
 }
 `;
 
@@ -149,7 +171,9 @@ void main() {
       WHITE * ahead * lead * 0.7 * step(0.55, vLight));
     lit = mix(lit, split, vEnergy);
   }
-  color = vec4(lit * vLight, 1.0);
+  lit *= vLight;
+  // Alpha is coverage, so the bone background only shows where no dot is lit.
+  color = vec4(lit, max(lit.r, max(lit.g, lit.b)));
 }
 `;
 
@@ -191,6 +215,8 @@ export function createFaceLayer(face: LedFace, field: Texture) {
     uTime: { value: 0 },
     uFieldOn: { value: 1 },
     uRadius: { value: DISRUPT_RADIUS },
+    uFlow: { value: 0 },
+    uTunnel: { value: new Vector3(900, 8000, 1000) },
     uField: { value: field },
   };
   const material = new RawShaderMaterial({

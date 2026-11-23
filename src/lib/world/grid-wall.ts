@@ -26,6 +26,7 @@ precision highp float;
 uniform float uTime;
 uniform float uCell;
 uniform float uWidth;
+uniform float uFade;
 uniform vec2 uFocus; // face center and half width, in screen UV
 in vec2 vWall;
 out vec4 color;
@@ -45,7 +46,8 @@ void main() {
   float near = 1.0 - smoothstep(uFocus.y * 0.5, uFocus.y * 1.02, abs(gl_FragCoord.x / uWidth - uFocus.x));
   float pulse = smoothstep(0.7, 1.0, sweep) * near;
   vec3 tint = mix(vec3(0.15, 0.11, 0.135), vec3(0.42, 0.075, 0.14), pulse);
-  color = vec4(tint * lines * (0.7 + pulse * 0.3), 1.0);
+  vec3 lit = tint * lines * (0.7 + pulse * 0.3) * uFade;
+  color = vec4(lit, max(lit.r, max(lit.g, lit.b)));
 }
 `;
 
@@ -58,6 +60,7 @@ export function createGridWall() {
     uTime: { value: 0 },
     uCell: { value: 64 },
     uWidth: { value: 1 },
+    uFade: { value: 1 },
     uFocus: { value: new Vector2(0.5, 0.2) },
   };
   const material = new RawShaderMaterial({

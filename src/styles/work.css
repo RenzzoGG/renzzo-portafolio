@@ -164,7 +164,7 @@
 
 @media (min-width: 1024px) {
   .work__grid {
-    grid-template-columns: 12rem minmax(0, 1fr);
+    grid-template-columns: 15rem minmax(0, 1fr);
     gap: var(--space-7) var(--space-6);
   }
 
@@ -206,7 +206,7 @@
   }
 
   :root:not([data-motion="off"], [data-world-failed]) .work__stage {
-    padding-block: 0 60vh;
+    padding-block: 0 160vh;
   }
 
   :root:not([data-motion="off"], [data-world-failed]) .work__title {

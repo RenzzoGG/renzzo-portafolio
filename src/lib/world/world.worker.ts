@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 import { decodeFace } from "../face/decode.ts";
-import type { FromWorld, ToWorld, WorldInit } from "./protocol.ts";
+import type { DrumLayout, FromWorld, ToWorld, WorldInit } from "./protocol.ts";
 import { createScene, type WorldScene } from "./scene.ts";
 
 const context = self as unknown as DedicatedWorkerGlobalScope;
@@ -11,6 +11,10 @@ const send = (message: FromWorld) => {
 let scene: WorldScene | null = null;
 let closing = false;
 let active = true;
+// Scrolling can start while the face data is still loading.
+let pendingJourney: number | null = null;
+let pendingDrum: DrumLayout | null = null;
+const pendingTextures = new Map<number, string>();
 
 async function init(message: WorldInit) {
   try {
@@ -26,6 +30,8 @@ async function init(message: WorldInit) {
       face,
       view: message.view,
       slot: message.slot,
+      journey: pendingJourney ?? message.journey,
+      drum: pendingDrum ?? message.drum,
       onFirstFrame: () => {
         send({ type: "first-frame" });
       },
@@ -40,6 +46,8 @@ async function init(message: WorldInit) {
     });
     // The hero may have left the screen while the scene was loading.
     scene.setActive(active);
+    for (const [index, url] of pendingTextures) scene.loadTexture(index, url);
+    pendingTextures.clear();
   } catch {
     send({ type: "failed" });
   }
@@ -56,6 +64,18 @@ context.onmessage = (event: MessageEvent<ToWorld | WorldInit>) => {
       break;
     case "slot":
       scene?.setSlot(message.slot);
+      break;
+    case "journey":
+      pendingJourney = message.value;
+      scene?.setJourney(message.value);
+      break;
+    case "drum":
+      pendingDrum = message.drum;
+      scene?.setDrum(message.drum);
+      break;
+    case "texture":
+      if (scene) scene.loadTexture(message.index, message.url);
+      else pendingTextures.set(message.index, message.url);
       break;
     case "pointer":
       scene?.setPointer(message.x, message.y, message.inside);

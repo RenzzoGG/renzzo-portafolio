@@ -36,10 +36,13 @@ uniform float uTime;
 uniform float uIntensity;
 uniform float uQuality;
 uniform vec4 uSafe; // slot center x, slot half width, fade width, header line (all in UV)
+uniform float uSafeAmount;
+uniform float uBone;
 in vec2 vUv;
 out vec4 color;
 
 const vec3 BASE = vec3(0.043, 0.039, 0.047);
+const vec3 BONE = vec3(0.949, 0.933, 0.918);
 
 float random(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -71,20 +74,31 @@ void main() {
   } else {
     scene = texture(uScene, uv).rgb;
   }
-  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) scene = vec3(0.0);
+  float cover = texture(uScene, uv).a;
+  // On bone the frame has no dark tube edge, so screens run cleanly off it.
+  if (uBone < 0.5 && (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)) {
+    scene = vec3(0.0);
+    cover = 0.0;
+  }
 
-  vec3 result = BASE + scene;
+  // The ground shifts to bone behind the screens. Dark keeps the hero's look.
+  vec3 ground = mix(BASE, BONE, uBone) * (1.0 - cover) + scene;
+  vec3 result = mix(BASE + scene, ground, step(0.0001, uBone));
   float scan = 0.5 + 0.5 * sin(vUv.y * uResolution.y * 1.5708);
-  result *= 1.0 - 0.34 * amount * (1.0 - scan);
+  // Project screens must stay readable, so bone softens the tube effects.
+  result *= 1.0 - 0.34 * amount * (1.0 - scan) * (1.0 - 0.62 * uBone);
   float vignette = smoothstep(0.92, 0.28, length(fromCenter * vec2(1.0, 1.12)));
-  result *= mix(1.0, vignette, 0.9 * amount);
+  result *= mix(1.0, vignette, 0.9 * amount * (1.0 - 0.8 * uBone));
   result += (random(vUv * uResolution + uTime * 60.0) - 0.5) * 0.05 * amount;
 
   // HTML text sits over these areas, so the scene stays dark enough for AA.
   float beside = smoothstep(uSafe.y, uSafe.y + uSafe.z, abs(vUv.x - uSafe.x));
   float header = smoothstep(uSafe.w - 0.02, uSafe.w, vUv.y);
-  float safe = max(beside, header);
+  float safe = max(beside, header) * uSafeAmount;
   result = mix(result, min(result, vec3(0.085)), safe);
+
+  // Bone stays the exact page color, so the HTML panels sit on it with no seam.
+  result = mix(result, ground, uBone * (1.0 - cover));
 
   color = vec4(clamp(result, 0.0, 1.0), 1.0);
 }
@@ -103,6 +117,8 @@ export function createPost() {
     uIntensity: { value: ANALOG_INTENSITY },
     uQuality: { value: 1 },
     uSafe: { value: new Vector4(0.5, 0.25, 0.04, 0.92) },
+    uSafeAmount: { value: 1 },
+    uBone: { value: 0 },
   };
   const material = new RawShaderMaterial({
     glslVersion: GLSL3,

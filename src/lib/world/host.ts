@@ -1,5 +1,12 @@
 import faceUrl from "../../assets/face/face.bin?url";
+import {
+  buildStops,
+  journeyAt,
+  smoothstep,
+  type JourneyStop,
+} from "./journey.ts";
 import type {
+  DrumLayout,
   FromWorld,
   SlotRect,
   ToWorld,
@@ -88,6 +95,8 @@ async function openMainThread(
     face: decodeFace(await response.arrayBuffer()),
     view: init.view,
     slot: init.slot,
+    journey: init.journey,
+    drum: init.drum,
     onFirstFrame: () => {
       listen({ type: "first-frame" });
     },
@@ -104,7 +113,11 @@ async function openMainThread(
     send(message) {
       if (message.type === "view") scene.setView(message.view, message.slot);
       else if (message.type === "slot") scene.setSlot(message.slot);
-      else if (message.type === "pointer") {
+      else if (message.type === "journey") scene.setJourney(message.value);
+      else if (message.type === "drum") scene.setDrum(message.drum);
+      else if (message.type === "texture") {
+        scene.loadTexture(message.index, message.url);
+      } else if (message.type === "pointer") {
         scene.setPointer(message.x, message.y, message.inside);
       } else if (message.type === "active") scene.setActive(message.active);
     },
@@ -117,6 +130,16 @@ async function openMainThread(
 export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   const hero = slot.closest<HTMLElement>("[data-hero]") ?? slot;
   const header = document.querySelector("header");
+  const root = document.documentElement;
+  const stage = document.querySelector<HTMLElement>("[data-work-stage]");
+  const tunnelSpace = document.querySelector<HTMLElement>(
+    "[data-signal-tunnel]",
+  );
+  const cases = [...document.querySelectorAll<HTMLElement>("[data-texture]")];
+  const requested = new Set<number>();
+  const showing = new Set<Element>([hero]);
+  let stops: JourneyStop[] = [];
+  let journey = 0;
   const showStats =
     import.meta.env.DEV && new URLSearchParams(location.search).has("fps");
 
@@ -148,19 +171,72 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     top: header?.getBoundingClientRect().bottom ?? 0,
   });
 
-  const fadeWithScroll = () => {
-    if (!canvas || !live) return;
-    const box = hero.getBoundingClientRect();
-    const progress = Math.max(0, Math.min(1, -box.top / (box.height * 0.72)));
-    canvas.style.opacity = String(1 - progress);
+  const readDrum = (): DrumLayout => {
+    const media = cases[0]?.querySelector("[data-screen-slot]");
+    const box = media?.getBoundingClientRect();
+    return {
+      x: box ? box.x + box.width / 2 : window.innerWidth / 2,
+      width: box?.width ?? 640,
+      accents: cases.map((item) => {
+        const hex = getComputedStyle(item)
+          .getPropertyValue("--accent")
+          .trim()
+          .replace("#", "");
+        const value = Number.parseInt(hex, 16) || 0xc21d3a;
+        return [
+          ((value >> 16) & 255) / 255,
+          ((value >> 8) & 255) / 255,
+          (value & 255) / 255,
+        ];
+      }),
+    };
+  };
+
+  /** Layout is read only when it changes, never on each scroll event. */
+  const measure = () => {
+    const top = (element: Element) =>
+      element.getBoundingClientRect().top + scrollY;
+    stops = buildStops({
+      heroBottom: top(hero) + hero.offsetHeight,
+      cases: cases.map((item) => ({
+        top: top(item),
+        height: item.offsetHeight,
+      })),
+      stageBottom: stage ? top(stage) + stage.offsetHeight : 0,
+      viewport: window.innerHeight,
+    });
+  };
+
+  const applyJourney = () => {
+    journey = journeyAt(scrollY, stops);
+    link?.send({ type: "journey", value: journey });
+    // Textures stream in for the project in view and its neighbors.
+    if (journey >= 1) {
+      const position = journey - 2;
+      cases.forEach((item, index) => {
+        const url = item.dataset.texture;
+        if (url && !requested.has(index) && Math.abs(index - position) <= 1.2) {
+          requested.add(index);
+          link?.send({
+            type: "texture",
+            index,
+            url: new URL(url, location.href).href,
+          });
+        }
+      });
+    }
+    if (canvas && live) {
+      // Past the drum the page is dark again, and the frozen frame must go.
+      canvas.style.opacity = String(1 - smoothstep(5.82, 6, journey));
+    }
   };
 
   const flush = () => {
     frame = 0;
     if (scrollDirty) {
       scrollDirty = false;
-      link?.send({ type: "slot", slot: readSlot() });
-      fadeWithScroll();
+      if (journey < 1.3) link?.send({ type: "slot", slot: readSlot() });
+      applyJourney();
     }
     if (pendingPointer) {
       link?.send({ type: "pointer", ...pendingPointer });
@@ -185,13 +261,27 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   };
   const onResize = () => {
     link?.send({ type: "view", view: readView(), slot: readSlot() });
-    fadeWithScroll();
+    relayout();
   };
+  const relayout = () => {
+    measure();
+    link?.send({ type: "drum", drum: readDrum() });
+    applyJourney();
+  };
+  // Catches anything that changes height, such as an opened <details>.
+  const resizes = new ResizeObserver(() => {
+    relayout();
+  });
   const syncActive = () => {
     link?.send({ type: "active", active: onScreen && !document.hidden });
   };
-  const visibility = new IntersectionObserver(([entry]) => {
-    onScreen = entry?.isIntersecting ?? true;
+  // The world runs from the hero to the end of Featured Work, then rests.
+  const visibility = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) showing.add(entry.target);
+      else showing.delete(entry.target);
+    }
+    onScreen = showing.size > 0;
     syncActive();
   });
 
@@ -206,12 +296,14 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     removeEventListener("resize", onResize);
     document.removeEventListener("visibilitychange", syncActive);
     visibility.disconnect();
+    resizes.disconnect();
     link?.close();
     link = null;
     canvas?.remove();
     canvas = null;
     live = false;
     delete slot.dataset.world;
+    delete root.dataset.worldLive;
   };
 
   const makeCanvas = () => {
@@ -232,9 +324,10 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
       clearTimeout(timer);
       live = true;
       // One crossfade: the frame fades in as the poster and panel fade out.
-      fadeWithScroll();
+      applyJourney();
       if (canvas) canvas.dataset.live = "";
       slot.dataset.world = "live";
+      root.dataset.worldLive = "";
       syncActive();
       settle = window.setTimeout(() => {
         if (canvas) canvas.dataset.settled = "";
@@ -257,6 +350,8 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     faceUrl: new URL(faceUrl, location.href).href,
     view: readView(),
     slot: readSlot(),
+    journey,
+    drum: readDrum(),
     stats: showStats,
   });
 
@@ -283,6 +378,8 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     }
   }
 
+  measure();
+  journey = journeyAt(scrollY, stops);
   const first = makeCanvas();
   link = openWorker(first, options(), handle);
   armTimeout();
@@ -293,7 +390,10 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   addEventListener("scroll", onScroll, { passive: true });
   addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", syncActive);
-  visibility.observe(hero);
+  for (const part of [hero, tunnelSpace, stage]) {
+    if (part) visibility.observe(part);
+  }
+  resizes.observe(document.body);
 
   if (import.meta.env.DEV && showStats) {
     void import("./fps-overlay.ts").then(({ createFpsOverlay }) => {
