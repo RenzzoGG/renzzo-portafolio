@@ -399,7 +399,7 @@ test.describe("contrast on bone", () => {
         found.push({
           text: node.textContent.trim().slice(0, 40),
           color: toHex(getComputedStyle(parent).color),
-          onDark: Boolean(parent.closest(".btn:not(.btn--ghost), .seg")),
+          onDark: Boolean(parent.closest(".btn:not(.btn--ghost)")),
         });
       }
       return found;

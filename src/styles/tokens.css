@@ -193,6 +193,13 @@
 }
 
 [data-tone="bone"] {
+  /* LED readouts are drawn on the surface: signal is 5.15:1 on bone. */
+  --seg-lit: var(--color-signal);
+  --seg-off: color-mix(in srgb, var(--color-ink) 7%, var(--color-bone));
+  --seg-ground: transparent;
+  --seg-border: color-mix(in srgb, var(--color-ink) 12%, var(--color-bone));
+  --seg-shadow: none;
+
   color: var(--color-ink);
 }
 
