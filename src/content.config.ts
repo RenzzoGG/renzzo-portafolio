@@ -156,6 +156,7 @@ const profile = defineCollection({
         services: text,
         cv: text,
       }),
+      workIndex: text,
       facts: z.strictObject({ location: text, work: text, languages: text }),
       project: z.strictObject({
         live: text,

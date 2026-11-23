@@ -89,6 +89,11 @@ export const CONTRAST_PAIRS: ContrastPair[] = [
   ...across("--color-focus-ring", SURFACES, "ui"),
   ...across("--color-on-signal", ["--color-signal"], "body"),
   ...across("--color-on-signal", ["--color-signal-hover"], "body"),
+  ...across("--color-ink", ["--color-bone"], "body"),
+  ...across("--color-muted-on-bone", ["--color-bone"], "body"),
+  ...across("--color-signal", ["--color-bone"], "body"),
+  ...across("--color-border-strong", ["--color-bone"], "ui"),
+  ...across("--color-bone", ["--color-ink"], "body"),
   ...ACCENTS.flatMap((accent) => [
     ...across(`--accent-${accent}-text`, SURFACES, "body"),
     ...across(`--accent-${accent}-on`, [`--accent-${accent}`], "body"),

@@ -13,6 +13,11 @@
   --color-signal: #c21d3a; /* Large text, UI and fills only: 3.32:1 on bg. */
   --color-glow: #ff3b5c; /* Use this when text must read as "signal". */
 
+  /* Bone-white sections. Glow is 3.02:1 here, so it's never text on bone. */
+  --color-bone: #f2eeea;
+  --color-ink: #0b0a0c;
+  --color-muted-on-bone: #5f585e;
+
   /* Surfaces and states */
   --color-surface-subtle: #100f12;
   --color-surface-raised: #1e1b21;
@@ -169,6 +174,30 @@
   --accent: var(--accent-stocktill);
   --accent-text: var(--accent-stocktill-text);
   --accent-on: var(--accent-stocktill-on);
+}
+
+/* Bone surface: every color inside is remapped to pass AA on bone. */
+[data-tone="bone"],
+[data-tone="bone"] [data-accent] {
+  --color-text: var(--color-ink);
+  --color-muted: var(--color-muted-on-bone);
+  --color-border: color-mix(in srgb, var(--color-ink) 14%, var(--color-bone));
+  --color-surface-hover: color-mix(
+    in srgb,
+    var(--color-ink) 8%,
+    var(--color-bone)
+  );
+  --color-focus-ring: var(--color-signal);
+  --accent-text: var(--color-ink);
+}
+
+[data-tone="bone"] {
+  color: var(--color-ink);
+}
+
+[data-tone="bone"] ::selection {
+  background: var(--color-signal);
+  color: var(--color-bone);
 }
 
 /* Near-zero rather than 0 so transitionend and animationend still fire. */

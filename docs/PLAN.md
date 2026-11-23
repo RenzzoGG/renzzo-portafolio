@@ -181,7 +181,15 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - **Accessible content:** each project keeps its real DOM heading, text, links and image alternative. The drum is decorative.
 - **Textures:** project textures stream per section as they approach. AVIF comes first, decoded off the main thread. KTX2 is used only if GPU memory requires it and its transcoder fits the WebGL JS budget.
 - **Bone-white shift:** the section background shifts to `#F2EEEA` and back. On bone, text uses `#0B0A0C` (17.12:1) and signal `#C21D3A` (5.15:1). Muted text uses a new approved token, `#5F585E` (5.98:1), because the current muted fails (3.20:1). Glow (`#FF3B5C`, 3.02:1) is not used for text on bone.
-- **Mobile:** the index plus stacked cards with a light CSS VHS overlay, and CSS/GSAP motion. No WebGL.
+- **Mobile:** the index plus stacked cards with a light CSS VHS overlay, and CSS motion. No WebGL.
+
+**Decisions (approved 2026-11-22)**
+
+- **Section order:** Hero → Featured Work → About, so the tunnel leads straight to the drum.
+- **No GSAP in this phase.** Scroll maps to one number on desktop and mobile only needs CSS. GSAP moves to Phase 6, where timelines are needed. No new dependencies here.
+- **Text contrast never depends on the canvas.** The text column and index have their own solid bone background, and the color shift happens in the text-free part of the tunnel.
+- **Headings on bone use ink.** All four project accent text colors fail AA on bone, so accents stay on non-text marks and the CRT frames.
+- **Scroll space is reserved by CSS** with a media query, before first paint, and collapses if WebGL fails.
 
 **Acceptance checks**
 
@@ -274,7 +282,7 @@ Every dependency must be justified here before it's added. Versions are pinned e
 | sharp                                                       | 0.35.5           | 2     | dev                     | Compresses the generated OG image. Same version Astro already installs for its image pipeline, declared because a script now imports it directly.                                       |
 | three                                                       | 0.187.0          | 4     | runtime (lazy, desktop) | WebGL for the persistent LED world, in a worker or on the main thread. MIT. Imported only through dynamic `import()`, inside the 250 KB gzip WebGL budget. No third-party network use.  |
 | @types/three                                                | 0.187.0          | 4     | dev                     | Strict TypeScript types matching the Three.js version. MIT. Not shipped.                                                                                                                |
-| gsap                                                        | 3.15.1 (planned) | 5     | runtime (lazy)          | Timelines and ScrollTrigger for DOM choreography and mobile motion. Standard no-charge license (free, not open source). Deferred chunk, never loaded with reduced motion or Motion off. |
+| gsap                                                        | 3.15.1 (planned) | 6     | runtime (lazy)          | Timelines and ScrollTrigger for DOM choreography and mobile motion. Standard no-charge license (free, not open source). Deferred chunk, never loaded with reduced motion or Motion off. |
 | uv                                                          | 0.13.7           | 3     | user tool, dev-only     | Manages the pipeline's Python and locked env. MIT / Apache-2.0. Network: installs Python and packages. Installed in `~/.local/bin` with Renzzo's approval, no shell profile changes.    |
 | Python (via uv)                                             | 3.13             | 3     | dev-only, offline       | Runtime for `scripts/face/`. PSF-2.0. Network: one download by uv. Not shipped.                                                                                                         |
 | onnxruntime                                                 | 1.32.0           | 3     | dev-only, offline       | Runs both models on CPU without PyTorch, which keeps the install small on a 3 GB machine. MIT. No network use.                                                                          |

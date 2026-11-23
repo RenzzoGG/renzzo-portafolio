@@ -65,6 +65,7 @@
       certifications: Certifications
       services: Services
       cv: CV
+    workIndex: Selected work
     facts: { location: Location, work: Work, languages: Languages }
     project:
       live: Live demo

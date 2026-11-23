@@ -112,6 +112,7 @@ Section link: "Let's talk →" (to #contact).
 - **Nav:** Work · Skills · Services · CV · Contact
 - **Hero actions:** See my work · Let's talk
 - **Section headings:** About · Featured work · More work · Skills · Education · Certifications · Services · CV
+- **Featured work index:** Selected work
 - **About facts:** Location · Work · Languages
 - **Project:** Live demo · Source · Landing · Landing source · How it's built
 - **CV actions:** Download CV (PDF) · View full CV
