@@ -259,7 +259,8 @@ export function createScene(options: SceneOptions): WorldScene {
     tunnel.mesh.visible = journey > 0.14 && fade > 0;
     tunnel.uniforms.uForm.value = smoothstep(0.16, 1, journey);
     tunnel.uniforms.uFade.value = fade;
-    tunnel.uniforms.uTravel.value = journey * 0.55 + time * 0.012;
+    // Slow enough that rings passing on a fast scroll never read as a red flash.
+    tunnel.uniforms.uTravel.value = journey * 0.2 + time * 0.012;
     tunnel.uniforms.uStretch.value = velocity;
     tunnel.uniforms.uTime.value = time;
     tunnel.uniforms.uCameraZ.value = camera.position.z;

@@ -152,7 +152,7 @@ export const releaseAt = (value: number) => ({
 /** Every layer and effect of the trip, as a pure function of the journey. */
 export function actAt(value: number): Act {
   return {
-    bone: between(1.36, 1.6, 5.3, 5.74, value),
+    bone: between(1.36, 1.6, 5.24, 5.6, value),
     wall: Math.max(
       1 - smoothstep(0.25, 0.85, value),
       between(5.4, 5.9, 6.55, 6.95, value),
@@ -168,7 +168,7 @@ export function actAt(value: number): Act {
       bump(5.22, 5.95, value),
       bump(7.1, 7.9, value),
       0.35 * bump(8.1, 8.9, value),
-      0.6 * bump(10.1, 10.55, value),
+      0.25 * bump(10.1, 10.5, value),
     ),
     slice: Math.max(
       bump(7.05, 7.95, value),

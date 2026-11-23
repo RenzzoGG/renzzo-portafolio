@@ -75,6 +75,18 @@
   background: linear-gradient(to bottom, transparent, var(--color-bg));
 }
 
+/*
+ * Just under opaque: an opaque panel lets the compositor cull the canvas below
+ * it, and on the main-thread renderer that cut a dark block out of the scene.
+ */
+:root[data-world-live] .work__rail {
+  background: rgb(242 238 234 / 0.996);
+}
+
+:root[data-world-live] footer {
+  background: rgb(11 10 12 / 0.996);
+}
+
 :root[data-world-live] .services {
   background: transparent;
 }
