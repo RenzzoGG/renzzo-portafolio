@@ -1,6 +1,7 @@
 ---
 import { Picture } from "astro:assets";
 import { getProfile, getProjects } from "../lib/content.ts";
+import CassetteReel from "./CassetteReel.astro";
 import ExternalLink from "./ExternalLink.astro";
 
 const { ui } = await getProfile();
@@ -29,8 +30,8 @@ const { more } = await getProjects();
                   </ul>
                 </div>
                 <div class="tape__window" aria-hidden="true">
-                  <span class="tape__reel" />
-                  <span class="tape__reel" />
+                  <CassetteReel pack={21} />
+                  <CassetteReel pack={14.5} />
                 </div>
               </div>
               {shot && (
@@ -158,30 +159,16 @@ const { more } = await getProjects();
   .tape__window {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    gap: var(--space-3);
     min-height: 3.25rem;
     border-radius: var(--radius-xs);
     background: var(--color-ink);
   }
 
-  .tape__reel {
-    width: 2.25rem;
-    height: 2.25rem;
-    border: 2px solid var(--color-border-strong);
-    border-radius: var(--radius-full);
-    background: conic-gradient(
-      var(--color-signal) 0 12%,
-      var(--color-surface) 12% 33%,
-      var(--color-signal) 33% 45%,
-      var(--color-surface) 45% 66%,
-      var(--color-signal) 66% 78%,
-      var(--color-surface) 78%
-    );
-  }
-
   .tape__crt {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
     border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-md);
@@ -192,8 +179,17 @@ const { more } = await getProjects();
   .shelf__frame :global(img) {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: top left;
+    object-fit: contain;
+  }
+
+  /* Scanlines only: a dark vignette would hide the corners of the screenshot. */
+  .tape__crt .crt-raster,
+  .shelf__screen .crt-raster {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(11 10 12 / 0.18) 0 1px,
+      transparent 1px 3px
+    );
   }
 
   .tape__summary {
@@ -250,7 +246,7 @@ const { more } = await getProjects();
 
     .shelf__screen {
       position: relative;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 16 / 10;
       overflow: hidden;
       border-radius: var(--radius-lg);
       background: var(--color-ink);
@@ -311,12 +307,6 @@ const { more } = await getProjects();
 
   @media (prefers-reduced-motion: no-preference) {
     :global(:root:not([data-motion="off"]))
-      .tape:is(:hover, :focus-within)
-      .tape__reel {
-      animation: reel 1.8s linear infinite;
-    }
-
-    :global(:root:not([data-motion="off"]))
       .shelf:has(.tape:is(:hover, :focus-within))
       .shelf__track {
       opacity: 1;
@@ -344,12 +334,6 @@ const { more } = await getProjects();
         );
         animation: crt-track 4.8s linear infinite;
       }
-    }
-  }
-
-  @keyframes reel {
-    to {
-      transform: rotate(360deg);
     }
   }
 </style>
