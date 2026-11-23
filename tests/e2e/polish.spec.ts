@@ -360,6 +360,16 @@ test.describe("project detail", () => {
         .querySelector("#pulse-theory")
         ?.scrollIntoView({ behavior: "instant" });
     });
+    // Clicking a panel mid-entrance makes Playwright retry and scroll past it.
+    await expect(page.locator("#pulse-theory")).toHaveAttribute(
+      "data-active",
+      "",
+    );
+    await page.locator("#pulse-theory .case__body").evaluate(async (body) => {
+      await Promise.allSettled(
+        body.getAnimations({ subtree: true }).map((item) => item.finished),
+      );
+    });
     const link = page.locator("#pulse-theory [data-detail-link]");
     await link.click();
     const dialog = page.locator("[data-detail-dialog]");
