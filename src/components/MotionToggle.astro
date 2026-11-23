@@ -72,13 +72,23 @@ const { ui } = await getProfile();
     cursor: not-allowed;
   }
 
-  /* During the WebGL journey the header is gone, but this must stay reachable. */
+  /* The header is gone during the journey. A tab in the gutter covers no content. */
   :global(:root[data-motion-pinned]) .motion {
     position: fixed;
     bottom: var(--space-4);
-    left: var(--gutter);
+    left: 0;
     z-index: var(--z-nav);
+    width: 1.75rem;
+    min-height: 0;
+    padding: var(--space-3) 0;
+    border-left: 1px solid var(--color-border-strong);
+    border-right: 0;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
     background: var(--color-bg);
+    line-height: 1.75rem;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
   }
 
   @media (hover: hover) {

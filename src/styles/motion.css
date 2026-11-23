@@ -31,15 +31,6 @@ html:has(dialog[open]) {
   background: var(--color-bg);
 }
 
-/* The pinned Motion button must never cover focused links or the footer. */
-:root[data-motion-pinned] {
-  scroll-padding-bottom: 5rem;
-}
-
-:root[data-motion-pinned] footer {
-  padding-inline-start: 11rem;
-}
-
 .hud {
   display: flex;
   flex-basis: 100%;

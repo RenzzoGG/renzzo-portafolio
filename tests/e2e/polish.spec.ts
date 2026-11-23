@@ -444,3 +444,48 @@ test.describe("project detail", () => {
     await expect(link).toBeFocused();
   });
 });
+
+test.describe("pinned Motion control", () => {
+  for (const width of [1024, 1440, 1920]) {
+    test.describe(`at ${width}px`, () => {
+      test.use({ viewport: { width, height: 900 } });
+
+      test("never covers a link or button", async ({ page }) => {
+        await page.goto("/");
+        await page
+          .locator('[data-led-slot][data-world="live"]')
+          .waitFor({ timeout: 60_000 });
+        const end = await page.evaluate(
+          () => document.documentElement.scrollHeight - innerHeight,
+        );
+        const covered = new Set<string>();
+        for (let top = 1000; top < end; top += 450) {
+          await page.evaluate((y) => {
+            window.scrollTo({ top: y, behavior: "instant" });
+          }, top);
+          await page.waitForTimeout(60);
+          const hits = await page.evaluate(() => {
+            const control = document.querySelector("[data-motion-toggle]");
+            if (!control) throw new Error("Missing Motion control");
+            const box = control.getBoundingClientRect();
+            return [...document.querySelectorAll("a, button")]
+              .filter((item) => item !== control)
+              .filter((item) => {
+                const rect = item.getBoundingClientRect();
+                return (
+                  rect.width > 1 &&
+                  rect.left < box.right &&
+                  rect.right > box.left &&
+                  rect.top < box.bottom &&
+                  rect.bottom > box.top
+                );
+              })
+              .map((item) => item.textContent.trim().slice(0, 30));
+          });
+          for (const hit of hits) covered.add(hit);
+        }
+        expect([...covered]).toEqual([]);
+      });
+    });
+  }
+});
