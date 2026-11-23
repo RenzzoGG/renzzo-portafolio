@@ -127,7 +127,8 @@ void main() {
   result = mix(result, ground, bone * (1.0 - cover));
 
   // WCAG 2.3.1: each cell re-rolls on its own clock, at most STATIC_RATE times a
-  // second. Scroll speed can't raise it, and the phases keep the static alive.
+  // second, and the phases keep the static alive. Reversing the scroll over the
+  // bone dissolve can re-roll a cell sooner: the flash suite covers that jitter.
   if (uStatic > 0.001) {
     // Cells still showing bone hold still, so each one only ever darkens once.
     float tick = mod(floor(uTime * STATIC_RATE + random(cell * 0.37) * 16.0), 251.0) * (1.0 - step(0.001, bone));
