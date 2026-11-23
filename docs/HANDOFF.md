@@ -28,12 +28,16 @@ Phase 4 commits, oldest first:
 - `947d362` perf(face): shorten 2D baking tasks to keep mobile at 100
 - `89e5da1` docs(world): mark Phase 4 done and document the FPS overlay
 
+Latest work, after Phase 4:
+
+- `d59bfa0` docs(handoff): add session handoff and its CLAUDE.md rule
+
 Also unpushed, from just before Phase 4:
 
 - `d51af06` docs(reference): add technical analysis of the reference site
 - `91b17cf` docs(plan): revise phases 4-6 for the signal world
 
-The commit that adds this handoff is unpushed too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
+The commit that refreshes this handoff is unpushed too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
 
 ## Exact next step
 
