@@ -21,9 +21,10 @@ export interface JourneyLayout {
 
 /** How far up the viewport a section's top is when its transition ends. */
 const FIRST_SETTLE = 0.55;
-const SETTLE = 0.35;
+const SETTLE = 0.12;
 const LAST_SETTLE = 0.15;
-const TRANSITION = 0.6;
+const TRANSITION = 0.5;
+const MIN_TRANSITION = 0.2;
 /** The drum starts leaving when its last project's bottom reaches this line. */
 const DRUM_EXIT = 0.7;
 
@@ -65,7 +66,13 @@ export function buildStops(layout: JourneyLayout): JourneyStop[] {
           : SETTLE;
     const end = Math.min(top - viewport * settle, maxScroll);
     if (index > 0) {
-      raw.push({ scroll: end - viewport * TRANSITION, value: before });
+      // A short section stays clear until it reaches the top of the viewport.
+      const previous = sections[index - 1] ?? 0;
+      const start = Math.min(
+        end - viewport * MIN_TRANSITION,
+        Math.max(end - viewport * TRANSITION, previous),
+      );
+      raw.push({ scroll: start, value: before });
     }
     raw.push({ scroll: end, value: before + 1 });
   });

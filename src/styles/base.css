@@ -55,12 +55,16 @@ li {
   white-space: nowrap;
 }
 
-/* Justified body text, only where the column is wide enough to avoid rivers. */
+/*
+ * Justified body text, only where the column is wide enough to avoid rivers.
+ * Plain wrapping: "pretty" pulls words down and stretches the line above.
+ */
 @media (min-width: 64rem) {
   .justify:not(.justify--wide) {
     hyphens: auto;
     hyphenate-limit-chars: 7 3 3;
     text-align: justify;
+    text-wrap: wrap;
   }
 }
 
@@ -69,6 +73,7 @@ li {
     hyphens: auto;
     hyphenate-limit-chars: 7 3 3;
     text-align: justify;
+    text-wrap: wrap;
   }
 }
 
