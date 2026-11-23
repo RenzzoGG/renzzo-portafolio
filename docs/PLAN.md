@@ -200,7 +200,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - `npm run check:contrast` covers the bone-white pairs.
 - Lighthouse mobile is still 100.
 
-## Phase 6: World and polish
+## Phase 6: World and polish ✅ (real-GPU feel check pending with Renzzo)
 
 **Goals:** complete the journey and the interface details.
 
