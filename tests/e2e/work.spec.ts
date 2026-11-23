@@ -421,3 +421,49 @@ test.describe("contrast on bone", () => {
     await expect(link).toHaveCSS("outline-color", "rgb(194, 29, 58)");
   });
 });
+
+test.describe("index after instant jumps", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  const jump = (page: Page, selector: string) =>
+    page
+      .locator(selector)
+      .first()
+      .evaluate((element) => {
+        element.scrollIntoView({ block: "start", behavior: "instant" });
+      });
+  const expectActive = async (page: Page, id: string) => {
+    await expect(page.locator("[data-index-link][aria-current]")).toHaveCount(
+      1,
+    );
+    await expect(
+      page.locator("[data-index-link][aria-current]"),
+    ).toHaveAttribute("href", `#${id}`);
+    await expect(page.locator(".case[data-active]")).toHaveAttribute("id", id);
+  };
+
+  test("a jump past the last project keeps the last one", async ({ page }) => {
+    await page.goto("/");
+    await jump(page, "#pulse-theory");
+    await expectActive(page, "pulse-theory");
+    await jump(page, "#contact");
+    await expectActive(page, "stocktill");
+  });
+
+  test("a jump from the hero past every project", async ({ page }) => {
+    await page.goto("/");
+    await expectActive(page, "clearline-dental");
+    await jump(page, "#contact");
+    await expectActive(page, "stocktill");
+  });
+
+  test("a jump back to the top returns to the first", async ({ page }) => {
+    await page.goto("/");
+    await jump(page, "#contact");
+    await expectActive(page, "stocktill");
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+    await expectActive(page, "clearline-dental");
+  });
+});
