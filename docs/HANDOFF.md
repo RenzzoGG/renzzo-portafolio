@@ -4,70 +4,87 @@ Last updated: 2026-11-23. Rewritten at the end of every phase or work session, a
 
 ## Current state
 
-| Item           | Status                                                                                 |
-| -------------- | -------------------------------------------------------------------------------------- |
-| Current phase  | **Phase 6.6: One continuous journey. Done**, with manual GPU and feel checks pending   |
-| Next phase     | **Phase 7: Performance & QA. Not started**, waiting for Renzzo                         |
-| Blocked        | Nothing is blocked                                                                     |
-| Branch         | `redesign`                                                                             |
-| `main`         | Untouched at `93d9b4d`                                                                 |
-| Remote         | **Local commits are not pushed.** `origin/redesign` stops at `ae1b4c5`. Renzzo pushes. |
-| Latest results | `npm run check` passes, 91/91 E2E tests pass                                           |
-| Lighthouse     | Mobile 100/100/100/100 and desktop 100/100/100/100 (median of 5)                       |
-| Critical JS    | 9.9 KB minified, including imported chunks (budget 20 KB)                              |
-| Mobile motion  | 34.3 KB gzip: GSAP core, SplitText, our motion and the skills tabs (budget 50 KB)      |
-| WebGL JS       | 140.9 KB gzip (budget 250 KB)                                                          |
-| Desktop JS     | 200.1 KB gzip in total, including ScrollTrigger                                        |
-| Face data      | 6.3 KB gzip (budget 60 KB)                                                             |
+| Item           | Status                                                                               |
+| -------------- | ------------------------------------------------------------------------------------ |
+| Current phase  | **Phase 7: Performance & QA. Done here**, with WebKit and real-device checks pending |
+| Next phase     | **Phase 8: Launch. Not started**, waiting for Renzzo                                 |
+| Blocked        | WebKit needs system libraries that require `sudo`                                    |
+| Branch         | `redesign`                                                                           |
+| `main`         | Untouched at `93d9b4d`                                                               |
+| Remote         | **Local commits are not pushed.** Renzzo pushes                                      |
+| Checks         | `npm run check` and `npm run check:budgets` pass                                     |
+| E2E            | Chromium 142/142. Firefox 49 passed, 1 skipped (Chromium-only phone emulation)       |
+| Lighthouse     | Mobile 100/100/100/100 and desktop 100/100/100/100 (median of 5)                     |
+| Accessibility  | Zero axe violations on all routes and key states                                     |
+| Flash effects  | Worst gated result: 2 general and 3 red flashes per second (limit 3)                 |
+| Critical JS    | 9.9 KB minified (budget 20 KB)                                                       |
+| Mobile motion  | 33.5 KB gzip (budget 50 KB)                                                          |
+| WebGL JS       | 137.9 KB gzip (budget 250 KB)                                                        |
+| Textures, face | 121.0 KB (budget 800 KB), 6.4 KB gzip (budget 60 KB)                                 |
 
 ## Just finished
 
-Phase 6.6 commits, oldest first:
+Phase 7 commits, oldest first:
 
-- `d5b785c` docs(plan): add Phase 6.6 continuity design
-- `4b136af` feat(work): draw LED readouts directly on bone in a row
-- `ddc6292` fix(world): remove dead zones and run signal transitions through every section
-- `e4dd438` feat(motion): choreograph section entrances with the HUD
-- `e3d4fef` test(continuity): fail on blank viewports across the full scroll
-- `d21f108` chore(lighthouse): report Phase 6.6 budgets
+- `7397301` fix(work): release pinned content before the section transition
+- `3f9c0b7` fix(more-work): show full previews and draw realistic cassette reels
+- `548e054` feat(type): justify body text and rebalance the About terminal
+- `bf3c18c` fix(work): derive the active project from scroll position
+- `2be1281` fix(motion): pin the Motion control as a tab in the page gutter
+- `68e9ebb` fix(a11y): keep every visual effect under three flashes per second
+- `6ff2e32` fix(cv): clear the right margin and keep project links together
+- `3c4a0ac` test(qa): add budget gate, axe audits and cross-browser projects
+- `adfde41` docs(qa): add Railway preview steps and a phone test checklist
+- `c3d1e55` fix(world): keep section effects off content that is still being read
+- `4466367` fix(design): apply the finish review to reels, About and previews
+- `984a5b2` fix(motion): apply the motion review to the dissolve and the canvas
+- `751595b` fix(services): keep narrow channel text left-aligned
+- `d8059e5` fix(work): keep a lone readout label on one line
+- `b3411b6` fix(world): close the last empty beat and keep rail fills solid
+- `2c22692` fix(a11y): wash drum screens during fast scrolling
 
 The commit that refreshes this handoff is unpushed too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
 
-What changed:
+Evidence is in `docs/reports/phase-7/` (gitignored):
 
-- **Readouts on bone:** no black box, signal digits, a faint ink ghost, a hairline border, and a row that wraps.
-- **Dead zones:** the cause was 160vh of reserved drum scroll plus a canvas that faded out after it. The space is now 40vh and the world never switches off.
-- **Transitions:** LED static, camera dive, channel change, vertical re-tune, CRT power-off, and the collapse into the Contact curtain.
-- **Without WebGL:** gradient seams on mobile, reduced motion, Motion off and no JS. Mobile adds a short static burst.
-- **Flash safety:** the static follows scroll instead of strobing while the page is held still.
-- **Intermittent detail test:** fixed. Playwright was clicking a panel that was still animating, then scrolling on retry.
-
-Evidence is in `docs/reports/phase-6-6/` (gitignored):
-
-- `desktop/` and `mobile/`: 12 screenshots each, mid-transition and settled for all 6 boundaries
-- `journey-desktop.webm` and `journey-mobile.webm`: full scroll from the hero to the Contact curtain
-- `lighthouse.json`
+- `desktop-1440/`, `desktop-1920/`, `mobile/`: 11 screenshots each
+- `transition/`: the end of Featured Work, mid-transition
+- `video/journey-hero-to-contact.webm`: full scroll from the hero to Contact
+- `photosensitivity.json`, `lighthouse.json`
+- `review/`: captures given to the Impeccable reviewers
 
 ## Exact next step
 
-1. **Renzzo:** check the full journey on a real GPU. Run `npm run dev`, open the printed URL with `/?fps` in Chrome on Windows, scroll from the hero to the Contact curtain, then run `npx astro dev stop`. Target: 60 fps.
-2. **Renzzo:** judge what stills can't show: the strength of the static, the speed of each transition and the Contact climax.
-3. **Renzzo:** optionally run `/review-animations`.
-4. **Renzzo:** push `redesign` when happy.
-5. **Then send this prompt:** `Start Phase 7 exactly as defined in docs/PLAN.md.`
+1. **Renzzo:** enable WebKit, then run its suite:
+
+   ```bash
+   sudo npx playwright install-deps webkit
+   npm run test:webkit
+   ```
+
+2. **Renzzo:** push `redesign` and create the temporary preview by following `docs/DEVICE-TESTING.md`. Those Railway steps have not been run.
+3. **Renzzo:** complete the phone checklist in that file on iOS Safari and Android Chrome.
+4. **Renzzo:** check the full journey on a real GPU: `npm run dev`, open the printed URL with `/?fps`, scroll from the hero to Contact, then run `npx astro dev stop`. Target: 60 fps.
+5. **Then send this prompt:** `Start Phase 8 exactly as defined in docs/PLAN.md.`
 
 ## Waiting for Renzzo
 
-- **Flash safety on real hardware:** the static was reduced and tied to scroll, but no formal photosensitivity analysis was run. Check that a fast scroll through it feels comfortable.
-- **Work index after a jump:** an instant jump past the last project can leave the index on an older project until a project crosses the viewport center. This was not changed in this phase.
-- **Phase 6.5 Lighthouse file:** `docs/reports/phase-6-5/lighthouse.json` was overwritten by the Phase 6.6 run before the script pointed to the new folder. The Phase 6.5 numbers are no longer in that file.
+- **Fast scrolling over the whole page:** every visual effect passes, but a synthetic fling through the full page still measures 8 general flashes per second on desktop and 5 on mobile. It comes from light and dark page blocks sliding past, not from an effect, so it's reported and not gated. An earlier measurement at 1200 px/s still gave 4. Decide on the real phone whether it feels comfortable. Softening it would mean reducing the contrast between sections.
+- **Photosensitivity scope:** the analyzer is modeled on WCAG 2.3.1 and is not a certified PEAT or Harding result.
+- **Reviewer outcome:** the last finish-review disposition was `fix` and the last motion-review disposition was `recapture`. The finish review's open items were then handled as listed below. The motion review asked for a fresh flash run, which passed. Neither reviewer scored the final commits again.
+- **Review items not applied:**
+  - Removing the `01 / 04` and HUD counters: approved in Phase 6.
+  - Replacing `→` arrows: copy comes from `docs/CONTENT.md`.
+  - Cropping the Fernwick screenshot: the request was to never crop.
+  - Moving About's counters above the bio on mobile: the request was about the desktop column.
+  - Turning off hyphenation in About ("dash-board"): automatic hyphenation was requested.
+- **Featured panel text stays left-aligned:** its column is too narrow to justify without rivers. Services stays left-aligned for the same reason (about 43 characters per line).
+- **Hero at 1440 px with a classic scrollbar:** the headline takes four lines and PostgreSQL drops to a second row. It still fits, and this phase didn't change it.
+- **Impeccable `detect`:** skipped, because `CLAUDE.md` forbids the engine.
+- **Screen reader:** only the accessibility tree was checked. A real VoiceOver or TalkBack pass is pending.
 - **742 tests:** shown as "automated tests" for Stocktill. The count includes 385 pgTAP assertions and 28 E2E tests that were listed but not run for that report. Counting only Vitest and Playwright cases gives 357. Prose and the CV keep "700+".
 - **Cassette year:** 2026 comes from the GitHub creation dates of the repos. Change `year` in the project YAML if a project really started earlier.
-- **Design review:** Impeccable's and Emil's guidance was applied by hand. Its `detect` scan is forbidden here, and the reviewer agents did not run on this phase.
-- **FPS result:** software rendering can't measure it. This includes the pending Phase 4, 5, 6 and 6.5 checks.
-- **VHS velocity:** the distortion reaches full strength at a lower pixel speed in the drum than in the tunnel. Tune `FAST_SCROLL` in `src/lib/world/scene.ts` only if it feels wrong on a real GPU.
-- **Phone tilt result:** it has only been checked in emulation.
-- **`/review-animations`:** only Renzzo can start this skill.
+- **VHS velocity:** tune `FAST_SCROLL` in `src/lib/world/scene.ts` only if it feels wrong on a real GPU, and rerun the photosensitivity test afterwards.
 
 ## Not in git: copy by hand to another machine
 
@@ -77,11 +94,11 @@ Evidence is in `docs/reports/phase-6-6/` (gitignored):
 
 **Optional:**
 
-- `docs/reports/` (gitignored): screenshots, videos, Lighthouse reports, face previews and reference captures. Phase 6.6 is in `docs/reports/phase-6-6/`.
+- `docs/reports/` (gitignored): screenshots, videos, Lighthouse reports, face previews and reference captures. Phase 7 is in `docs/reports/phase-7/`.
 - `.claude/settings.local.json`: machine-specific Claude Code settings. Never commit it.
 
 **Reinstall instead of copying:**
 
 - Dependencies: Node 24 (`.nvmrc`), then `npm ci`.
-- Browser for tests and the CV PDF: `npx playwright install chromium`.
+- Browsers: `npx playwright install chromium firefox webkit`. WebKit also needs `sudo npx playwright install-deps webkit`.
 - Face pipeline only: uv 0.13.7. Its first `npm run face:build` downloads Python, packages and models (about 420 MB) into `~/.cache/renzzo-face/`.

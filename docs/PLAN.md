@@ -293,7 +293,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Lighthouse median of 5 on mobile and desktop. Mobile stays at 100, critical JS ≤ 20 KB, WebGL JS ≤ 250 KB gzip.
 - Screenshots at every boundary (mid-transition and settled) and a full-scroll video in `docs/reports/phase-6-6/`.
 
-## Phase 7: Performance & QA
+## Phase 7: Performance & QA ✅ (WebKit and real-device checks pending with Renzzo)
 
 **Goals:** prove the budgets and quality across devices.
 
