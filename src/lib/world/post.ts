@@ -54,6 +54,7 @@ const vec3 BONE = vec3(0.949, 0.933, 0.918);
 const vec3 SIGNAL = vec3(0.761, 0.114, 0.227);
 const vec3 GLOW = vec3(1.0, 0.231, 0.361);
 const float LED_CELL = 7.0;
+const float STATIC_RATE = 2.0;
 
 float random(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -125,10 +126,12 @@ void main() {
   // Bone stays the exact page color, so the HTML panels sit on it with no seam.
   result = mix(result, ground, bone * (1.0 - cover));
 
-  // LED static follows the scroll, so a held page never strobes (WCAG 2.3.1).
+  // WCAG 2.3.1: each cell re-rolls on its own clock, at most STATIC_RATE times a
+  // second. Scroll speed can't raise it, and the phases keep the static alive.
   if (uStatic > 0.001) {
-    float shade = random(cell + uSeed);
-    float lit = step(1.0 - uStatic * 0.62, random(cell * 1.7 + uSeed));
+    float tick = mod(floor(uTime * STATIC_RATE + random(cell * 0.37) * 16.0), 251.0);
+    float shade = random(cell + tick);
+    float lit = step(1.0 - uStatic * 0.62, random(cell * 1.7 + tick));
     result = mix(result, mix(BASE, SIGNAL * 0.78, shade), lit);
   }
 

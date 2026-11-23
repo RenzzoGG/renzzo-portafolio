@@ -79,7 +79,8 @@ void main() {
   // VHS tracking: scroll speed tears the rows sideways and splits the color.
   float v = clamp(uVelocity, 0.0, 1.0);
   float band = floor(vUv.y * 54.0);
-  float tick = floor(uTime * 20.0);
+  // WCAG 2.3.1: tears re-roll twice a second, however fast the scroll is.
+  float tick = floor(uTime * 2.0);
   float tear = (hash(vec2(band, tick)) - 0.5) * 0.055 * v * v;
   float roll = sin(vUv.y * 11.0 + uTime * 5.0) * 0.006 * v;
   vec2 uv = vec2(vUv.x + tear + roll, vUv.y);
@@ -90,7 +91,7 @@ void main() {
     picture(uv - vec2(split, 0.0)).b
   );
 
-  tube += (hash(vUv * 900.0 + uTime) - 0.5) * (0.022 + v * 0.05);
+  tube += (hash(vUv * 900.0 + uTime) - 0.5) * (0.022 + v * 0.012);
   // A tracking line drifts down the tube, as a worn tape does.
   float drift = fract(uTime * 0.09);
   tube += smoothstep(0.018, 0.0, abs(vUv.y - (1.0 - drift))) * 0.09;

@@ -35,24 +35,25 @@
   }
 }
 
+/* Brightness only ever falls, so a burst can never count as a flash. */
 @keyframes seam-burst {
   0% {
-    opacity: 0.9;
+    opacity: 0.7;
     transform: translateX(-6%);
   }
 
   25% {
-    opacity: 0.45;
+    opacity: 0.52;
     transform: translateX(5%);
   }
 
   50% {
-    opacity: 0.75;
+    opacity: 0.34;
     transform: translateX(-3%);
   }
 
   75% {
-    opacity: 0.25;
+    opacity: 0.16;
     transform: translateX(2%);
   }
 

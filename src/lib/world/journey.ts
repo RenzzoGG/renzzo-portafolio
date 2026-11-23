@@ -148,12 +148,13 @@ export function actAt(value: number): Act {
     bone: between(1.36, 1.6, 5.3, 5.74, value),
     wall: Math.max(
       1 - smoothstep(0.25, 0.85, value),
-      between(5.4, 5.9, 6.3, 6.8, value),
-      between(7.4, 7.8, 8.2, 8.6, value),
+      between(5.4, 5.9, 6.55, 6.95, value),
+      between(7.25, 7.6, 8.2, 8.6, value),
       between(9.6, 9.9, 10.2, 10.4, value),
     ),
-    bands: between(7.4, 7.8, 8.2, 8.6, value),
-    stream: between(6.3, 6.8, 7.3, 7.6, value),
+    bands: between(7.25, 7.6, 8.2, 8.6, value),
+    // The streams rise after the dive: a camera move across their rows flickers.
+    stream: between(6.7, 6.98, 7.1, 7.42, value),
     dots: between(8.4, 8.8, 9.2, 9.5, value),
     curtain: smoothstep(10.45, 10.98, value),
     noise: Math.max(
@@ -165,21 +166,23 @@ export function actAt(value: number): Act {
     slice: Math.max(
       bump(7.05, 7.95, value),
       0.5 * bump(8.1, 8.6, value),
-      bump(10.3, 10.6, value),
+      bump(10.15, 10.45, value),
     ),
     roll: bump(8.1, 8.9, value),
     squeeze: Math.max(
       Math.min(1, 1.6 * bump(9.08, 9.92, value)),
-      between(10.08, 10.42, 10.46, 10.66, value),
+      // Done before the curtain lights: squeezing its dots sweeps them over pixels.
+      between(10.08, 10.28, 10.3, 10.44, value),
     ),
     cap: smoothstep(10, 10.05, value),
     distance:
       1 +
       0.22 * bump(5.1, 6, value) -
-      0.42 * bump(6.05, 6.95, value) +
+      0.42 * bump(6.05, 6.72, value) +
       0.18 * bump(9.05, 9.95, value) -
-      0.5 * bump(10.05, 10.7, value),
-    pan: 0.1 * bump(7.05, 7.95, value),
+      0.5 * bump(10.05, 10.48, value),
+    // The pan waits for the streams to clear: their gaps would flicker past.
+    pan: 0.1 * bump(7.42, 7.98, value),
     tilt: 0.1 * bump(8.05, 8.95, value),
   };
 }

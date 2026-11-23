@@ -282,7 +282,8 @@ export function createScene(options: SceneOptions): WorldScene {
     signal.uniforms.uStream.value = act.stream;
     signal.uniforms.uDots.value = act.dots;
     signal.uniforms.uCurtain.value = curtain;
-    signal.uniforms.uTravel.value = journey * 0.5 + time * 0.012;
+    // Slow enough that passing streams never read as a flash (WCAG 2.3.1).
+    signal.uniforms.uTravel.value = journey * 0.22 + time * 0.012;
     signal.setQuality(quality);
     post.uniforms.uCurtain.value = curtain;
     post.uniforms.uStatic.value = act.noise;
@@ -290,9 +291,8 @@ export function createScene(options: SceneOptions): WorldScene {
     post.uniforms.uRoll.value = act.roll;
     post.uniforms.uSqueeze.value = act.squeeze;
     post.uniforms.uCap.value = act.cap;
-    // Changes with scroll, plus a slow drift well under three times a second.
-    post.uniforms.uSeed.value =
-      Math.floor(journey * 40) + Math.floor(time * 2) * 97;
+    // Time only: tying this to scroll let a fast scroll strobe the slices.
+    post.uniforms.uSeed.value = Math.floor(time * 2) * 97;
     post.uniforms.uSafeAmount.value = 1 - smoothstep(0.78, 1, journey);
 
     const aspect = slot.height / slot.width;

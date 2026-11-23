@@ -56,16 +56,17 @@ void main() {
   float stream = inLine * onRow * uStream * (0.42 + aSize * 0.58);
   vec2 streamAt = vec2(aCell.x - 0.5, fract(aCell.y + uTravel) - 0.5) * uView * vec2(1.0, 1.04);
 
-  // Contact rises from the bottom, so the dots land there first.
+  // Contact lights from the bottom up, with each dot growing in place. A dense
+  // grid sliding across the screen reads as a red flash (WCAG 2.3.1).
   float delay = aCell.y * 0.58 + hash(aCell.x * 97.0 + aCell.y * 41.0) * 0.08;
   float land = smoothstep(delay, delay + 0.34, uCurtain);
   vec2 curtainAt = (aCell - 0.5) * uView;
-  curtainAt.y += (1.0 - land) * (1.0 - land) * uView.y * 0.42;
 
   // Skills: a sparse field with slow waves of light crossing it.
   float wave = 0.5 + 0.5 * sin(aCell.x * 9.0 + aCell.y * 6.0 + uTravel * 40.0);
   float field = uDots * step(0.62, hash(aCell.x * 53.0 + aCell.y * 29.0)) * (0.25 + 0.75 * wave * wave * wave);
-  float streaming = step(field, stream);
+  // With no stream lit, dots must not ride its moving rows into the curtain.
+  float streaming = step(0.001, stream) * step(field, stream);
 
   float light = max(max(stream, field) * (1.0 - land), land);
   if (light < 0.004) {
