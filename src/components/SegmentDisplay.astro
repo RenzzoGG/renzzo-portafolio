@@ -51,15 +51,17 @@ const spoken = unit
 
 <style>
   .readout {
-    display: inline-flex;
-    flex: none;
+    display: flex;
+    width: 100%;
   }
 
   .seg {
     --seg-height: 2rem;
 
     display: inline-flex;
+    flex: 1;
     align-items: flex-end;
+    justify-content: flex-end;
     gap: 0.125rem;
     min-height: calc(var(--seg-height) + var(--space-3));
     padding: calc(var(--space-3) / 2) var(--space-2);
@@ -73,7 +75,6 @@ const spoken = unit
     display: block;
     flex: none;
     height: var(--seg-height);
-    fill: var(--color-glow);
     transform: skewX(-5deg);
   }
 
@@ -89,10 +90,6 @@ const spoken = unit
     width: calc(var(--seg-height) * 0.4);
   }
 
-  .seg__digit polygon {
-    transition: fill var(--duration-instant) linear;
-  }
-
   /* Each rule lists the segments that are dark for that digit. */
   [data-d="0"] .s-g,
   [data-d="1"] :is(.s-a, .s-d, .s-e, .s-f, .s-g),
@@ -104,7 +101,15 @@ const spoken = unit
   [data-d="7"] :is(.s-d, .s-e, .s-f, .s-g),
   [data-d="9"] .s-e,
   .seg[data-signal-armed] :is(polygon, circle) {
-    fill: var(--color-led-off);
+    --lit: var(--color-led-off);
+  }
+
+  polygon,
+  circle {
+    fill: var(--lit, var(--color-glow));
+    stroke: var(--lit, var(--color-glow));
+    stroke-width: 0.5;
+    stroke-linejoin: round;
   }
 
   .seg__unit {

@@ -51,7 +51,7 @@ void main() {
   float gap = step(0.78, hash(token + row * 3.0));
   float inLine = step(indent, aCell.x) * step(aCell.x, indent + span) * (1.0 - gap);
   float onRow = 1.0 - step(0.5, mod(grid, 2.0));
-  float stream = inLine * onRow * uStream * (0.2 + aSize * 0.8);
+  float stream = inLine * onRow * uStream * (0.42 + aSize * 0.58);
   vec2 streamAt = vec2(aCell.x - 0.5, fract(aCell.y + uTravel) - 0.5) * uView * vec2(1.0, 1.04);
 
   // Contact rises from the bottom, so the dots land there first.
@@ -67,14 +67,14 @@ void main() {
   }
 
   vec2 place = mix(streamAt, curtainAt, land);
-  float radius = mix(pitch * 0.16, pitch * (0.2 + aSize * 0.58), land);
-  float streak = pitch * 0.52 * (1.0 - land);
+  float radius = mix(pitch * 0.22, pitch * (0.2 + aSize * 0.58), land);
+  float streak = pitch * 0.7 * (1.0 - land);
   vec2 local = position.xy * vec2(radius + streak + 1.5, radius + 1.5);
 
   vQuad = local;
   vDot = radius;
   vStreak = streak;
-  vLight = mix(light * 0.62, 1.0, land);
+  vLight = mix(light * 0.94, 1.0, land);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(place + local, 0.0, 1.0);
 }
 `;

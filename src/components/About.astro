@@ -1,14 +1,22 @@
 ---
-import { getProfile } from "../lib/content.ts";
+import { getProfile, getProjects } from "../lib/content.ts";
 import HudMarks from "./HudMarks.astro";
+import SegmentDisplay from "./SegmentDisplay.astro";
 
 const { about, location, remote, languages, ui } = await getProfile();
+const { all } = await getProjects();
 // Paragraph breaks only: the approved wording stays in one profile field.
 const paragraphs = about.split(/ (?=Clearline Dental is|I also care|I deploy)/);
 const facts = [
   [ui.facts.location, location],
   [ui.facts.work, remote],
   [ui.facts.languages, languages],
+];
+const { terminalTitle, terminalCommand, counters } = ui.sets;
+const readouts = [
+  { value: String(all.length), label: counters.projects },
+  { value: counters.testsValue, label: counters.tests },
+  { value: counters.lighthouseValue, label: counters.lighthouse },
 ];
 ---
 
@@ -26,72 +34,204 @@ const facts = [
       {ui.headings.about}
     </h2>
     <div class="about__panel">
-      <div class="about__text">
-        {paragraphs.map((paragraph) => (
-          <p>{paragraph}</p>
-        ))}
+      <div class="term">
+        <div class="term__bar" aria-hidden="true">
+          <span class="term__lights">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+          <span>{terminalTitle}</span>
+        </div>
+        <div class="term__body" data-type>
+          <p class="term__command" aria-hidden="true">
+            {terminalCommand}
+          </p>
+          {paragraphs.map((paragraph) => (
+            <p data-type-line>{paragraph}</p>
+          ))}
+        </div>
       </div>
-      <dl class="about__facts">
-        {facts.map(([term, value]) => (
-          <div>
-            <dt>{term}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
+
+      <div class="about__side">
+        <ul class="about__counters">
+          {readouts.map((item) => (
+            <li>
+              <SegmentDisplay value={item.value} /> <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+        <dl class="about__facts">
+          {facts.map(([term, value]) => (
+            <div>
+              <dt>{term}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   .about {
+    position: relative;
     padding-block: var(--section-gap);
+    overflow: clip;
     background: var(--color-surface);
   }
 
   .about__inner {
+    position: relative;
     display: grid;
     gap: var(--space-5);
   }
 
-  /* The streams pass behind this panel, so body text never depends on them. */
+  /* The streams pass behind the solid terminal, so text never depends on them. */
   :global(:root[data-world-live]) .about {
     background: transparent;
   }
 
-  :global(:root[data-world-live]) .about__panel {
-    padding: var(--space-6);
+  .about__panel {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+
+  .term {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: 0 28px 56px -32px rgb(0 0 0 / 0.95);
+  }
+
+  .term__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+  }
+
+  .term__lights {
+    display: inline-flex;
+    gap: var(--space-1);
+  }
+
+  .term__lights i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+  }
+
+  .term__lights i:first-child {
+    background: var(--color-glow);
+  }
+
+  .term__body {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+  }
+
+  .term__body p {
+    position: relative;
+    max-width: 68ch;
+  }
+
+  .term__command {
+    color: var(--color-glow);
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+  }
+
+  .about__side {
+    display: grid;
+    align-content: start;
+    gap: var(--space-5);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     background: var(--color-surface);
   }
 
-  .about__text {
+  .about__counters {
     display: grid;
-    gap: var(--space-4);
-    max-width: var(--measure-body);
-    font-size: var(--text-lead);
-    line-height: var(--leading-body);
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .about__counters li {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
   }
 
   .about__facts {
     display: grid;
-    gap: var(--space-4);
-    margin-top: var(--space-6);
+    gap: var(--space-3);
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
   }
 
   dt {
     color: var(--color-muted);
-    font-size: var(--text-small);
+    font-size: var(--text-caption);
   }
 
-  @media (min-width: 48rem) {
-    .about__facts {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Without WebGL, a light CSS stream keeps the section alive. */
+  .about::before {
+    content: "";
+    position: absolute;
+    inset: -40% 0 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-signal) 42%, transparent) 0 1px,
+      transparent 1px 22px
+    );
+    mask-image: linear-gradient(to right, black, transparent 45%, black);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  :global(:root[data-world-live]) .about::before {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-motion="off"])) .about::before {
+      animation: about-stream 9s linear infinite;
+    }
+  }
+
+  @keyframes about-stream {
+    to {
+      transform: translateY(22px);
     }
   }
 
   @media (min-width: 64rem) {
     .about__inner {
-      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      grid-template-columns: minmax(0, 2fr) minmax(0, 10fr);
+    }
+
+    .about__panel {
+      grid-template-columns: minmax(0, 7fr) minmax(16rem, 3fr);
+      align-items: start;
     }
   }
 </style>
