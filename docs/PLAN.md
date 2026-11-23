@@ -259,7 +259,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Lighthouse median of 5 on mobile and desktop. Mobile stays at 100, and all budgets are reported.
 - Before/after screenshots of every section on desktop and mobile, plus a full-scroll video, in `docs/reports/phase-6-5/`.
 
-## Phase 6.6: One continuous journey
+## Phase 6.6: One continuous journey ✅ (real-GPU feel check pending with Renzzo)
 
 **Goals:** LED readouts that sit lightly on bone, no blank screen at any scroll position, and one continuous trip from the hero to the Contact curtain.
 
@@ -270,14 +270,14 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - **Continuous world (desktop):** the scene runs behind every section, with moods of bone (Work), dark signal (More work to CV) and crimson (Contact).
 - **Boundary transitions:**
 
-| Journey | Boundary          | Transition                                  | Camera     |
-| ------- | ----------------- | ------------------------------------------- | ---------- |
-| 5–6     | Work → More work  | Bone dissolves into LED static that darkens | Pull back  |
-| 6–7     | More work → About | Dive through the wall into the streams      | Dive       |
-| 7–8     | About → Services  | Channel change: static and slices           | Side pan   |
-| 8–9     | Services → Skills | Signal cut and re-tune: vertical roll       | Tilt       |
-| 9–10    | Skills → CV       | CRT power-off to a glowing line, and back   | Pull back  |
-| 10–11   | CV → Contact      | Climax: collapse, pulse, curtain rises      | Long dive  |
+| Journey | Boundary          | Transition                                  | Camera    |
+| ------- | ----------------- | ------------------------------------------- | --------- |
+| 5–6     | Work → More work  | Bone dissolves into LED static that darkens | Pull back |
+| 6–7     | More work → About | Dive through the wall into the streams      | Dive      |
+| 7–8     | About → Services  | Channel change: static and slices           | Side pan  |
+| 8–9     | Services → Skills | Signal cut and re-tune: vertical roll       | Tilt      |
+| 9–10    | Skills → CV       | CRT power-off to a glowing line, and back   | Pull back |
+| 10–11   | CV → Contact      | Climax: collapse, pulse, curtain rises      | Long dive |
 
 - **Choreography:** HUD, then heading, body and details, staggered.
 - **Seams:** static gradients between section colors for mobile, no JS, reduced motion, Motion off and WebGL failure. Mobile adds a short CSS static burst.
