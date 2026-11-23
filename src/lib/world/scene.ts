@@ -12,7 +12,7 @@ import { createField } from "./displacement.ts";
 import { createDrum } from "./drum.ts";
 import { createFaceLayer } from "./face-layer.ts";
 import { createGridWall } from "./grid-wall.ts";
-import { smoothstep } from "./journey.ts";
+import { actAt, smoothstep } from "./journey.ts";
 import { createPost } from "./post.ts";
 import type { DrumLayout, SlotRect, View, WorldStats } from "./protocol.ts";
 import { createSignalField } from "./signal-field.ts";
@@ -141,6 +141,7 @@ export function createScene(options: SceneOptions): WorldScene {
   let speed = 0;
   let baseZ = 1000;
   const slotCenter = new Vector2();
+  const wallFocus = new Vector2(0.5, 0.2);
   const ground = new Vector3();
 
   function applySize() {
@@ -179,7 +180,7 @@ export function createScene(options: SceneOptions): WorldScene {
     );
     uniforms.uCenter.value.copy(slotCenter);
     const centerX = (slot.x + slot.width / 2) / view.width;
-    wall.uniforms.uFocus.value.set(centerX, slot.width / view.width / 2);
+    wallFocus.set(centerX, slot.width / view.width / 2);
     post.uniforms.uSafe.value.set(
       centerX,
       (slot.width / 2 + 8) / view.width,
@@ -234,18 +235,27 @@ export function createScene(options: SceneOptions): WorldScene {
 
     const leaving = smoothstep(0, 0.55, journey);
     const arrived = smoothstep(1.35, 1.9, journey);
+    const act = actAt(journey);
     camera.position.z =
-      baseZ * (1 + PULL_BACK * smoothstep(0, 1, journey) * (1 - arrived));
+      baseZ *
+      (1 + PULL_BACK * smoothstep(0, 1, journey) * (1 - arrived)) *
+      act.distance;
+    camera.position.x = view.width * act.pan;
+    camera.rotation.x = act.tilt;
 
     const { uniforms } = faceLayer;
     const flow = Math.max(0, Math.min(1, (journey - 0.1) / 1));
     uniforms.uFlow.value = flow;
     uniforms.uCenter.value.copy(slotCenter).multiplyScalar(1 - leaving);
     faceLayer.mesh.visible = journey < 1.25;
-    wall.mesh.visible = journey < 0.9;
-    wall.uniforms.uFade.value = 1 - smoothstep(0.25, 0.85, journey);
+    wall.mesh.visible = act.wall > 0;
+    wall.uniforms.uFade.value = act.wall;
+    wall.uniforms.uBands.value = act.bands;
+    // Past the hero the wall's signal sweeps across the full width.
+    if (journey > 2) wall.uniforms.uFocus.value.set(0.5, 1.4);
+    else wall.uniforms.uFocus.value.copy(wallFocus);
 
-    const fade = 1 - smoothstep(1.4, 1.62, journey);
+    const fade = 1 - smoothstep(1.46, 1.74, journey);
     tunnel.mesh.visible = journey > 0.14 && fade > 0;
     tunnel.uniforms.uForm.value = smoothstep(0.16, 1, journey);
     tunnel.uniforms.uFade.value = fade;
@@ -255,8 +265,7 @@ export function createScene(options: SceneOptions): WorldScene {
     tunnel.uniforms.uCameraZ.value = camera.position.z;
     tunnel.setQuality(quality);
     drum.setQuality(quality);
-    const bone =
-      smoothstep(1.36, 1.6, journey) * (1 - smoothstep(5.2, 5.85, journey));
+    const { bone, curtain } = act;
     ground.copy(DARK_GROUND).lerp(BONE_GROUND, bone);
     drum.update(
       renderer,
@@ -269,15 +278,21 @@ export function createScene(options: SceneOptions): WorldScene {
     );
     post.uniforms.uBone.value = bone;
 
-    const stream =
-      smoothstep(6, 6.25, journey) * (1 - smoothstep(6.8, 7, journey));
-    const curtain = smoothstep(8.05, 8.95, journey);
-    signal.mesh.visible = stream > 0 || curtain > 0;
-    signal.uniforms.uStream.value = stream;
+    signal.mesh.visible = act.stream > 0 || act.dots > 0 || curtain > 0;
+    signal.uniforms.uStream.value = act.stream;
+    signal.uniforms.uDots.value = act.dots;
     signal.uniforms.uCurtain.value = curtain;
     signal.uniforms.uTravel.value = journey * 0.5 + time * 0.012;
     signal.setQuality(quality);
     post.uniforms.uCurtain.value = curtain;
+    post.uniforms.uStatic.value = act.noise;
+    post.uniforms.uSlice.value = act.slice;
+    post.uniforms.uRoll.value = act.roll;
+    post.uniforms.uSqueeze.value = act.squeeze;
+    post.uniforms.uCap.value = act.cap;
+    // Changes with scroll, plus a slow drift well under three times a second.
+    post.uniforms.uSeed.value =
+      Math.floor(journey * 40) + Math.floor(time * 2) * 97;
     post.uniforms.uSafeAmount.value = 1 - smoothstep(0.78, 1, journey);
 
     const aspect = slot.height / slot.width;

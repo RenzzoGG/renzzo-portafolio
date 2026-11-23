@@ -214,7 +214,7 @@
   }
 
   :root:not([data-motion="off"], [data-world-failed]) .work__stage {
-    padding-block: 0 160vh;
+    padding-block: 0 40vh;
   }
 
   :root:not([data-motion="off"], [data-world-failed]) .work__title {
@@ -256,7 +256,7 @@
   }
 
   /* The drum replaces the image visually. The img and its alt stay in the DOM. */
-  :root[data-world-live] .work__stage {
+  :root[data-world-live] :is(.work__stage, .work__more) {
     background: transparent;
   }
 

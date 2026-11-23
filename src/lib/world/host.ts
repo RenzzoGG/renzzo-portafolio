@@ -1,10 +1,5 @@
 import faceUrl from "../../assets/face/face.bin?url";
-import {
-  buildStops,
-  canvasOpacity,
-  journeyAt,
-  type JourneyStop,
-} from "./journey.ts";
+import { buildStops, journeyAt, type JourneyStop } from "./journey.ts";
 import type {
   DrumLayout,
   FromWorld,
@@ -134,14 +129,9 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   const header = document.querySelector("header");
   const root = document.documentElement;
   const stage = document.querySelector<HTMLElement>("[data-work-stage]");
-  const tunnelSpace = document.querySelector<HTMLElement>(
-    "[data-signal-tunnel]",
-  );
   const cases = [...document.querySelectorAll<HTMLElement>("[data-texture]")];
-  const aboutPart = document.querySelector<HTMLElement>("#about");
-  const contactPart = document.querySelector<HTMLElement>("#contact");
+  const acts = [...document.querySelectorAll<HTMLElement>("[data-act]")];
   const requested = new Set<number>();
-  const showing = new Set<Element>([hero]);
   let stops: JourneyStop[] = [];
   let journey = 0;
   const showStats =
@@ -154,7 +144,6 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   let frame = 0;
   let pendingPointer: { x: number; y: number; inside: boolean } | null = null;
   let scrollDirty = false;
-  let onScreen = true;
   let timer = 0;
   let settle = 0;
   let renderStats: ((stats: WorldStats, thread: string) => void) | null = null;
@@ -219,10 +208,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
       })),
       stageBottom: stage ? top(stage) + stage.offsetHeight : 0,
       viewport: window.innerHeight,
-      about: aboutPart
-        ? { top: top(aboutPart), height: aboutPart.offsetHeight }
-        : undefined,
-      contact: contactPart ? { top: top(contactPart) } : undefined,
+      sections: acts.map(top),
       maxScroll: root.scrollHeight - window.innerHeight,
     });
   };
@@ -244,9 +230,6 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
           });
         }
       });
-    }
-    if (canvas && live) {
-      canvas.style.opacity = String(canvasOpacity(journey));
     }
   };
 
@@ -298,17 +281,9 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     relayout();
   });
   const syncActive = () => {
-    link?.send({ type: "active", active: onScreen && !document.hidden });
+    // The world runs behind the whole page, and only rests in a hidden tab.
+    link?.send({ type: "active", active: !document.hidden });
   };
-  // The world runs on the sections that show it, and rests between them.
-  const visibility = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) showing.add(entry.target);
-      else showing.delete(entry.target);
-    }
-    onScreen = showing.size > 0;
-    syncActive();
-  });
 
   const teardown = () => {
     clearTimeout(timer);
@@ -320,7 +295,6 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     removeEventListener("scroll", onScroll);
     removeEventListener("resize", onResize);
     document.removeEventListener("visibilitychange", syncActive);
-    visibility.disconnect();
     resizes.disconnect();
     link?.close();
     link = null;
@@ -416,9 +390,6 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
   addEventListener("scroll", onScroll, { passive: true });
   addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", syncActive);
-  for (const part of [hero, tunnelSpace, stage, aboutPart, contactPart]) {
-    if (part) visibility.observe(part);
-  }
   resizes.observe(document.body);
 
   if (import.meta.env.DEV && showStats) {

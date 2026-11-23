@@ -9,7 +9,12 @@ const ICONS = ["rack", "page", "fix"] as const;
 const pad = (value: number) => String(value).padStart(2, "0");
 ---
 
-<section class="services" id="services" aria-labelledby="services-title">
+<section
+  class="services"
+  id="services"
+  aria-labelledby="services-title"
+  data-act
+>
   <div class="container">
     <HudMarks index={3} total={6} />
     <div class="services__head">
@@ -27,7 +32,7 @@ const pad = (value: number) => String(value).padStart(2, "0");
     </div>
     <ul class="services__list">
       {services.map(({ data }, index) => (
-        <li class="channel" data-channel>
+        <li class="channel" data-channel data-act-item="body">
           <div class="channel__monitor" aria-hidden="true">
             <div class="channel__screen">
               <div class="channel__picture">

@@ -26,13 +26,6 @@ html:has(dialog[open]) {
   scrollbar-gutter: stable;
 }
 
-/* The curtain sits behind the page, so plain sections keep a solid ground. */
-:root[data-world-live] :is(#skills, #cv) {
-  background: var(--color-bg);
-  box-shadow: 0 0 0 100vmax var(--color-bg);
-  clip-path: inset(0 -100vmax);
-}
-
 :root[data-world-live] footer {
   position: relative;
   background: var(--color-bg);
@@ -194,5 +187,14 @@ html:has(dialog[open]) {
 
   [data-signal-armed] {
     color: inherit !important;
+  }
+
+  [data-act-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .seam {
+    display: none;
   }
 }

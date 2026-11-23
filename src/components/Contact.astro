@@ -5,14 +5,16 @@ import HudMarks from "./HudMarks.astro";
 const { contact } = await getProfile();
 ---
 
-<section class="contact" id="contact" aria-labelledby="contact-title">
+<section class="contact" id="contact" aria-labelledby="contact-title" data-act>
   <div class="container">
     <HudMarks index={6} total={6} />
     <h2 id="contact-title" data-reveal data-glitch={contact.heading}>
       {contact.heading}
     </h2>
-    <p class="contact__intro">{contact.intro}</p>
-    <ul>
+    <p class="contact__intro" data-act-item="body">
+      {contact.intro}
+    </p>
+    <ul data-act-item="detail">
       {contact.links.map((link) => {
         const body = (
           <>

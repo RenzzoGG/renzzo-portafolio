@@ -20,7 +20,7 @@ const readouts = [
 ];
 ---
 
-<section class="about" id="about" aria-labelledby="about-title">
+<section class="about" id="about" aria-labelledby="about-title" data-act>
   <div class="container">
     <HudMarks index={2} total={6} />
   </div>
@@ -34,7 +34,7 @@ const readouts = [
       {ui.headings.about}
     </h2>
     <div class="about__panel">
-      <div class="term">
+      <div class="term" data-act-item="body">
         <div class="term__bar" aria-hidden="true">
           <span class="term__lights">
             <i></i>
@@ -53,7 +53,7 @@ const readouts = [
         </div>
       </div>
 
-      <div class="about__side">
+      <div class="about__side" data-act-item="detail">
         <ul class="about__counters">
           {readouts.map((item) => (
             <li>

@@ -256,7 +256,7 @@ export function createDrum(initial: DrumLayout, count: number) {
         uniforms.uVelocity.value = quality > 0.5 ? velocity : velocity * 0.4;
         uniforms.uTime.value = time;
         uniforms.uFocus.value = 1 - smoothstep(0.08, STEP, Math.abs(theta));
-        uniforms.uAlpha.value = smoothstep(1.56, 1.72, journey) * (1 - leave);
+        uniforms.uAlpha.value = smoothstep(1.48, 1.64, journey) * (1 - leave);
         uniforms.uGround.value.copy(ground);
         // No depth buffer: the farthest screen draws first.
         screen.mesh.renderOrder = 10 - Math.abs(theta);

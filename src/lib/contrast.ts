@@ -97,6 +97,9 @@ export const CONTRAST_PAIRS: ContrastPair[] = [
   ...across("--color-glow", ["--color-ink"], "body"),
   ...across("--color-muted", ["--color-ink"], "body"),
   ...across("--color-ink", ["--color-text"], "body"),
+  ...across("--color-text", ["--color-panel-floor"], "body"),
+  ...across("--color-muted", ["--color-panel-floor"], "body"),
+  ...across("--color-glow", ["--color-panel-floor"], "body"),
   ...ACCENTS.flatMap((accent) => [
     ...across(`--accent-${accent}-text`, SURFACES, "body"),
     ...across(`--accent-${accent}-on`, [`--accent-${accent}`], "body"),

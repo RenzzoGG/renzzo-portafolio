@@ -3,12 +3,14 @@ import About from "../components/About.astro";
 import Contact from "../components/Contact.astro";
 import CvBlock from "../components/CvBlock.astro";
 import Hero from "../components/Hero.astro";
+import Seam from "../components/Seam.astro";
 import Services from "../components/Services.astro";
 import SkillsExperience from "../components/SkillsExperience.astro";
 import Work from "../components/Work.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getProfile } from "../lib/content.ts";
 import "../styles/sets.css";
+import "../styles/journey.css";
 
 const { meta } = await getProfile();
 ---
@@ -16,11 +18,17 @@ const { meta } = await getProfile();
 <BaseLayout title={meta.title} description={meta.description}>
   <Hero />
   <Work />
+  <Seam from="bg" to="surface" />
   <About />
+  <Seam from="surface" to="surface" />
   <Services />
+  <Seam from="surface" to="bg" />
   <SkillsExperience />
+  <Seam from="bg" to="bg" />
   <CvBlock />
+  <Seam from="bg" to="signal" />
   <Contact />
+  <Seam from="signal" to="bg" closing />
 </BaseLayout>
 
 <script>

@@ -4,6 +4,7 @@ import "../styles/detail.css";
 import "../styles/work.css";
 import MoreWork from "./MoreWork.astro";
 import ProjectCase from "./ProjectCase.astro";
+import Seam from "./Seam.astro";
 import WorkIndex from "./WorkIndex.astro";
 
 const { ui } = await getProfile();
@@ -36,7 +37,8 @@ const { featured } = await getProjects();
       </div>
     </div>
   </div>
-  <div class="work__more">
+  <Seam from="bone" to="bg" />
+  <div class="work__more" data-act>
     <div class="container">
       <MoreWork />
     </div>

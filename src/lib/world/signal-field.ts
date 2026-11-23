@@ -13,8 +13,9 @@ import {
 import type { LedFace } from "../face/decode.ts";
 
 /**
- * One flat grid of face dots with two looks: rows of signal that read like
- * code (About), and a full pixel curtain (Contact). Dots never pass crimson.
+ * One flat grid of face dots with three looks: rows of signal that read like
+ * code (About), a sparse LED field (Skills) and a full pixel curtain (Contact).
+ * Dots never pass crimson.
  */
 const COLUMNS = 168;
 const ROWS = 108;
@@ -27,6 +28,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 modelViewMatrix;
 uniform vec2 uView;
 uniform float uStream;
+uniform float uDots;
 uniform float uCurtain;
 uniform float uTravel;
 in vec3 position;
@@ -60,15 +62,20 @@ void main() {
   vec2 curtainAt = (aCell - 0.5) * uView;
   curtainAt.y += (1.0 - land) * (1.0 - land) * uView.y * 0.42;
 
-  float light = max(stream * (1.0 - land), land);
+  // Skills: a sparse field with slow waves of light crossing it.
+  float wave = 0.5 + 0.5 * sin(aCell.x * 9.0 + aCell.y * 6.0 + uTravel * 40.0);
+  float field = uDots * step(0.62, hash(aCell.x * 53.0 + aCell.y * 29.0)) * (0.25 + 0.75 * wave * wave * wave);
+  float streaming = step(field, stream);
+
+  float light = max(max(stream, field) * (1.0 - land), land);
   if (light < 0.004) {
     gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
     return;
   }
 
-  vec2 place = mix(streamAt, curtainAt, land);
+  vec2 place = mix(mix((aCell - 0.5) * uView, streamAt, streaming), curtainAt, land);
   float radius = mix(pitch * 0.22, pitch * (0.2 + aSize * 0.58), land);
-  float streak = pitch * 0.7 * (1.0 - land);
+  float streak = pitch * 0.7 * (1.0 - land) * streaming;
   vec2 local = position.xy * vec2(radius + streak + 1.5, radius + 1.5);
 
   vQuad = local;
@@ -132,6 +139,7 @@ export function createSignalField(face: LedFace) {
   const uniforms = {
     uView: { value: new Vector2(1, 1) },
     uStream: { value: 0 },
+    uDots: { value: 0 },
     uCurtain: { value: 0 },
     uTravel: { value: 0 },
   };

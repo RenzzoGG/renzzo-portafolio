@@ -1,0 +1,112 @@
+/*
+ * Section continuity. Seams are the static base: a gradient between two section
+ * colors that works without JS, WebGL or motion. Over the live world they clear,
+ * and text blocks sit on ink panels so contrast never depends on the canvas.
+ */
+.seam {
+  position: relative;
+  height: clamp(3rem, 10vh, 6rem);
+  overflow: clip;
+  background: linear-gradient(to bottom, var(--seam-from), var(--seam-to));
+}
+
+.seam--strong {
+  height: clamp(6rem, 18vh, 10rem);
+}
+
+.seam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(194 29 58 / 0.6) 0 1px,
+    transparent 1px 4px,
+    rgb(242 238 234 / 0.28) 4px 5px,
+    transparent 5px 9px
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"], [data-world-live]) .seam[data-on]::after {
+    animation: seam-burst 520ms steps(1, end) both;
+  }
+}
+
+@keyframes seam-burst {
+  0% {
+    opacity: 0.9;
+    transform: translateX(-6%);
+  }
+
+  25% {
+    opacity: 0.45;
+    transform: translateX(5%);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateX(-3%);
+  }
+
+  75% {
+    opacity: 0.25;
+    transform: translateX(2%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+:root[data-world-live] {
+  --panel: rgb(11 10 12 / 0.94);
+}
+
+:root[data-world-live] .seam {
+  background: transparent;
+}
+
+:root[data-world-live] .seam--closing {
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+}
+
+:root[data-world-live] .services {
+  background: transparent;
+}
+
+/* A box-shadow ring adds padding without moving the layout or the glitch layers. */
+:root[data-world-live]
+  :is(
+    .more__title,
+    #about-title,
+    #services-title,
+    #skills-title,
+    #cv-title,
+    .hud > span:not(.hud__line, #contact span),
+    .tape__body,
+    .about__counters,
+    .about__facts,
+    .channel,
+    .grid__board,
+    #cv .actions
+  ) {
+  border-radius: var(--radius-xs);
+  background: var(--panel);
+  box-shadow: 0 0 0 var(--space-2) var(--panel);
+}
+
+:root[data-world-live] :is(.more__title, .section-title:not(.work__title)) {
+  width: fit-content;
+}
+
+:root[data-world-live] #about-title {
+  align-self: start;
+}
+
+:root[data-world-live] .services__head .btn--ghost:not(:hover) {
+  background: var(--panel);
+}

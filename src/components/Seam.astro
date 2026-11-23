@@ -1,0 +1,22 @@
+---
+type Ground = "bone" | "bg" | "surface" | "signal";
+
+interface Props {
+  from: Ground;
+  to: Ground;
+  /** The last seam fades into the footer, even over the live world. */
+  closing?: boolean;
+}
+
+const { from, to, closing = false } = Astro.props;
+const strong = [from, to].some(
+  (ground) => ground === "bone" || ground === "signal",
+);
+---
+
+<div
+  class:list={["seam", { "seam--strong": strong, "seam--closing": closing }]}
+  style={`--seam-from: var(--color-${from}); --seam-to: var(--color-${to})`}
+  data-seam
+  aria-hidden="true"
+></div>

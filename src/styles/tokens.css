@@ -17,6 +17,7 @@
   --color-bone: #f2eeea;
   --color-ink: #0b0a0c;
   --color-muted-on-bone: #5f585e;
+  --color-panel-floor: #191819; /* The ink panel at its lightest, over bone. */
 
   /* Surfaces and states */
   --color-surface-subtle: #100f12;

@@ -27,6 +27,7 @@ uniform float uTime;
 uniform float uCell;
 uniform float uWidth;
 uniform float uFade;
+uniform float uBands;
 uniform vec2 uFocus; // face center and half width, in screen UV
 in vec2 vWall;
 out vec4 color;
@@ -46,6 +47,9 @@ void main() {
   float near = 1.0 - smoothstep(uFocus.y * 0.5, uFocus.y * 1.02, abs(gl_FragCoord.x / uWidth - uFocus.x));
   float pulse = smoothstep(0.7, 1.0, sweep) * near;
   vec3 tint = mix(vec3(0.15, 0.11, 0.135), vec3(0.42, 0.075, 0.14), pulse);
+  // Services: wide channel bands roll slowly up the wall.
+  float band = smoothstep(0.45, 0.5, fract(grid.y * 0.125 + uTime * 0.05));
+  tint += vec3(0.2, 0.035, 0.07) * band * uBands;
   vec3 lit = tint * lines * (0.7 + pulse * 0.3) * uFade;
   color = vec4(lit, max(lit.r, max(lit.g, lit.b)));
 }
@@ -61,6 +65,7 @@ export function createGridWall() {
     uCell: { value: 64 },
     uWidth: { value: 1 },
     uFade: { value: 1 },
+    uBands: { value: 0 },
     uFocus: { value: new Vector2(0.5, 0.2) },
   };
   const material = new RawShaderMaterial({

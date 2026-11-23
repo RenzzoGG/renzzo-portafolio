@@ -9,7 +9,12 @@ const education = await getEducation();
 const certifications = await getCertifications();
 ---
 
-<section class="section container" id="skills" aria-labelledby="skills-title">
+<section
+  class="section container"
+  id="skills"
+  aria-labelledby="skills-title"
+  data-act
+>
   <HudMarks index={4} total={6} />
   <h2
     class="section-title"
@@ -20,9 +25,11 @@ const certifications = await getCertifications();
     {ui.headings.skills}
   </h2>
   <div class="grid">
-    <SkillsBoard />
+    <div class="grid__board" data-act-item="body">
+      <SkillsBoard />
+    </div>
 
-    <div class="log">
+    <div class="log" data-act-item="detail">
       <div class="log__bar" aria-hidden="true">
         {ui.sets.logTitle}
       </div>
@@ -62,6 +69,10 @@ const certifications = await getCertifications();
     display: grid;
     gap: var(--space-7);
     margin-top: var(--space-6);
+  }
+
+  .grid__board {
+    min-width: 0;
   }
 
   .log {

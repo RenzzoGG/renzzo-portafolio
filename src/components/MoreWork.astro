@@ -14,7 +14,7 @@ const { more } = await getProjects();
       {more.map(({ data }) => {
         const shot = data.screenshots[0];
         return (
-          <li class="row tape">
+          <li class="row tape" data-act-item="body">
             <div class="tape__body">
               <div class="tape__shell">
                 <div class="tape__label" data-tone="bone">
