@@ -37,6 +37,7 @@ uniform float uIntensity;
 uniform float uQuality;
 uniform vec4 uSafe; // slot center x, slot half width, fade width, header line (all in UV)
 uniform float uSafeAmount;
+uniform float uCopyLine; // bottom of the hero text, in UV
 uniform float uBone;
 in vec2 vUv;
 out vec4 color;
@@ -51,7 +52,7 @@ float random(vec2 p) {
 void main() {
   float amount = uIntensity;
   vec2 fromCenter = vUv - 0.5;
-  vec2 uv = 0.5 + fromCenter * (1.0 + 0.16 * amount * dot(fromCenter, fromCenter));
+  vec2 uv = 0.5 + fromCenter * (1.0 + 0.16 * amount * (1.0 - uBone) * dot(fromCenter, fromCenter));
 
   // Occasional horizontal signal cuts: a thin band slips sideways for a moment.
   float window = floor(uTime * 7.0);
@@ -60,7 +61,7 @@ void main() {
     float height = 0.012 + random(vec2(window, 11.0)) * 0.05;
     float band = 1.0 - smoothstep(height * 0.6, height, abs(uv.y - center));
     float slip = (random(vec2(floor(uv.y * 90.0), window)) - 0.5) * 0.05;
-    uv.x += band * slip * amount * 1.6;
+    uv.x += band * slip * amount * 1.6 * (1.0 - uBone);
   }
 
   vec3 scene;
@@ -75,8 +76,7 @@ void main() {
     scene = texture(uScene, uv).rgb;
   }
   float cover = texture(uScene, uv).a;
-  // On bone the frame has no dark tube edge, so screens run cleanly off it.
-  if (uBone < 0.5 && (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)) {
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
     scene = vec3(0.0);
     cover = 0.0;
   }
@@ -94,7 +94,8 @@ void main() {
   // HTML text sits over these areas, so the scene stays dark enough for AA.
   float beside = smoothstep(uSafe.y, uSafe.y + uSafe.z, abs(vUv.x - uSafe.x));
   float header = smoothstep(uSafe.w - 0.02, uSafe.w, vUv.y);
-  float safe = max(beside, header) * uSafeAmount;
+  float rows = smoothstep(uCopyLine - 0.06, uCopyLine, vUv.y);
+  float safe = max(beside * rows, header) * uSafeAmount;
   result = mix(result, min(result, vec3(0.085)), safe);
 
   // Bone stays the exact page color, so the HTML panels sit on it with no seam.
@@ -118,6 +119,7 @@ export function createPost() {
     uQuality: { value: 1 },
     uSafe: { value: new Vector4(0.5, 0.25, 0.04, 0.92) },
     uSafeAmount: { value: 1 },
+    uCopyLine: { value: 0 },
     uBone: { value: 0 },
   };
   const material = new RawShaderMaterial({

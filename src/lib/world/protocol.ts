@@ -4,14 +4,15 @@ export interface SlotRect {
   y: number;
   width: number;
   height: number;
+  /** Bottom of the hero text and header, which the analog pass keeps readable. */
+  textBottom: number;
+  headerBottom: number;
 }
 
 export interface View {
   width: number;
   height: number;
   dpr: number;
-  /** Height of the header, which the analog effect must keep readable. */
-  top: number;
 }
 
 export interface WorldStats {

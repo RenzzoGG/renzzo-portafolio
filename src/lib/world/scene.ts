@@ -3,6 +3,7 @@ import {
   PerspectiveCamera,
   Scene,
   Vector2,
+  Vector3,
   WebGLRenderer,
   WebGLRenderTarget,
 } from "three";
@@ -31,6 +32,8 @@ const JOURNEY_FOLLOW = 8;
 const PULL_BACK = 0.34;
 /** Journey units per second that count as the fastest scroll. */
 const FAST_SCROLL = 1.5;
+const DARK_GROUND = new Vector3(0.043, 0.039, 0.047);
+const BONE_GROUND = new Vector3(0.949, 0.933, 0.918);
 
 export interface SceneOptions {
   canvas: HTMLCanvasElement | OffscreenCanvas;
@@ -130,6 +133,7 @@ export function createScene(options: SceneOptions): WorldScene {
   let speed = 0;
   let baseZ = 1000;
   const slotCenter = new Vector2();
+  const ground = new Vector3();
 
   function applySize() {
     const dpr = Math.min(view.dpr, dprLimit);
@@ -171,8 +175,9 @@ export function createScene(options: SceneOptions): WorldScene {
       centerX,
       (slot.width / 2 + 8) / view.width,
       20 / view.width,
-      1 - view.top / view.height,
+      slot.headerBottom > 0 ? 1 - slot.headerBottom / view.height : 1.03,
     );
+    post.uniforms.uCopyLine.value = 1 - slot.textBottom / view.height;
   }
 
   function update(dt: number) {
@@ -241,6 +246,9 @@ export function createScene(options: SceneOptions): WorldScene {
     tunnel.uniforms.uCameraZ.value = camera.position.z;
     tunnel.setQuality(quality);
     drum.setQuality(quality);
+    const bone =
+      smoothstep(1.36, 1.6, journey) * (1 - smoothstep(5.2, 5.85, journey));
+    ground.copy(DARK_GROUND).lerp(BONE_GROUND, bone);
     drum.update(
       renderer,
       journey,
@@ -248,10 +256,9 @@ export function createScene(options: SceneOptions): WorldScene {
       time,
       dt,
       tunnel.uniforms.uLength.value * 0.7,
+      ground,
     );
-
-    post.uniforms.uBone.value =
-      smoothstep(1.36, 1.6, journey) * (1 - smoothstep(5.2, 5.85, journey));
+    post.uniforms.uBone.value = bone;
     post.uniforms.uSafeAmount.value = 1 - smoothstep(0.78, 1, journey);
 
     const aspect = slot.height / slot.width;

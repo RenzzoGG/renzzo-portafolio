@@ -1,5 +1,6 @@
 import { readFileSync, statSync } from "node:fs";
 import { devices, expect, test, type Page } from "@playwright/test";
+import sharp from "sharp";
 import { contrastRatio } from "../../src/lib/contrast.ts";
 import { buildStops, journeyAt } from "../../src/lib/world/journey.ts";
 
@@ -166,6 +167,48 @@ test.describe("desktop with the live drum", () => {
       "background-color",
       "rgb(242, 238, 234)",
     );
+  });
+
+  test("the face returns after jumping back to the top", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(WORLD).waitFor({ timeout: 60_000 });
+    await jump(page, "stocktill");
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+    const box = await page.locator("[data-led-slot]").boundingBox();
+    if (!box) throw new Error("No face slot");
+    await expect
+      .poll(
+        async () => {
+          const { data, info } = await sharp(
+            await page.screenshot({ clip: box }),
+          )
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          let lit = 0;
+          for (let at = 0; at < data.length; at += info.channels) {
+            if ((data[at] ?? 0) > 150 && (data[at + 1] ?? 0) < 110) lit += 1;
+          }
+          return lit;
+        },
+        { timeout: 30_000 },
+      )
+      .toBeGreaterThan(2000);
+  });
+
+  test("Motion stays reachable mid-journey and keeps the project", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.locator(WORLD).waitFor({ timeout: 60_000 });
+    await jump(page, "fernwick-platform");
+    const toggle = page.locator("[data-motion-toggle]");
+    await expect(toggle).toBeInViewport();
+    await toggle.click();
+    await expect(page.locator(".world-canvas")).toHaveCount(0);
+    await expect(page.locator("#fernwick-platform h3")).toBeInViewport();
   });
 
   test("Motion off collapses the tunnel and restores the images", async ({

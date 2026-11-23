@@ -97,8 +97,15 @@ if (slot && host) {
     if (wantsWorld()) {
       if (!world && !worldLoading) void startWorld();
     } else if (world) {
+      // The tunnel's space collapses, so keep the reader on their project.
+      const keepPlace = world.inJourney();
       world.destroy();
       world = null;
+      if (keepPlace) {
+        document
+          .querySelector(".case[data-active]")
+          ?.scrollIntoView({ behavior: "instant" });
+      }
     }
     if (wantsFlat()) {
       if (!flat && !flatLoading && !flatFailed) void startFlat();

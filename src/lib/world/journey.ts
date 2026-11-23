@@ -31,7 +31,10 @@ export function buildStops(layout: JourneyLayout): JourneyStop[] {
   // The last project holds until its text has left, then the world turns dark.
   const last = cases.at(-1);
   if (last) {
-    raw.push({ scroll: last.top + last.height, value: 1 + cases.length });
+    raw.push({
+      scroll: last.top + last.height - viewport * 0.2,
+      value: 1 + cases.length,
+    });
   }
   raw.push({ scroll: stageBottom - viewport, value: 2 + cases.length });
 

@@ -40,11 +40,11 @@ out float vPulse;
 
 void main() {
   float angle = aCell.x * 6.28318;
-  float along = fract(aCell.y + uTravel);
+  float along = fract(aCell.y - uTravel);
   // The tunnel builds from its far end toward the camera.
   float show = smoothstep(0.0, 0.2, uForm * 1.2 - (1.0 - along) * 0.95);
   float ends = smoothstep(0.0, 0.07, along) * (1.0 - smoothstep(0.7, 1.0, along));
-  float pulse = pow(0.5 + 0.5 * sin(along * 30.0 - uTime * 2.6), 6.0);
+  float pulse = pow(0.5 + 0.5 * sin(along * 30.0 + uTime * 2.6), 6.0);
   float light = show * ends * uFade * (0.34 + aSize * 0.7 + pulse * 0.7);
   if (light < 0.004) {
     gl_Position = vec4(2.0, 2.0, 2.0, 1.0);

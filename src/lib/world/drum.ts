@@ -50,6 +50,7 @@ uniform float uVelocity;
 uniform float uTime;
 uniform float uFocus;
 uniform float uAlpha;
+uniform vec3 uGround;
 in vec2 vUv;
 out vec4 color;
 
@@ -95,7 +96,8 @@ void main() {
   tube += smoothstep(0.018, 0.0, abs(vUv.y - (1.0 - drift))) * 0.09;
   float tubeEdge = smoothstep(0.92, 0.42, length(q / vec2(0.8, 0.5)));
   tube *= mix(0.88, 1.0, tubeEdge);
-  tube *= mix(0.46, 1.0, uFocus);
+  // Neighbors recede into the ground, so the active screen always leads.
+  tube = mix(uGround, tube, mix(0.42, 1.0, uFocus));
 
   float frame = smoothstep(-0.009, -0.003, d);
   tube = mix(tube, uAccent, frame);
@@ -135,6 +137,7 @@ export function createDrum(initial: DrumLayout, count: number) {
       uVelocity: { value: 0 },
       uTime: { value: 0 },
       uFocus: { value: 0 },
+      uGround: { value: new Vector3() },
       uAlpha: { value: 0 },
     };
     const material = new RawShaderMaterial({
@@ -215,6 +218,7 @@ export function createDrum(initial: DrumLayout, count: number) {
       time: number,
       dt: number,
       depth: number,
+      ground: Vector3,
     ) {
       upload(renderer);
       const enter = smoothstep(1.42, 2, journey);
@@ -252,7 +256,8 @@ export function createDrum(initial: DrumLayout, count: number) {
         uniforms.uVelocity.value = quality > 0.5 ? velocity : velocity * 0.4;
         uniforms.uTime.value = time;
         uniforms.uFocus.value = 1 - smoothstep(0.08, STEP, Math.abs(theta));
-        uniforms.uAlpha.value = enter * (1 - leave);
+        uniforms.uAlpha.value = smoothstep(1.56, 1.72, journey) * (1 - leave);
+        uniforms.uGround.value.copy(ground);
         // No depth buffer: the farthest screen draws first.
         screen.mesh.renderOrder = 10 - Math.abs(theta);
       });

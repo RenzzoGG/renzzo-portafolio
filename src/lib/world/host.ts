@@ -20,6 +20,8 @@ const FIRST_FRAME_TIMEOUT = 20000;
 export interface WorldHandle {
   /** True after the first frame is on screen, false if WebGL couldn't start. */
   ready: Promise<boolean>;
+  /** True while the visitor is between the tunnel and the end of the drum. */
+  inJourney(): boolean;
   destroy(): void;
 }
 
@@ -162,13 +164,24 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
 
   const readSlot = (): SlotRect => {
     const box = slot.getBoundingClientRect();
-    return { x: box.x, y: box.y, width: box.width, height: box.height };
+    const textBottom = Math.max(
+      ...[...hero.querySelectorAll(".hero__identity, .hero__copy")].map(
+        (part) => part.getBoundingClientRect().bottom,
+      ),
+    );
+    return {
+      x: box.x,
+      y: box.y,
+      width: box.width,
+      height: box.height,
+      textBottom,
+      headerBottom: header?.getBoundingClientRect().bottom ?? 0,
+    };
   };
   const readView = (): View => ({
     width: canvas?.clientWidth || document.documentElement.clientWidth,
     height: canvas?.clientHeight || window.innerHeight,
     dpr: window.devicePixelRatio || 1,
-    top: header?.getBoundingClientRect().bottom ?? 0,
   });
 
   const readDrum = (): DrumLayout => {
@@ -235,8 +248,14 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     frame = 0;
     if (scrollDirty) {
       scrollDirty = false;
-      if (journey < 1.3) link?.send({ type: "slot", slot: readSlot() });
+      // Journey first: a jump back to the top must still re-place the face.
       applyJourney();
+      if (journey < 1.3) link?.send({ type: "slot", slot: readSlot() });
+      // The header is gone, so the Motion control stays within reach.
+      root.toggleAttribute(
+        "data-motion-pinned",
+        live && (header?.getBoundingClientRect().bottom ?? 1) <= 0,
+      );
     }
     if (pendingPointer) {
       link?.send({ type: "pointer", ...pendingPointer });
@@ -304,6 +323,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
     live = false;
     delete slot.dataset.world;
     delete root.dataset.worldLive;
+    root.removeAttribute("data-motion-pinned");
   };
 
   const makeCanvas = () => {
@@ -403,6 +423,7 @@ export function startWorld(slot: HTMLElement, onLost: () => void): WorldHandle {
 
   return {
     ready,
+    inJourney: () => journey >= 1 && journey < 6,
     destroy() {
       if (destroyed) return;
       destroyed = true;

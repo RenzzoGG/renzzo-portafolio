@@ -72,8 +72,18 @@ const { ui } = await getProfile();
     cursor: not-allowed;
   }
 
+  /* During the WebGL journey the header is gone, but this must stay reachable. */
+  :global(:root[data-motion-pinned]) .motion {
+    position: fixed;
+    bottom: var(--space-4);
+    left: var(--gutter);
+    z-index: var(--z-nav);
+    background: var(--color-bg);
+  }
+
   @media (hover: hover) {
-    .motion:hover:not(:disabled) {
+    .motion:hover:not(:disabled),
+    :global(:root[data-motion-pinned]) .motion:hover:not(:disabled) {
       background: var(--color-surface-hover);
     }
   }
