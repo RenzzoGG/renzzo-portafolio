@@ -2,7 +2,20 @@ import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 // These tests cover the page itself, so they skip the WebGL world.
-test.use({ launchOptions: { args: ["--disable-webgl", "--disable-webgl2"] } });
+test.use({
+  launchOptions: [
+    async ({ browserName }, use) => {
+      await use(
+        browserName === "chromium"
+          ? { args: ["--disable-webgl", "--disable-webgl2"] }
+          : browserName === "firefox"
+            ? { firefoxUserPrefs: { "webgl.disabled": true } }
+            : {},
+      );
+    },
+    { scope: "worker" },
+  ],
+});
 
 const PROJECT_LINKS = [
   "https://clearline.renzzogg.com",

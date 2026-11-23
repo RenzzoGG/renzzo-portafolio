@@ -216,6 +216,15 @@ const profileLinks = contacts.filter((link) => link !== email);
     }
   }
 
+  /* On screen these are tap targets. The printed page keeps its tight line. */
+  @media screen {
+    .cv__contact a {
+      display: inline-block;
+      min-height: 1.5rem;
+      line-height: 1.5rem;
+    }
+  }
+
   @media (max-width: 30rem) {
     .cv__contact a {
       overflow-wrap: anywhere;

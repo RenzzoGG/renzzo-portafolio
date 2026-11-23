@@ -7,12 +7,13 @@ import { gzipSync } from "node:zlib";
 import { chromium } from "@playwright/test";
 import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
+import { measureBudgets } from "./budgets.ts";
 import { startServer } from "./serve-dist.ts";
 
 const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
-const REPORT_DIR = "docs/reports/phase-6-6";
+const REPORT_DIR = "docs/reports/phase-7";
 const REPORT = `${REPORT_DIR}/lighthouse.json`;
 const CATEGORIES = [
   "performance",
@@ -88,21 +89,6 @@ async function runOnce(url: string, formFactor: "mobile" | "desktop") {
   }
 }
 
-function criticalJsBytes() {
-  const html = readFileSync("dist/index.html", "utf8");
-  const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
-  // Counts inline scripts and entry modules. Lazy chunks load after first paint.
-  return scripts
-    .filter(([, attrs]) => !attrs?.includes("application/ld+json"))
-    .reduce((total, [, attrs, body]) => {
-      const src = /\bsrc="\/([^"]+)"/.exec(attrs ?? "")?.[1];
-      const size = src
-        ? readFileSync(`dist/${src}`).length
-        : Buffer.byteLength(body ?? "");
-      return total + size;
-    }, 0);
-}
-
 /** Gzip sizes of what a desktop visit downloads, with WebGL reported on its own. */
 function desktopJs() {
   const files = readdirSync("dist/_astro").filter((name) =>
@@ -142,7 +128,8 @@ function desktopJs() {
 
 const server = await startServer(PORT);
 const summary: Record<string, unknown> = {
-  criticalJsBytes: criticalJsBytes(),
+  criticalJsBytes: measureBudgets().find((item) => item.id === "critical")
+    ?.value,
   desktopJs: desktopJs(),
 };
 try {
