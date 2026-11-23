@@ -391,7 +391,7 @@ test.describe("contrast on bone", () => {
         return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
       };
       const walker = document.createTreeWalker(stage, NodeFilter.SHOW_TEXT);
-      const found: { text: string; color: string; onButton: boolean }[] = [];
+      const found: { text: string; color: string; onDark: boolean }[] = [];
       while (walker.nextNode()) {
         const node = walker.currentNode;
         const parent = node.parentElement;
@@ -399,14 +399,14 @@ test.describe("contrast on bone", () => {
         found.push({
           text: node.textContent.trim().slice(0, 40),
           color: toHex(getComputedStyle(parent).color),
-          onButton: Boolean(parent.closest(".btn:not(.btn--ghost)")),
+          onDark: Boolean(parent.closest(".btn:not(.btn--ghost), .seg")),
         });
       }
       return found;
     });
     expect(colors.length).toBeGreaterThan(40);
     for (const item of colors) {
-      const ground = item.onButton ? "#0b0a0c" : BONE;
+      const ground = item.onDark ? "#0b0a0c" : BONE;
       expect(
         contrastRatio(item.color, ground),
         item.text,

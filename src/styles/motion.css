@@ -122,7 +122,9 @@ html:has(dialog[open]) {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    animation: 260ms steps(1, end) both;
+    animation-duration: 260ms;
+    animation-timing-function: steps(1, end);
+    animation-fill-mode: both;
   }
 
   :root:not([data-motion="off"]) [data-glitching]::before {
