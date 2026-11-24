@@ -4,59 +4,55 @@ Last updated: 2026-11-23. Rewritten at the end of every phase or work session, a
 
 ## Current state
 
-| Item           | Status                                                                      |
-| -------------- | --------------------------------------------------------------------------- |
-| Current phase  | **Phase 7.5: Mobile motion. Done here**, with the real iPhone check pending |
-| Next phase     | **Phase 8: Launch. Not started**, waiting for Renzzo                        |
-| Blocked        | Nothing is blocked                                                          |
-| Branch         | `redesign`                                                                  |
-| `main`         | Untouched at `93d9b4d`                                                      |
-| Remote         | `origin/redesign` is at `69de754`. **The commits below are not pushed**     |
-| Checks         | `npm run check` and `npm run check:budgets` pass                            |
-| Phone E2E      | WebKit and Chromium: 37 passed, 1 skipped (a WebKit-only compositor test)   |
-| Other E2E      | Chromium 146/146. WebKit and Firefox 49 passed, 1 skipped each              |
-| Lighthouse     | Mobile 100/100/100/100 and desktop 100/100/100/100 (median of 5)            |
-| Flash effects  | Worst gated result: 2 general and 3 red flashes per second (limit 3)        |
-| Critical JS    | 10.9 KB minified (budget 20 KB)                                             |
-| Mobile motion  | 34.2 KB gzip (budget 50 KB)                                                 |
-| WebGL JS       | 137.9 KB gzip (budget 250 KB)                                               |
-| Textures, face | 121.0 KB (budget 800 KB), 6.4 KB gzip (budget 60 KB)                        |
+| Item           | Status                                                                  |
+| -------------- | ----------------------------------------------------------------------- |
+| Current phase  | **Phase 8: Launch. Prepared**, waiting for Renzzo to deploy             |
+| Next step      | Follow `docs/LAUNCH.md` from step 1                                     |
+| Blocked        | Nothing is blocked                                                      |
+| Branch         | `redesign`                                                              |
+| `main`         | Untouched at `93d9b4d`, still the live old site                         |
+| Remote         | `origin/redesign` is at `2004dc6`. **The commits below are not pushed** |
+| Checks         | `npm run check` and `npm run check:budgets` pass                        |
+| Phone E2E      | WebKit and Chromium: 37 passed, 1 skipped (WebKit-only compositor test) |
+| Other E2E      | Chromium 146/146. WebKit and Firefox 49 passed, 1 skipped each          |
+| Lighthouse     | Local build: mobile and desktop 100/100/100/100 (median of 5)           |
+| Flash effects  | Worst gated result: 2 general and 3 red flashes per second (limit 3)    |
+| Critical JS    | 10.9 KB minified (budget 20 KB)                                         |
+| Mobile motion  | 34.2 KB gzip (budget 50 KB)                                             |
+| WebGL JS       | 137.9 KB gzip (budget 250 KB)                                           |
+| Textures, face | 121.0 KB (budget 800 KB), 6.4 KB gzip (budget 60 KB)                    |
 
 ## Just finished
 
-Phase 7.5 commits, oldest first:
+Phase 8 preparation commits, oldest first:
 
-- `22add63` feat(face): give the phone face real depth, tilt and idle life
-- `252b168` feat(mobile): add visible entrances, a 3D card carousel and CRT wipes
-- `573087e` test(mobile): cover phone motion in WebKit and Chromium
-- `999d966` fix(a11y): calm the phone face during a hard shake
-- `6509bfb` feat(hero): lead the phone hero with the LED face
-- `01a5fbc` fix(face): publish the dot layers in the WebKit compositor
+- `b1c58a5` fix(services): replace X-like LED icons with code, browser and bug
+- `0ca3efd` chore(launch): ignore Upwork assets and report to the Phase 8 folder
+- `fdce1b0` docs(launch): add the step-by-step launch and rollback plan
 
-The commit that refreshes this handoff is unpushed too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
+The commit that refreshes this handoff is local too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
 
-Why the iPhone felt static:
+What is ready:
 
-- **The bright dots never reached the screen in WebKit.** Canvases drawn before joining the page kept a stale compositor buffer, so only the dim glow showed. Screenshots hid this, and a test on recorded frames now guards it.
-- **The face was below the first screen** on phones.
-- **Tilt was too weak:** a 10° tilt moved the edge of the face about 3 px.
-- **Entrances were too small:** 14 px while a normal scroll moves about 320 px.
-- Motion code did run, and nothing disabled it on iOS.
-
-Evidence is in `docs/reports/phase-7-mobile/` (gitignored):
-
-- `video/mobile-webkit-hero-to-contact.webm`: 390 px WebKit, hero to Contact. The tilt in it uses a simulated sensor.
-- `frames/contact-sheet.png`, `lighthouse.json`, `photosensitivity.json`
+- **`docs/LAUNCH.md`:** merge, Railway settings, post-launch checklist, rollback and when to delete `portfolio-preview`.
+- **Rehearsed in an isolated clone:** the `--no-ff` merge, a clean `npm ci` and build, the server on all key routes, the revert to `93d9b4d`, and the re-launch.
+- **`upwork-assets/` (gitignored):** five 1600×1200 images and `DESCRIPTION.md`.
+- **Production Lighthouse:** `LIGHTHOUSE_URL=https://renzzogg.com/ npm run lighthouse`.
 
 ## Exact next step
 
-1. **Renzzo:** push `redesign`. The Railway preview redeploys from it.
-2. **Renzzo:** on the iPhone, reload the preview and complete the checklist in `docs/DEVICE-TESTING.md`. Check first that the face is bright, follows the tilt and that the carousel swipes well.
-3. **Renzzo:** repeat on Android Chrome, and check the desktop journey on a real GPU (target 60 fps).
-4. **Then send this prompt:** `Start Phase 8 exactly as defined in docs/PLAN.md.`
+1. **Renzzo:** follow `docs/LAUNCH.md` in order. Don't change production settings before saving the screenshots in step 2.
+2. **After the launch:** run the checklist in Phase C, then publish the Upwork entry.
+3. **48 hours after a clean checklist:** delete the `portfolio-preview` Railway project.
+4. **If anything fails:** use the rollback section of `docs/LAUNCH.md`.
 
 ## Waiting for Renzzo
 
+- **Railway and Cloudflare steps have not been run.** They come from current docs. Claude has no access to the production settings, so the screenshots in step 2 are the record of the old configuration.
+- **Serverless:** Railway warns that the first request after sleep may return a 502. Test it after launch, and turn it off if it happens even once.
+- **Skills decision:** after launch, Astro and Three.js are used in a published project, but Skills and the CV don't list them. Adding them means updating the page and regenerating the PDF.
+- **No custom 404 page:** unknown URLs get a plain "Not found" text.
+- **Old anchors:** `#projects`, `#certifications`, `#education` and `#top` no longer exist. Those links open the top of the page.
 - **iPhone result:** all of this was measured in Playwright WebKit with iPhone emulation, which is not iOS. The compositor fix, gyroscope feel and Low Power Mode still need the real phone.
 - **Fast scrolling over the whole page:** every visual effect passes, but a synthetic fling through the full page still measures 8 general flashes per second on desktop and 4 on mobile. It comes from light and dark page blocks sliding past, so it is reported and not gated. Decide on the real phone whether it feels comfortable.
 - **Photosensitivity scope:** the analyzer is modeled on WCAG 2.3.1 and is not a certified PEAT or Harding result.
@@ -83,7 +79,8 @@ Evidence is in `docs/reports/phase-7-mobile/` (gitignored):
 
 **Optional:**
 
-- `docs/reports/` (gitignored): screenshots, videos, Lighthouse reports, face previews and reference captures. Phase 7 is in `docs/reports/phase-7/` and the mobile pass in `docs/reports/phase-7-mobile/`.
+- `docs/reports/` (gitignored): screenshots, videos, Lighthouse reports, face previews and reference captures. Phase 7 is in `docs/reports/phase-7/`, the mobile pass in `docs/reports/phase-7-mobile/` and Phase 8 in `docs/reports/phase-8/`.
+- `upwork-assets/` (gitignored): Upwork images and `DESCRIPTION.md`.
 - `.claude/settings.local.json`: machine-specific Claude Code settings. Never commit it.
 
 **Reinstall instead of copying:**
