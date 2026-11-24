@@ -1,6 +1,7 @@
 /**
  * Runs Lighthouse on the production build, mobile and desktop, and reports the
  * median of 5 runs. Each run uses a fresh browser. Run `npm run build` first.
+ * Set LIGHTHOUSE_URL to measure a deployed site instead of the local build.
  */
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -14,7 +15,8 @@ const RUNS = 5;
 const PORT = 4332;
 const DEBUG_PORT = 9333;
 const REPORT_DIR = "docs/reports/phase-8";
-const REPORT = `${REPORT_DIR}/lighthouse.json`;
+const TARGET = process.env.LIGHTHOUSE_URL;
+const REPORT = `${REPORT_DIR}/lighthouse${TARGET ? "-production" : ""}.json`;
 const CATEGORIES = [
   "performance",
   "accessibility",
@@ -126,8 +128,10 @@ function desktopJs() {
   };
 }
 
-const server = await startServer(PORT);
+const server = TARGET ? null : await startServer(PORT);
+const url = TARGET ?? `http://127.0.0.1:${PORT}/`;
 const summary: Record<string, unknown> = {
+  url,
   criticalJsBytes: measureBudgets().find((item) => item.id === "critical")
     ?.value,
   desktopJs: desktopJs(),
@@ -136,7 +140,7 @@ try {
   for (const formFactor of ["mobile", "desktop"] as const) {
     const runs: Awaited<ReturnType<typeof runOnce>>[] = [];
     for (let run = 1; run <= RUNS; run += 1) {
-      const result = await runOnce(`http://127.0.0.1:${PORT}/`, formFactor);
+      const result = await runOnce(url, formFactor);
       console.log(formFactor, run, JSON.stringify(result.scores));
       runs.push(result);
     }
@@ -156,7 +160,7 @@ try {
     };
   }
 } finally {
-  server.close();
+  server?.close();
 }
 
 mkdirSync(REPORT_DIR, { recursive: true });

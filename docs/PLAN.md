@@ -349,23 +349,29 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - Lighthouse mobile median of 5 is 100/100/100/100. Critical JS ≤ 20 KB and deferred motion ≤ 50 KB gzip.
 - A 390 px WebKit video from the hero to Contact is in `docs/reports/phase-7-mobile/`.
 
-## Phase 8: Launch
+## Phase 8: Launch 🟡 (prepared, waiting for Renzzo to deploy)
 
 **Goals:** ship to renzzogg.com safely.
 
 **Deliverables**
 
-- Railway configuration for the Astro static build. Railpack detects Node and runs `npm run build`, and we serve `dist/` statically (Railpack static output or Caddy). **Railway Serverless** (sleep when idle) enabled on the service.
+- Railway settings for the static build, set in the dashboard of "Portafolio Personal". `npm run build` builds and `scripts/serve-dist.ts` serves `dist/`, the setup already proven on the temporary preview. **Railway Serverless** is enabled on the service.
 - Verification on a **separate** Railway service or preview domain first. Then the cutover.
 - Merge `redesign` → `main`. Renzzo pushes.
-- Post-launch: refresh the LinkedIn Post Inspector cache, check the Cloudflare cache, confirm the PDF and OG are fresh.
-- Upwork portfolio images: 1000×750 (and other required sizes) captured with Playwright from the live site, plus copy taken from `docs/CONTENT.md`.
+- Post-launch: refresh the LinkedIn Post Inspector cache, purge the Cloudflare cache, confirm the PDF and OG are fresh.
+- Upwork portfolio images: 1600×1200 in the gitignored `upwork-assets/`, plus `DESCRIPTION.md`.
+- The exact steps are in `docs/LAUNCH.md`.
+
+**Decisions**
+
+- **Dashboard settings, not `railway.json`.** Railway has deprecated Config as Code, and existing files stop working for legacy services on 2026-12-01.
+- **`--no-ff` merge.** A single merge commit can be reverted without a force push. The merge and both reverts were rehearsed in a separate clone.
 
 **Acceptance checks**
 
 - The preview service serves all routes, the PDF, OG and favicon, with correct cache headers and HTTPS.
-- Lighthouse on the production URL matches Phase 7.
-- Rollback is documented: redeploy the previous `main` commit in Railway.
+- Lighthouse on the production URL matches Phase 7 (`LIGHTHOUSE_URL=https://renzzogg.com/ npm run lighthouse`).
+- Rollback is documented: redeploy the previous deployment in Railway, or revert the merge commit.
 
 ---
 
