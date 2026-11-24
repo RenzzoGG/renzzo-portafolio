@@ -11,7 +11,7 @@ import {
 const FPS = 60;
 const FRAME_MS = 1000 / FPS;
 const SAMPLE_WIDTH = 256;
-const REPORT = "docs/reports/phase-7-mobile/photosensitivity.json";
+const REPORT = "docs/reports/phase-8/photosensitivity.json";
 const WORLD = '[data-led-slot][data-world="live"]';
 
 test.setTimeout(900_000);
@@ -77,7 +77,7 @@ async function capture(
 }
 
 function save(name: string, entry: Record<string, unknown>) {
-  mkdirSync("docs/reports/phase-7-mobile", { recursive: true });
+  mkdirSync("docs/reports/phase-8", { recursive: true });
   const saved = existsSync(REPORT)
     ? (JSON.parse(readFileSync(REPORT, "utf8")) as Record<string, unknown>)
     : {};
