@@ -2,7 +2,10 @@ import type { LedFace } from "./decode.ts";
 
 /** Dot radius per halftone size, in grid pitches. Matches the pipeline. */
 const RADII = [0.13, 0.25, 0.36, 0.48];
-const LAYERS = 4; // One steady layer plus three groups that twinkle.
+// Three depth planes for the tilt parallax, plus two groups that twinkle.
+const DEPTH_LAYERS = 3;
+const LAYERS = DEPTH_LAYERS + 2;
+const TWINKLE_SHARE = 0.24;
 const GLOW_SCALE = 3;
 const MAX_DPR = 1.5;
 const RESIZE_TOLERANCE = 0.08;
@@ -46,11 +49,19 @@ export function createCanvasRenderer(
   host: HTMLElement,
   face: LedFace,
 ): FaceRenderer {
-  // About 75% of dots stay steady. The rest twinkle in three random groups.
+  // Equal thirds of real depth, so every plane holds part of the face.
+  const sorted = Uint8Array.from(face.depth).sort();
+  const cuts = [1, 2].map(
+    (part) => sorted[Math.floor((sorted.length * part) / DEPTH_LAYERS)] ?? 0,
+  );
   const group = new Uint8Array(face.count);
   for (let dot = 0; dot < face.count; dot += 1) {
     const random = hash(dot);
-    group[dot] = random < 0.75 ? 0 : 1 + Math.floor((random - 0.75) * 12);
+    const depth = face.depth[dot] ?? 0;
+    group[dot] =
+      random < TWINKLE_SHARE
+        ? DEPTH_LAYERS + (random < TWINKLE_SHARE / 2 ? 0 : 1)
+        : cuts.filter((cut) => depth >= cut).length;
   }
 
   let width = 0;

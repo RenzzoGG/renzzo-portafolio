@@ -87,25 +87,88 @@ const style = `--poster: url("${posterUrl}")`;
     transition-delay: calc(var(--duration-fast) * 0.75);
   }
 
-  /* All motion is CSS on baked canvases, so it stays off the main thread. */
+  /*
+   * Baked canvases on the compositor. Each property has one job, so they can
+   * overlap: `translate` is the tilt parallax, `scale` the assemble, and
+   * `transform` the idle drift. Layers 0 to 2 are depth, far to near.
+   */
+  .led-slot__live :global(canvas) {
+    --depth: 0.35;
+    --drift: 2px;
+
+    translate: calc(var(--face-x, 0px) * var(--depth))
+      calc(var(--face-y, 0px) * var(--depth));
+  }
+
+  .led-slot__live :global(canvas[data-layer="glow"]) {
+    --depth: -0.2;
+  }
+
+  .led-slot__live :global(canvas[data-layer="0"]) {
+    --depth: -0.45;
+    --drift: -2px;
+  }
+
+  .led-slot__live :global(canvas[data-layer="2"]) {
+    --depth: 1;
+    --drift: 4px;
+  }
+
   .led-slot[data-face="live"] .led-slot__live {
     visibility: visible;
     animation: led-assemble var(--duration-scene) var(--ease-out-expo) both;
   }
 
+  .led-slot[data-face="live"][data-face-glitch] .led-slot__live {
+    animation:
+      led-assemble var(--duration-scene) var(--ease-out-expo) both,
+      face-glitch 180ms steps(1, end);
+  }
+
+  /* A slow scan band, so the face is visibly alive with the phone held still. */
+  .led-slot[data-face="live"] .led-slot__live::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 18%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(255 59 92 / 0.2),
+      transparent
+    );
+    animation: led-scan 5.2s linear infinite;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas) {
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) both,
+      led-drift 5.6s ease-in-out 1100ms infinite alternate;
+  }
+
   .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="1"]) {
-    animation: led-shimmer 3.7s ease-in-out infinite;
+    animation-delay: 90ms, 1100ms;
   }
 
   .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="2"]) {
-    animation: led-shimmer 2.9s ease-in-out -1.1s infinite;
+    animation-delay: 180ms, 1100ms;
   }
 
   .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="3"]) {
-    animation: led-shimmer 4.3s ease-in-out -2.4s infinite;
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) 240ms both,
+      led-shimmer 2.7s ease-in-out infinite;
   }
 
-  .led-slot__live[data-paused] :global(canvas) {
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="4"]) {
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) 300ms both,
+      led-shimmer 3.5s ease-in-out -1.4s infinite;
+  }
+
+  .led-slot__live[data-paused] :global(canvas),
+  .led-slot__live[data-paused]::after {
     animation-play-state: paused !important;
   }
 
@@ -119,6 +182,26 @@ const style = `--poster: url("${posterUrl}")`;
     }
   }
 
+  @keyframes led-layer-in {
+    from {
+      scale: 1.22;
+    }
+
+    to {
+      scale: 1;
+    }
+  }
+
+  @keyframes led-drift {
+    from {
+      transform: translateY(calc(var(--drift) * -1));
+    }
+
+    to {
+      transform: translateY(var(--drift));
+    }
+  }
+
   @keyframes led-shimmer {
     0%,
     100% {
@@ -126,7 +209,36 @@ const style = `--poster: url("${posterUrl}")`;
     }
 
     50% {
-      opacity: 0.78;
+      opacity: 0.28;
+    }
+  }
+
+  @keyframes led-scan {
+    from {
+      transform: translateY(-110%);
+    }
+
+    to {
+      transform: translateY(620%);
+    }
+  }
+
+  /* Position only: a fast tilt tears the picture without changing brightness. */
+  @keyframes face-glitch {
+    0% {
+      translate: -7px 0;
+    }
+
+    33% {
+      translate: 6px 1px;
+    }
+
+    66% {
+      translate: -3px -1px;
+    }
+
+    100% {
+      translate: 0 0;
     }
   }
 </style>

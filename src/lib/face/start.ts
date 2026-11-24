@@ -137,6 +137,10 @@ if (slot && host) {
   else addEventListener("load", whenIdle, { once: true });
 }
 
+interface OrientationPermission {
+  requestPermission?: () => Promise<"granted" | "denied">;
+}
+
 /** Phones get a visible control, because iOS needs a tap to allow motion data. */
 function setupTilt(target: HTMLElement, allowed: () => boolean) {
   const button =
@@ -168,8 +172,15 @@ function setupTilt(target: HTMLElement, allowed: () => boolean) {
       stop();
       return;
     }
-    void import("./tilt.ts")
-      .then(({ startTilt }) => startTilt(target))
+    // iOS only accepts this inside the tap, so it runs before any async work.
+    const api = DeviceOrientationEvent as unknown as OrientationPermission;
+    const permission = api.requestPermission?.() ?? Promise.resolve("granted");
+    void permission
+      .then((answer) =>
+        answer === "granted"
+          ? import("./tilt.ts").then(({ startTilt }) => startTilt(target))
+          : null,
+      )
       .then((next) => {
         tilt = next;
         render();
