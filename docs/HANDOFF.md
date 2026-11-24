@@ -29,6 +29,7 @@ Phase 8 preparation commits, oldest first:
 - `b1c58a5` fix(services): replace X-like LED icons with code, browser and bug
 - `0ca3efd` chore(launch): ignore Upwork assets and report to the Phase 8 folder
 - `fdce1b0` docs(launch): add the step-by-step launch and rollback plan
+- `532524b` feat(skills): add Astro, Three.js and GLSL shaders (CV PDF is now `?v=15`, still one Letter page)
 
 The commit that refreshes this handoff is local too. `git log origin/redesign..HEAD --oneline` always shows the exact list.
 
@@ -50,7 +51,6 @@ What is ready:
 
 - **Railway and Cloudflare steps have not been run.** They come from current docs. Claude has no access to the production settings, so the screenshots in step 2 are the record of the old configuration.
 - **Serverless:** Railway warns that the first request after sleep may return a 502. Test it after launch, and turn it off if it happens even once.
-- **Skills decision:** after launch, Astro and Three.js are used in a published project, but Skills and the CV don't list them. Adding them means updating the page and regenerating the PDF.
 - **No custom 404 page:** unknown URLs get a plain "Not found" text.
 - **Old anchors:** `#projects`, `#certifications`, `#education` and `#top` no longer exist. Those links open the top of the page.
 - **iPhone result:** all of this was measured in Playwright WebKit with iPhone emulation, which is not iOS. The compositor fix, gyroscope feel and Low Power Mode still need the real phone.
