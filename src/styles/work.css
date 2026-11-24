@@ -170,6 +170,13 @@
   }
 }
 
+/* Cassettes slide in from the sides, without adding sideways page scroll. */
+@media (max-width: 63.99rem) {
+  .work__more {
+    overflow-x: clip;
+  }
+}
+
 @media (min-width: 1024px) {
   .work__grid {
     grid-template-columns: 15rem minmax(0, 1fr);
@@ -203,6 +210,61 @@
 
   .work__cases .case {
     scroll-margin-top: var(--space-5);
+  }
+}
+
+/*
+ * Phones: a swipeable card carousel. Native scroll and snap do the moving, so it
+ * stays reachable by touch and keyboard. Laid out before first paint, and only
+ * where motion is allowed. Everywhere else the cards simply stack.
+ */
+@media (scripting: enabled) and (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .work__cases {
+    --card: min(84vw, 34rem);
+    --card-edge: calc((100vw - var(--card)) / 2);
+
+    display: flex;
+    gap: var(--space-3);
+    align-items: stretch;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--space-4) var(--card-edge) var(--space-6);
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--card-edge);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  :root:not([data-motion="off"]) .work__cases::-webkit-scrollbar {
+    display: none;
+  }
+
+  :root:not([data-motion="off"]) .work__cases .case {
+    flex: 0 0 var(--card);
+    align-content: start;
+    padding: var(--space-3);
+    border: 1px solid rgb(11 10 12 / 0.16);
+    border-radius: var(--radius-lg);
+    background: var(--color-bone);
+    box-shadow: 0 22px 34px -24px rgb(11 10 12 / 0.6);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    backface-visibility: hidden;
+  }
+
+  :root:not([data-motion="off"]) .work__cases[data-carousel] .case {
+    will-change: transform;
+  }
+
+  /* A swipe drags the VHS tracking across every picture. */
+  :root:not([data-motion="off"])
+    .work__cases[data-swiping]
+    .case__media::after {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(11 10 12 / 0.24) 0 2px,
+      transparent 2px 5px
+    );
   }
 }
 

@@ -5,6 +5,7 @@
  */
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
+import { startCarousel } from "./carousel.ts";
 
 gsap.registerPlugin(SplitText);
 
@@ -23,6 +24,23 @@ const ACT_RISE = 14;
 const ACT_S = 0.46;
 const ACT_DELAY = { body: 0.12, detail: 0.24 };
 const ACT_STAGGER = 0.07;
+/**
+ * Phones scroll about 300 px during a short entrance, so a small one is never
+ * seen. Here entrances wait until the element is well on screen and move more.
+ */
+const TOUCH = {
+  /** Share of the viewport, from the bottom, an element must clear to play. */
+  line: 22,
+  /** Plays anyway after this, so text near the page end never rests hidden. */
+  waitMs: 650,
+  rise: 44,
+  slide: 72,
+  actS: 0.78,
+  revealS: 0.9,
+  tuneS: 0.95,
+  countS: 1.6,
+  tuningMs: 720,
+};
 
 const glyph = () =>
   GLYPHS[Math.floor(Math.random() * GLYPHS.length)] ?? GLYPHS.charAt(0);
@@ -81,7 +99,9 @@ const played = new WeakSet<Element>();
 
 export function startMotion() {
   const cleanups = new Set<() => void>();
+  cleanups.add(startCarousel());
   let stopped = false;
+  const desktop = matchMedia(DESKTOP).matches;
 
   /** Runs `play` once per element, when it enters the viewport. */
   const onEnter = (
@@ -90,7 +110,7 @@ export function startMotion() {
     play: (element: HTMLElement) => void,
     arm?: (element: HTMLElement) => void,
   ) => {
-    const timers = new Set<number>();
+    const timers = new Map<Element, number>();
     const items = [...document.querySelectorAll<HTMLElement>(selector)].filter(
       (item) => {
         const box = item.getBoundingClientRect();
@@ -99,33 +119,60 @@ export function startMotion() {
         );
       },
     );
+    const percent = desktop
+      ? marginPercent
+      : Math.max(marginPercent, TOUCH.line);
+    const fire = (element: HTMLElement) => {
+      if (played.has(element)) return;
+      played.add(element);
+      observer.unobserve(element);
+      lineObserver?.unobserve(element);
+      clearTimeout(timers.get(element));
+      timers.delete(element);
+      play(element);
+    };
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const element = entry.target as HTMLElement;
-        observer.unobserve(element);
-        played.add(element);
         // Past the trigger line it plays now. In the bottom band it plays
         // shortly after, so text can never rest invisible on screen.
-        const line = window.innerHeight * (1 - marginPercent / 100);
+        const line = window.innerHeight * (1 - percent / 100);
         if (entry.boundingClientRect.top <= line) {
-          play(element);
-        } else {
-          const timer = window.setTimeout(() => {
-            timers.delete(timer);
-            play(element);
-          }, BAND_DELAY_MS);
-          timers.add(timer);
+          fire(element);
+        } else if (!timers.has(element)) {
+          timers.set(
+            element,
+            window.setTimeout(
+              () => {
+                fire(element);
+              },
+              desktop ? BAND_DELAY_MS : TOUCH.waitMs,
+            ),
+          );
         }
       }
     });
+    // On phones, crossing the line during the wait starts it right away.
+    const lineObserver = desktop
+      ? null
+      : new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) fire(entry.target as HTMLElement);
+            }
+          },
+          { rootMargin: `0px 0px -${percent}% 0px` },
+        );
     for (const item of items) {
       arm?.(item);
       observer.observe(item);
+      lineObserver?.observe(item);
     }
     cleanups.add(() => {
       observer.disconnect();
-      for (const timer of timers) clearTimeout(timer);
+      lineObserver?.disconnect();
+      for (const timer of timers.values()) clearTimeout(timer);
       timers.clear();
     });
   };
@@ -175,14 +222,25 @@ export function startMotion() {
       linesClass: "reveal-line",
       aria: "auto",
     });
+    // Phones add a short signal tune on the heading as its lines rise.
+    if (!desktop) element.dataset.tuning = "";
+    const tuned = window.setTimeout(() => {
+      delete element.dataset.tuning;
+    }, TOUCH.tuningMs);
     const finish = () => {
+      clearTimeout(tuned);
+      delete element.dataset.tuning;
       split.revert();
       cleanups.delete(stop);
     };
     const tween = gsap.from(split.lines, {
       yPercent: 108,
       // Contact is the closing beat, so it keeps the longest entrance.
-      duration: element.closest(".contact") ? 0.8 : 0.6,
+      duration: desktop
+        ? element.closest(".contact")
+          ? 0.8
+          : 0.6
+        : TOUCH.revealS,
       stagger: 0.09,
       ease: "expo.out",
       onComplete: finish,
@@ -217,12 +275,13 @@ export function startMotion() {
     armText,
   );
 
-  /** In the drum a panel stays hidden until its project is active or focused. */
+  /** In the drum and the carousel, a panel plays once its project is active. */
   const whenShown = (element: HTMLElement, play: () => void) => {
     const host = element.closest<HTMLElement>(".case");
     if (
       !host ||
-      document.documentElement.dataset.worldLive === undefined ||
+      (document.documentElement.dataset.worldLive === undefined &&
+        !host.parentElement?.hasAttribute("data-carousel")) ||
       host.hasAttribute("data-active") ||
       host.contains(document.activeElement)
     ) {
@@ -254,7 +313,11 @@ export function startMotion() {
     6,
     (element) => {
       whenShown(element, () => {
-        overlay(element, TUNE_S, decodeFrames(element.textContent));
+        overlay(
+          element,
+          desktop ? TUNE_S : TOUCH.tuneS,
+          decodeFrames(element.textContent),
+        );
       });
     },
     armText,
@@ -271,7 +334,7 @@ export function startMotion() {
     };
     const tween = gsap.to(state, {
       value: 1,
-      duration: COUNT_S,
+      duration: desktop ? COUNT_S : TOUCH.countS,
       ease: "power3.out",
       onUpdate: () => {
         paint(state.value);
@@ -415,7 +478,6 @@ export function startMotion() {
   );
 
   // Section entrances: the HUD draws in, then the heading, body and details.
-  const desktop = matchMedia(DESKTOP).matches;
   const hudParts = (hud: HTMLElement) => ({
     marks: [
       ...hud.querySelectorAll<HTMLElement>(
@@ -460,6 +522,20 @@ export function startMotion() {
       });
     },
   );
+  /** Cassettes slide in from alternating sides, and the rest rise further. */
+  const actStart = (item: HTMLElement) => {
+    if (desktop) return { opacity: 0, y: ACT_RISE };
+    if (!item.classList.contains("tape")) {
+      return { opacity: 0, y: TOUCH.rise, scale: 0.96 };
+    }
+    const index = [...(item.parentElement?.children ?? [])].indexOf(item);
+    const side = index % 2 === 0 ? -1 : 1;
+    return {
+      opacity: 0,
+      x: side * TOUCH.slide,
+      rotate: side * -2.5,
+    };
+  };
   onEnter(
     "[data-act-item]",
     8,
@@ -474,10 +550,13 @@ export function startMotion() {
       };
       const tween = gsap.to(item, {
         opacity: 1,
+        x: 0,
         y: 0,
-        duration: ACT_S,
+        rotate: 0,
+        scale: 1,
+        duration: desktop ? ACT_S : TOUCH.actS,
         delay: base + order * ACT_STAGGER,
-        ease: "power3.out",
+        ease: desktop ? "power3.out" : "expo.out",
         onComplete: finish,
       });
       const stop = () => {
@@ -487,14 +566,14 @@ export function startMotion() {
       cleanups.add(stop);
     },
     (item) => {
-      gsap.set(item, { opacity: 0, y: ACT_RISE });
+      gsap.set(item, actStart(item));
       cleanups.add(() => {
         gsap.set(item, { clearProps: "opacity,transform" });
       });
     },
   );
   // Without the world, each seam plays one short burst of static.
-  onEnter("[data-seam]", 12, (seam) => {
+  onEnter("[data-seam]", 42, (seam) => {
     seam.dataset.on = "";
     cleanups.add(() => {
       delete seam.dataset.on;
@@ -503,12 +582,24 @@ export function startMotion() {
 
   // Touch has no hover, so each channel powers on once as it enters view.
   if (matchMedia("(hover: none)").matches) {
-    onEnter("[data-channel]", 14, (element) => {
-      element.dataset.on = "";
-      cleanups.add(() => {
-        delete element.dataset.on;
-      });
-    });
+    onEnter(
+      "[data-channel], [data-crt]",
+      30,
+      (element) => {
+        delete element.dataset.crtOff;
+        element.dataset.on = "";
+        cleanups.add(() => {
+          delete element.dataset.on;
+        });
+      },
+      (element) => {
+        // The tube is dark until it enters, so the power-on has somewhere to go.
+        element.dataset.crtOff = "";
+        cleanups.add(() => {
+          delete element.dataset.crtOff;
+        });
+      },
+    );
   }
 
   if (desktop) {

@@ -29,9 +29,57 @@
   pointer-events: none;
 }
 
+/* Phones: a taller band, so the CRT wipe between sections has room to read. */
+@media (max-width: 63.99rem) {
+  .seam {
+    height: 6.5rem;
+  }
+
+  .seam--strong {
+    height: 9rem;
+  }
+}
+
+.seam::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 3px;
+  background: var(--color-glow);
+  box-shadow: 0 0 18px 4px rgb(255 59 92 / 0.55);
+  opacity: 0;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root:not([data-motion="off"], [data-world-live]) .seam[data-on]::after {
-    animation: seam-burst 520ms steps(1, end) both;
+    animation: seam-burst 620ms steps(1, end) both;
+  }
+
+  :root:not([data-motion="off"], [data-world-live]) .seam[data-on]::before {
+    animation: seam-wipe 620ms var(--ease-out) both;
+  }
+}
+
+/* One line opens across the tube and fades: a single, one-way change. */
+@keyframes seam-wipe {
+  0% {
+    opacity: 0.95;
+    transform: scaleX(0);
+  }
+
+  45% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(1) scaleY(0.4);
   }
 }
 

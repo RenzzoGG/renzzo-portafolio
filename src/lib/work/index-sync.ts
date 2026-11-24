@@ -9,6 +9,7 @@ const stage = document.querySelector<HTMLElement>("[data-work-stage]");
 let current = -1;
 let frame = 0;
 let tops: number[] = [];
+let carousel = false;
 
 const activate = (active: number) => {
   current = active;
@@ -22,35 +23,89 @@ const activate = (active: number) => {
   });
 };
 
+/** The phone carousel scrolls sideways, so its active card is the most centered. */
+const track = cases[0]?.parentElement ?? null;
+const isCarousel = () =>
+  Boolean(track) && getComputedStyle(track as Element).overflowX === "auto";
+
+const centeredCard = () => {
+  const box = (track as HTMLElement).getBoundingClientRect();
+  const middle = box.left + box.width / 2;
+  let best = 0;
+  let distance = Infinity;
+  cases.forEach((item, index) => {
+    if (!item) return;
+    const card = item.getBoundingClientRect();
+    const away = Math.abs(card.left + card.width / 2 - middle);
+    if (away < distance) {
+      distance = away;
+      best = index;
+    }
+  });
+  return best;
+};
+
 /** Depends only on the scroll position, so an instant jump can't leave it stale. */
 const sync = () => {
   frame = 0;
-  const line = scrollY + innerHeight / 2;
   let active = 0;
-  tops.forEach((top, index) => {
-    if (top <= line) active = index;
-  });
+  if (carousel) {
+    active = centeredCard();
+  } else {
+    const line = scrollY + innerHeight / 2;
+    tops.forEach((top, index) => {
+      if (top <= line) active = index;
+    });
+  }
   if (active !== current) activate(active);
 };
 
 const measure = () => {
+  carousel = isCarousel();
   tops = cases.map((item) =>
     item ? item.getBoundingClientRect().top + scrollY : Infinity,
   );
   sync();
 };
 
+const schedule = () => {
+  frame ||= requestAnimationFrame(sync);
+};
+
 if (links.length > 0) {
   activate(0);
   measure();
-  addEventListener(
-    "scroll",
-    () => {
-      frame ||= requestAnimationFrame(sync);
-    },
-    { passive: true },
-  );
+  addEventListener("scroll", schedule, { passive: true });
+  track?.addEventListener("scroll", schedule, { passive: true });
   addEventListener("resize", measure);
+  // Motion on or off switches between the carousel and stacked cards.
+  new MutationObserver(measure).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-motion"],
+  });
   // Catches layout changes such as an opened <details> or late fonts.
   new ResizeObserver(measure).observe(document.body);
+
+  // An index link centers its card, then brings the carousel into view.
+  for (const [index, link] of links.entries()) {
+    link.addEventListener("click", (event) => {
+      const item = cases[index];
+      if (!carousel || !item || !track) return;
+      event.preventDefault();
+      history.pushState(null, "", link.hash);
+      const box = track.getBoundingClientRect();
+      const card = item.getBoundingClientRect();
+      track.scrollBy({
+        left: card.left + card.width / 2 - (box.left + box.width / 2),
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
+      const rail = link.closest<HTMLElement>(".work__rail");
+      const offset = rail?.offsetHeight ?? 0;
+      if (box.top < offset || box.top > innerHeight * 0.5) {
+        scrollTo({ top: scrollY + box.top - offset - 8, behavior: "smooth" });
+      }
+    });
+  }
 }

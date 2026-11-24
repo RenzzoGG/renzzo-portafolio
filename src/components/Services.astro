@@ -172,6 +172,14 @@ const pad = (value: number) => String(value).padStart(2, "0");
       animation: crt-on 420ms var(--ease-out) both;
     }
 
+    @media (hover: none) {
+      :global(:root:not([data-motion="off"]))
+        .channel[data-on]
+        .channel__picture {
+        animation: crt-soft 680ms var(--ease-out) both;
+      }
+    }
+
     :global(:root:not([data-motion="off"]))
       .channel:is(:hover, :focus-within, [data-on])
       .channel__icon

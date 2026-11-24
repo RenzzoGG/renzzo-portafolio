@@ -36,7 +36,7 @@ const { more } = await getProjects();
                 </div>
               </div>
               {shot && (
-                <div class="tape__crt" aria-hidden="true">
+                <div class="tape__crt" aria-hidden="true" data-crt>
                   <Picture
                     src={shot.src}
                     alt=""
@@ -323,6 +323,13 @@ const { more } = await getProjects();
     }
 
     @media (max-width: 63.99rem) {
+      /* Before it enters, the tube is off. It powers on as it reaches the view. */
+      :global(:root:not([data-motion="off"]))
+        .tape__crt[data-on]
+        :global(picture) {
+        animation: crt-soft 680ms var(--ease-out) both;
+      }
+
       :global(:root:not([data-motion="off"])) .tape__crt::after {
         content: "";
         position: absolute;

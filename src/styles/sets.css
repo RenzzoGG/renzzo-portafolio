@@ -104,6 +104,65 @@
   }
 }
 
+/* The phone power-on. Brightness only ever falls, so it can't count as a flash. */
+@keyframes crt-soft {
+  0% {
+    opacity: 0.4;
+    transform: scale(1, 0.012);
+    filter: brightness(1.7);
+  }
+
+  34% {
+    opacity: 1;
+    transform: scale(0.72, 0.03);
+    filter: brightness(1.7);
+  }
+
+  68% {
+    transform: scale(1, 1.04);
+    filter: brightness(1.25);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+[data-crt-off] :is(picture, .channel__picture) {
+  opacity: 0;
+}
+
+/* A heading tuning in: the color channels settle onto the text. */
+@keyframes heading-tune {
+  0% {
+    text-shadow:
+      -7px 0 var(--color-glow),
+      7px 0 var(--color-signal);
+    transform: skewX(-5deg);
+  }
+
+  35% {
+    text-shadow:
+      4px 0 var(--color-glow),
+      -4px 0 var(--color-signal);
+    transform: skewX(3deg);
+  }
+
+  70% {
+    text-shadow:
+      -2px 0 var(--color-glow),
+      2px 0 var(--color-signal);
+    transform: skewX(-1deg);
+  }
+
+  100% {
+    text-shadow: none;
+    transform: none;
+  }
+}
+
 @keyframes btn-glitch {
   0% {
     text-shadow:
@@ -135,6 +194,10 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) [data-tuning] {
+    animation: heading-tune 700ms steps(7, end) both;
+  }
+
   :root:not([data-motion="off"]) [data-waving] > li {
     animation: tag-light 420ms var(--ease-out) both;
     animation-delay: min(calc(var(--i, 0) * 26ms), 280ms);
