@@ -329,6 +329,26 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 - **Native page movement is reported, not gated.** A synthetic fling slides light and dark page blocks past each other, and the concurrent measure counts that as flashes on the full page (see `docs/reports/phase-7-mobile/photosensitivity.json`, entries with `gated: false`). No effect causes it, and it is the same on any page with light and dark blocks.
 - Frames come from software rendering, so a real-GPU and real-phone comfort check is still needed.
 
+## Phase 7.5: Mobile motion ✅ (real iPhone check pending with Renzzo)
+
+**Goals:** make the phone site clearly alive after a real iPhone test felt static, still without WebGL and within budget.
+
+**Diagnosis:** motion code ran and nothing disabled it on iOS. WebKit composited only the face's dim glow, the face sat below the first screen, tilt moved it about 3 px, and entrances rose 14 px while the page scrolled about 320 px.
+
+**Deliverables**
+
+- **Face:** leads the phone hero, with depth-layer parallax, a stronger tilt, a position-only glitch, idle shimmer and a staggered assemble. A sustained shake damps it (WCAG 2.3.1).
+- **Entrances:** start once an element is well on screen, with heading tune-in, LED count-up, sliding cassettes and CRT power-on.
+- **Featured work:** a native scroll-snap carousel with CSS 3D, synced with the index and laid out before first paint.
+- **Transitions:** one-way CRT wipes and static bursts in the seams.
+- **Reduced motion and Motion off:** stacked cards, no animation and no motion code.
+
+**Acceptance checks**
+
+- WebKit and Chromium E2E pass at phone sizes, including a recorded-frame compositor test.
+- Lighthouse mobile median of 5 is 100/100/100/100. Critical JS ≤ 20 KB and deferred motion ≤ 50 KB gzip.
+- A 390 px WebKit video from the hero to Contact is in `docs/reports/phase-7-mobile/`.
+
 ## Phase 8: Launch
 
 **Goals:** ship to renzzogg.com safely.
