@@ -132,12 +132,13 @@ test.describe("the LED face", () => {
       });
       Object.assign(window, { glitches: state });
     });
+    // Separate quick turns: a sustained shake is damped instead of glitching.
     const started = Date.now();
-    let side = 1;
+    let angle = 0;
     while (Date.now() - started < 2000) {
-      await orient(page, 45, side * 16);
-      side *= -1;
-      await page.waitForTimeout(40);
+      angle = angle >= 60 ? 0 : angle + 15;
+      await orient(page, 45, angle);
+      await page.waitForTimeout(angle === 0 ? 700 : 30);
     }
     const count = await page.evaluate(
       () =>
@@ -145,6 +146,25 @@ test.describe("the LED face", () => {
     );
     expect(count).toBeGreaterThan(0);
     expect(count).toBeLessThanOrEqual(5);
+  });
+
+  test("a sustained shake calms the face", async ({ page }) => {
+    await fakeSensor(page, "granted");
+    await page.goto("/");
+    await page.locator(FACE).waitFor({ timeout: 15_000 });
+    await enableTilt(page);
+    const started = Date.now();
+    let side = 1;
+    while (Date.now() - started < 1400) {
+      await orient(page, 45, side * 14);
+      side *= -1;
+      await page.waitForTimeout(60);
+    }
+    const turn = await page.locator("[data-led-slot]").evaluate((slot) => {
+      const rotate = /rotateY\((-?[\d.]+)deg/.exec(slot.style.transform);
+      return Math.abs(Number(rotate?.[1] ?? 0));
+    });
+    expect(turn).toBeLessThan(4);
   });
 
   test("a denied permission keeps Tilt off", async ({ page }) => {

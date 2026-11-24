@@ -326,7 +326,7 @@ fojcikdominik.com is inspiration for **techniques only**. We never copy its desi
 **Limits**
 
 - This is an automated analyzer modeled on WCAG. It is **not a certified PEAT or Harding result**.
-- **Native page movement is reported, not gated.** A synthetic fling slides light and dark page blocks past each other, and the concurrent measure counts that as flashes on the full page (see `docs/reports/phase-7/photosensitivity.json`, entries with `gated: false`). No effect causes it, and it is the same on any page with light and dark blocks.
+- **Native page movement is reported, not gated.** A synthetic fling slides light and dark page blocks past each other, and the concurrent measure counts that as flashes on the full page (see `docs/reports/phase-7-mobile/photosensitivity.json`, entries with `gated: false`). No effect causes it, and it is the same on any page with light and dark blocks.
 - Frames come from software rendering, so a real-GPU and real-phone comfort check is still needed.
 
 ## Phase 8: Launch

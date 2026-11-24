@@ -11,7 +11,7 @@ import {
 const FPS = 60;
 const FRAME_MS = 1000 / FPS;
 const SAMPLE_WIDTH = 256;
-const REPORT = "docs/reports/phase-7/photosensitivity.json";
+const REPORT = "docs/reports/phase-7-mobile/photosensitivity.json";
 const WORLD = '[data-led-slot][data-world="live"]';
 
 test.setTimeout(900_000);
@@ -77,7 +77,7 @@ async function capture(
 }
 
 function save(name: string, entry: Record<string, unknown>) {
-  mkdirSync("docs/reports/phase-7", { recursive: true });
+  mkdirSync("docs/reports/phase-7-mobile", { recursive: true });
   const saved = existsSync(REPORT)
     ? (JSON.parse(readFileSync(REPORT, "utf8")) as Record<string, unknown>)
     : {};
@@ -348,14 +348,46 @@ test.describe("mobile", () => {
     );
     const frames = 420;
     const speed = Math.min(end / frames, 700 / FPS);
+    // Moving page content crosses pixels, so this uses the concurrent measure.
     const { result, count } = await capture(
       page,
       frames,
       (frame) => 3200 + frame * speed,
-      "pixel",
     );
-    record("phone effects at normal scroll (per pixel)", result, count);
+    record("phone effects at normal scroll (concurrent)", result, count);
   });
+
+  for (const [name, selector] of [
+    ["CRT channel", "[data-channel]"],
+    ["cassette preview", "[data-crt]"],
+  ] as const) {
+    test(`${name} power-on, held still, per pixel`, async ({ page }) => {
+      await page.clock.install();
+      await page.goto("/");
+      await page.locator(`${selector}[data-crt-off]`).first().waitFor({
+        state: "attached",
+        timeout: 15_000,
+      });
+      await pauseClock(page);
+      await page.clock.runFor(1000);
+      await page.addStyleTag({
+        content: `body *:not([data-crt], [data-crt] *, .channel__picture, .channel__picture *) { visibility: hidden !important; }
+          [data-crt], [data-crt] *, .channel__picture, .channel__picture * { visibility: visible !important; }`,
+      });
+      await page
+        .locator(selector)
+        .first()
+        .evaluate((element) => {
+          element.scrollIntoView({ block: "center", behavior: "instant" });
+        });
+      await expect(page.locator(selector).first()).toHaveAttribute(
+        "data-on",
+        "",
+      );
+      const { result, count } = await capture(page, 90, undefined, "pixel");
+      record(`${name} power-on (held, per pixel)`, result, count);
+    });
+  }
 
   test("a hard shake of the tilting face", async ({ page }) => {
     await page.addInitScript(() => {
@@ -380,8 +412,12 @@ test.describe("mobile", () => {
         },
         [beta, gamma],
       );
-    await orient(45, 0);
-    await expect(page.locator("[data-tilt-state]")).toHaveText("On");
+    await expect
+      .poll(async () => {
+        await orient(45, 0);
+        return page.locator("[data-tilt-state]").textContent();
+      })
+      .toBe("On");
     await pauseClock(page);
     await page.clock.runFor(2000);
     await page.addStyleTag({

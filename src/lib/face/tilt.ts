@@ -6,7 +6,7 @@ const GAIN = 1.15;
 const MAX_DEGREES = 16;
 const PERSPECTIVE = 560;
 const PARALLAX_PX_PER_DEGREE = 1.5;
-const FOLLOW = 12;
+const FOLLOW = 7;
 /** The rest position eases to how the phone is being held. */
 const RECENTER = 0.08;
 const FIRST_EVENT_MS = 2000;
@@ -14,6 +14,17 @@ const GLITCH_SPEED = 75; // Degrees per second.
 const GLITCH_MS = 180;
 /** At most two glitches a second, well under the three-flash limit. */
 const GLITCH_GAP_MS = 500;
+
+/**
+ * WCAG 2.3.1: dense crimson dots swinging quickly read as a red flash. Two
+ * direction changes in this window mean a shake, so the face almost holds still.
+ */
+const SHAKE_WINDOW_MS = 700;
+const SHAKE_TURNS = 2;
+const SHAKE_DEADZONE = 0.5;
+const SHAKE_HOLD = 0.08;
+const SHAKE_IN = 22;
+const SHAKE_OUT = 1.4;
 
 export interface FaceTilt {
   stop(): void;
@@ -50,6 +61,25 @@ export function startTilt(target: HTMLElement): Promise<FaceTilt | null> {
   let last = 0;
   let nextGlitch = 0;
   let glitchTimer = 0;
+  let damp = 1;
+  let turnX = 0;
+  let turnY = 0;
+  let turnAimX = 0;
+  let turnAimY = 0;
+  let turns: number[] = [];
+
+  /** Counts reversals, ignoring sensor noise smaller than the deadzone. */
+  const reversed = (aim: number, from: number, direction: number) => {
+    const change = aim - from;
+    if (Math.abs(change) < SHAKE_DEADZONE)
+      return { direction, from, turned: false };
+    const next = Math.sign(change);
+    return {
+      direction: next,
+      from: aim,
+      turned: direction !== 0 && next !== direction,
+    };
+  };
 
   const glitch = (now: number) => {
     nextGlitch = now + GLITCH_GAP_MS;
@@ -71,15 +101,26 @@ export function startTilt(target: HTMLElement): Promise<FaceTilt | null> {
       aimX = clamp((basePitch - pitch) * GAIN);
       aimY = clamp((roll - baseRoll) * GAIN);
     }
-    if (dt > 0) {
+    const onX = reversed(aimX, turnAimX, turnX);
+    const onY = reversed(aimY, turnAimY, turnY);
+    turnX = onX.direction;
+    turnAimX = onX.from;
+    turnY = onY.direction;
+    turnAimY = onY.from;
+    if (onX.turned || onY.turned) turns.push(now);
+    turns = turns.filter((time) => now - time < SHAKE_WINDOW_MS);
+    const shaking = turns.length >= SHAKE_TURNS;
+    const rate = shaking ? SHAKE_IN : SHAKE_OUT;
+    damp += ((shaking ? SHAKE_HOLD : 1) - damp) * (1 - Math.exp(-dt * rate));
+    if (dt > 0 && !shaking && damp > 0.9) {
       const speed = Math.hypot(aimX - lastAimX, aimY - lastAimY) / dt;
       if (speed > GLITCH_SPEED && now >= nextGlitch) glitch(now);
     }
     lastAimX = aimX;
     lastAimY = aimY;
     const follow = 1 - Math.exp(-dt * FOLLOW);
-    x += (aimX - x) * follow;
-    y += (aimY - y) * follow;
+    x += (aimX * damp - x) * follow;
+    y += (aimY * damp - y) * follow;
     target.style.transform = `perspective(${PERSPECTIVE}px) rotateX(${x.toFixed(2)}deg) rotateY(${y.toFixed(2)}deg)`;
     target.style.setProperty(
       "--face-x",
