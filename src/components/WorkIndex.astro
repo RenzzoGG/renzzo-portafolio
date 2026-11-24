@@ -1,0 +1,36 @@
+---
+import {
+  getProfile,
+  shortTitle,
+  type FeaturedProject,
+} from "../lib/content.ts";
+
+interface Props {
+  projects: FeaturedProject[];
+}
+
+const { projects } = Astro.props;
+const { ui } = await getProfile();
+---
+
+<nav class="work-index" aria-labelledby="work-index-label">
+  <p class="work-index__label" id="work-index-label" data-decode>
+    {ui.workIndex}
+  </p>
+  <ol class="work-index__list">
+    {projects.map((project, index) => (
+      <li>
+        <a class="work-index__link" href={`#${project.id}`} data-index-link>
+          <span class="work-index__number" aria-hidden="true">
+            [{String(index + 1).padStart(2, "0")}]
+          </span>
+          <span class="work-index__name">{shortTitle(project.data.title)}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  import "../lib/work/index-sync.ts";
+</script>

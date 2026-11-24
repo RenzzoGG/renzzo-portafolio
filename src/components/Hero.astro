@@ -1,0 +1,163 @@
+---
+import { getProfile } from "../lib/content.ts";
+import LedSlot from "./LedSlot.astro";
+
+const { name, role, hero, heroStack, ui } = await getProfile();
+---
+
+<section class="hero container" aria-labelledby="hero-title" data-hero>
+  <div class="hero__identity">
+    <p class="hero__name">{name}</p>
+    <p class="hero__role">{role}</p>
+  </div>
+  <div class="hero__stage">
+    <LedSlot />
+    <button
+      class="hero__tilt"
+      type="button"
+      aria-pressed="false"
+      data-tilt-toggle
+      data-on={ui.tilt.on}
+      data-off={ui.tilt.off}
+      hidden
+    >
+      {ui.tilt.label}: <span data-tilt-state>{ui.tilt.off}</span>
+    </button>
+  </div>
+  <div class="hero__copy">
+    <h1 id="hero-title">{hero.headline}</h1>
+    <p class="hero__subline">{hero.subline}</p>
+    <ul class="stack-list hero__stack">
+      {heroStack.split(" · ").map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+    <div class="actions">
+      <a class="btn" href="#work">
+        {ui.heroActions.primary}
+      </a>
+      <a class="btn btn--ghost" href="#contact">
+        {ui.heroActions.secondary}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Phones lead with the face, sized so the headline shares the first screen. */
+  .hero {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-3) var(--section-gap);
+  }
+
+  .hero__identity {
+    display: none;
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .hero__subline {
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-3);
+    color: var(--color-text);
+    font-size: var(--text-lead);
+    line-height: var(--leading-snug);
+  }
+
+  .hero__stack {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-4);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+  }
+
+  .hero__stage {
+    position: relative;
+    width: min(100%, 26rem, calc(36svh * 0.8));
+    margin-inline: auto;
+  }
+
+  .hero__tilt {
+    position: absolute;
+    right: var(--space-2);
+    bottom: var(--space-2);
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    transition: transform var(--duration-instant) var(--ease-out);
+  }
+
+  .hero__tilt:active {
+    transform: scale(0.97);
+  }
+
+  /* Desktop: the face is the centerpiece, with text on either side. */
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-areas: "identity stage copy";
+      grid-template-columns:
+        minmax(0, 1fr) minmax(0, min(38vw, calc((100svh - 9rem) * 0.8)))
+        minmax(0, 1.2fr);
+      align-items: center;
+      gap: var(--space-6);
+      min-height: calc(100svh - 4.5rem);
+      padding-block: var(--space-5);
+    }
+
+    .hero__identity {
+      display: block;
+      grid-area: identity;
+    }
+
+    .hero__name {
+      font-size: var(--text-heading);
+      font-weight: var(--weight-semibold);
+      line-height: var(--leading-heading);
+      letter-spacing: var(--tracking-heading);
+      text-wrap: balance;
+    }
+
+    .hero__role {
+      margin-top: var(--space-2);
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+    }
+
+    .hero__copy {
+      grid-area: copy;
+    }
+
+    h1 {
+      font-size: clamp(2.25rem, 3.5vw, 3.75rem);
+      line-height: var(--leading-title);
+      letter-spacing: var(--tracking-title);
+    }
+
+    .hero__subline {
+      margin-top: var(--space-5);
+      font-size: var(--text-body);
+    }
+
+    .hero__stack {
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .hero__stage {
+      grid-area: stage;
+      width: 100%;
+    }
+  }
+</style>

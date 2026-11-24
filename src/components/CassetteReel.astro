@@ -1,0 +1,83 @@
+---
+interface Props {
+  /** Outer radius of the wound tape, in the 48-unit drawing. */
+  pack: number;
+}
+
+const { pack } = Astro.props;
+const windings = [0.94, 0.82, 0.7, 0.58]
+  .map((share) => Math.round(pack * share * 10) / 10)
+  .filter((radius) => radius > 11);
+const teeth = [0, 60, 120, 180, 240, 300];
+---
+
+<svg class="reel" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+  <circle class="reel__tape" cx="24" cy="24" r={pack}></circle>
+  {windings.map((radius) => (
+    <circle class="reel__winding" cx="24" cy="24" r={radius} />
+  ))}
+  <g class="reel__spin">
+    <circle class="reel__hub" cx="24" cy="24" r="10.5"></circle>
+    <circle class="reel__hole" cx="24" cy="24" r="6.6"></circle>
+    {teeth.map((angle) => (
+      <rect
+        class="reel__tooth"
+        x="23.1"
+        y="17.2"
+        width="1.8"
+        height="2"
+        rx="0.4"
+        transform={`rotate(${angle} 24 24)`}
+      />
+    ))}
+  </g>
+</svg>
+
+<style>
+  .reel {
+    display: block;
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
+  .reel__tape {
+    fill: #3b2a20;
+    stroke: #6a4c38;
+    stroke-width: 0.6;
+  }
+
+  .reel__winding {
+    fill: none;
+    stroke: #7a5a44;
+    stroke-width: 0.35;
+    opacity: 0.75;
+  }
+
+  .reel__hub,
+  .reel__tooth {
+    fill: #ece7df;
+  }
+
+  .reel__hole {
+    fill: #0b0a0c;
+  }
+
+  .reel__spin {
+    transform-box: view-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-motion="off"]))
+      :global(.tape:is(:hover, :focus-within))
+      .reel__spin {
+      animation: reel-spin 5s linear infinite;
+    }
+  }
+
+  @keyframes reel-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

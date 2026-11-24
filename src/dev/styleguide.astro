@@ -1,0 +1,573 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import { ACCENTS } from "../lib/accents.ts";
+import {
+  contrastRatio,
+  evaluatePairs,
+  parseTokens,
+  resolveHex,
+  THRESHOLDS,
+} from "../lib/contrast.ts";
+import tokensCss from "../styles/tokens.css?raw";
+
+const tokens = parseTokens(tokensCss);
+const byPrefix = (prefix: string) =>
+  [...tokens].filter(([name]) => name.startsWith(prefix));
+const hex = (name: string) => resolveHex(tokens, name);
+const ratio = (a: string, b: string) => contrastRatio(hex(a), hex(b));
+const format = (value: number) => `${value.toFixed(2)}:1`;
+const rating = (value: number) =>
+  value >= THRESHOLDS.body
+    ? "AA text"
+    : value >= THRESHOLDS.large
+      ? "Large / UI"
+      : "Fill only";
+
+const bg = "--color-bg";
+const surface = "--color-surface";
+
+const foregrounds = [
+  "--color-text",
+  "--color-muted",
+  "--color-glow",
+  "--color-signal",
+  "--color-border-strong",
+  "--color-focus-ring",
+];
+const surfaces = [
+  "--color-bg",
+  "--color-surface-subtle",
+  "--color-surface",
+  "--color-surface-raised",
+  "--color-surface-hover",
+];
+const fills = ["--color-signal-hover", "--color-border", "--color-selection"];
+
+const pairs = evaluatePairs(tokens);
+const passing = pairs.filter((pair) => pair.passes).length;
+
+const projects = await getCollection("projects");
+const profile = await getEntry("profile", "main");
+const accentRows = ACCENTS.map((accent) => ({
+  accent,
+  name:
+    projects
+      .find(
+        (project) =>
+          project.data.tier === "featured" && project.data.accent === accent,
+      )
+      ?.data.title.split(" — ")[0] ?? accent,
+  brand: `--accent-${accent}`,
+  text: `--accent-${accent}-text`,
+  on: `--accent-${accent}-on`,
+}));
+
+const typeRoles = [
+  ["--text-display", "--leading-display", "--tracking-display"],
+  ["--text-title", "--leading-title", "--tracking-title"],
+  ["--text-heading", "--leading-heading", "--tracking-heading"],
+  ["--text-subheading", "--leading-heading", "--tracking-heading"],
+  ["--text-lead", "--leading-snug", "--tracking-body"],
+  ["--text-body", "--leading-body", "--tracking-body"],
+  ["--text-small", "--leading-snug", "--tracking-body"],
+  ["--text-caption", "--leading-snug", "--tracking-caption"],
+] as const;
+
+const groups = [
+  ["Weights", "--weight-"],
+  ["Line heights", "--leading-"],
+  ["Letter spacing", "--tracking-"],
+  ["Measure", "--measure-"],
+  ["Layout", "--gutter"],
+  ["Layout rhythm", "--section-gap"],
+  ["Container", "--container-"],
+  ["Z-index layers", "--z-"],
+  ["Breakpoints", "--bp-"],
+  ["Durations", "--duration-"],
+  ["Easings", "--ease-"],
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title="Signal styleguide (dev only)" noindex />
+  </head>
+  <body>
+    <main class="guide">
+      <header class="intro">
+        <h1>Signal styleguide</h1>
+        <p>
+          Every design token, rendered from <code>src/styles/tokens.css</code>.
+          This page exists only under <code>npm run dev</code>.
+        </p>
+      </header>
+
+      <section aria-labelledby="color">
+        <h2 id="color">Text and UI colors</h2>
+        <div class="scroll" tabindex="0" role="region" aria-labelledby="color">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Color</th>
+                <th scope="col">Token</th>
+                <th scope="col">Hex</th>
+                <th scope="col">On bg</th>
+                <th scope="col">On surface</th>
+                <th scope="col">Allowed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {foregrounds.map((name) => {
+                const lowest = Math.min(ratio(name, bg), ratio(name, surface));
+                return (
+                  <tr>
+                    <td>
+                      <span class="swatch" style={`background:var(${name})`} />
+                    </td>
+                    <td>
+                      <code>{name}</code>
+                    </td>
+                    <td>
+                      <code>{hex(name)}</code>
+                    </td>
+                    <td>{format(ratio(name, bg))}</td>
+                    <td>{format(ratio(name, surface))}</td>
+                    <td>{rating(lowest)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="surfaces">
+        <h2 id="surfaces">Surfaces and fills</h2>
+        <div
+          class="scroll"
+          tabindex="0"
+          role="region"
+          aria-labelledby="surfaces"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Color</th>
+                <th scope="col">Token</th>
+                <th scope="col">Hex</th>
+                <th scope="col">Text on it</th>
+                <th scope="col">Muted on it</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...surfaces, ...fills].map((name) => (
+                <tr>
+                  <td>
+                    <span class="swatch" style={`background:var(${name})`} />
+                  </td>
+                  <td>
+                    <code>{name}</code>
+                  </td>
+                  <td>
+                    <code>{hex(name)}</code>
+                  </td>
+                  <td>{format(ratio("--color-text", name))}</td>
+                  <td>
+                    {surfaces.includes(name)
+                      ? format(ratio("--color-muted", name))
+                      : "Not used"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="accents">
+        <h2 id="accents">Project accents</h2>
+        <div class="accents">
+          {accentRows.map((row) => (
+            <article class="accent" data-accent={row.accent}>
+              <h3>{row.name}</h3>
+              <p class="accent-sample">Readable accent text</p>
+              <p class="accent-fill">Text on brand fill</p>
+              <dl>
+                <div>
+                  <dt>Brand</dt>
+                  <dd>
+                    <code>{hex(row.brand)}</code>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Text</dt>
+                  <dd>
+                    <code>{hex(row.text)}</code>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Text on bg</dt>
+                  <dd>{format(ratio(row.text, bg))}</dd>
+                </div>
+                <div>
+                  <dt>Text on surface</dt>
+                  <dd>{format(ratio(row.text, surface))}</dd>
+                </div>
+                <div>
+                  <dt>Brand on surface</dt>
+                  <dd>{format(ratio(row.brand, surface))}</dd>
+                </div>
+                <div>
+                  <dt>On brand fill</dt>
+                  <dd>{format(ratio(row.on, row.brand))}</dd>
+                </div>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="pairs">
+        <h2 id="pairs">All checked pairings</h2>
+        <p class="note">
+          {passing} of {pairs.length} pass WCAG AA.
+        </p>
+        <div
+          class="scroll tall"
+          tabindex="0"
+          role="region"
+          aria-labelledby="pairs"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Foreground</th>
+                <th scope="col">Background</th>
+                <th scope="col">Level</th>
+                <th scope="col">Ratio</th>
+                <th scope="col">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pairs.map((pair) => (
+                <tr>
+                  <td>
+                    <code>{pair.foreground}</code>
+                  </td>
+                  <td>
+                    <code>{pair.background}</code>
+                  </td>
+                  <td>{pair.level}</td>
+                  <td>{format(pair.ratio)}</td>
+                  <td>{pair.passes ? "Pass" : "Fail"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="type">
+        <h2 id="type">Type scale</h2>
+        <div class="type-list">
+          {typeRoles.map(([size, leading, tracking]) => (
+            <div class="type-row">
+              <p class="type-meta">
+                <code>{size}</code> <code>{tokens.get(size)}</code>
+              </p>
+              <p
+                class="type-sample"
+                style={`font-size:var(${size});line-height:var(${leading});letter-spacing:var(${tracking})`}
+              >
+                {size === "--text-body" ||
+                size === "--text-small" ||
+                size === "--text-caption"
+                  ? profile?.data.hero.headline
+                  : profile?.data.name}
+              </p>
+            </div>
+          ))}
+          <div class="type-row">
+            <p class="type-meta">
+              <code>--font-mono</code>
+            </p>
+            <p class="mono-sample">700+ tests · RLS 20/20 · #C21D3A</p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="spacing">
+        <h2 id="spacing">Spacing</h2>
+        <ul class="bars">
+          {byPrefix("--space-").map(([name, value]) => (
+            <li>
+              <code>{name}</code>
+              <code>{value}</code>
+              <span class="bar" style={`width:var(${name})`} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="radii">
+        <h2 id="radii">Radii</h2>
+        <ul class="radii">
+          {byPrefix("--radius-").map(([name, value]) => (
+            <li>
+              <span class="radius" style={`border-radius:var(${name})`} />
+              <code>{name}</code>
+              <code>{value}</code>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="system">
+        <h2 id="system">Layout, layers and motion</h2>
+        <div class="system">
+          {groups.map(([label, prefix]) => (
+            <div>
+              <h3>{label}</h3>
+              <dl class="values">
+                {byPrefix(prefix).map(([name, value]) => (
+                  <div>
+                    <dt>
+                      <code>{name}</code>
+                    </dt>
+                    <dd>
+                      <code>{value}</code>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .guide {
+    display: grid;
+    gap: var(--section-gap);
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--space-8) var(--gutter);
+  }
+
+  section {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h1 {
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+  }
+
+  h2 {
+    font-size: var(--text-heading);
+  }
+
+  h3 {
+    font-size: var(--text-lead);
+  }
+
+  .intro p,
+  .note {
+    max-width: var(--measure-body);
+    color: var(--color-muted);
+  }
+
+  code {
+    overflow-wrap: anywhere;
+    font-size: var(--text-caption);
+  }
+
+  .scroll {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .tall {
+    max-height: 28rem;
+    overflow-y: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 40rem;
+    font-size: var(--text-small);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    background: var(--color-surface);
+    color: var(--color-muted);
+    font-weight: var(--weight-medium);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .swatch {
+    display: block;
+    width: var(--space-6);
+    height: var(--space-5);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+  }
+
+  .accents {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  .accent {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .accent-sample {
+    color: var(--accent-text);
+    font-weight: var(--weight-medium);
+  }
+
+  .accent-fill {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--accent-on);
+    font-weight: var(--weight-medium);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-small);
+  }
+
+  dl div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  dt {
+    color: var(--color-muted);
+  }
+
+  .type-list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .type-row {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .type-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    color: var(--color-muted);
+  }
+
+  .type-sample {
+    overflow-wrap: anywhere;
+    font-weight: var(--weight-semibold);
+  }
+
+  .type-row:nth-last-child(-n + 4) .type-sample {
+    font-weight: var(--weight-regular);
+  }
+
+  .mono-sample {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bars,
+  .radii {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .bars li {
+    display: grid;
+    grid-template-columns: 6rem 5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .bar {
+    display: block;
+    max-width: 100%;
+    height: var(--space-3);
+    background: var(--color-signal);
+  }
+
+  .radii {
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: var(--space-4);
+  }
+
+  .radii li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .radius {
+    display: block;
+    width: var(--space-9);
+    height: var(--space-8);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+  }
+
+  .system {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-7) var(--space-6);
+  }
+
+  .system > div {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+</style>

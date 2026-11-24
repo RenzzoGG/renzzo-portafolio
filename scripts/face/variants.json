@@ -1,0 +1,115 @@
+{
+  "selected": "e2-halftone",
+  "crop": {
+    "headBand": 0.3,
+    "headScale": 1.9,
+    "topPad": 0.05
+  },
+  "variants": {
+    "a-soft": {
+      "label": "A, Soft",
+      "cols": 110,
+      "gamma": 0.95,
+      "contrast": 1.05,
+      "localContrast": 0.25,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 18,
+      "maskThreshold": 0.5
+    },
+    "b-balanced": {
+      "label": "B, Balanced",
+      "cols": 125,
+      "gamma": 0.9,
+      "contrast": 1.25,
+      "localContrast": 0.45,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 14,
+      "maskThreshold": 0.5
+    },
+    "c-detailed": {
+      "label": "C, Detailed",
+      "cols": 140,
+      "gamma": 0.85,
+      "contrast": 1.45,
+      "localContrast": 0.65,
+      "blackPoint": 2,
+      "whitePoint": 98,
+      "floor": 10,
+      "maskThreshold": 0.5
+    }
+  },
+  "stylized": {
+    "crop": {
+      "headBand": 0.3,
+      "headScale": 1.7,
+      "topPad": 0.05
+    },
+    "treatment": {
+      "capRatio": 2.1,
+      "eyeletPercentile": 70,
+      "fadeOffset": -0.17,
+      "fadeGamma": 1,
+      "dropBelow": 0.04,
+      "dissolve": 0.88,
+      "hoodieFloor": 0.2
+    },
+    "variants": {
+      "d-posterized": {
+        "label": "D, Posterized",
+        "style": "posterized",
+        "mode": "levels",
+        "levels": 4,
+        "cols": 80,
+        "contrast": 1.35,
+        "gamma": 1.35,
+        "thresholds": [0.18, 0.5, 0.82],
+        "localContrast": 0.8
+      },
+      "e-halftone": {
+        "label": "E, Halftone",
+        "style": "halftone",
+        "mode": "size",
+        "levels": 4,
+        "cols": 90,
+        "contrast": 1.35,
+        "gamma": 1.25,
+        "thresholds": [0.2, 0.48, 0.78],
+        "localContrast": 0.7
+      },
+      "f-features": {
+        "label": "F, Features",
+        "style": "features",
+        "mode": "levels",
+        "levels": 3,
+        "cols": 90,
+        "contrast": 1.3,
+        "gamma": 1.25,
+        "globalWeight": 0.75,
+        "localWeight": 2.2,
+        "featureMid": 0.17,
+        "featureOn": 0.3,
+        "localContrast": 0.7,
+        "beardStart": 0.62
+      },
+      "e2-halftone": {
+        "label": "E2, Halftone",
+        "style": "halftone",
+        "mode": "size",
+        "levels": 4,
+        "cols": 90,
+        "contrast": 1.35,
+        "gamma": 1.25,
+        "thresholds": [0.2, 0.48, 0.78],
+        "localContrast": 0.7,
+        "baseVariant": "e-halftone",
+        "faceRemap": {
+          "shares": [0.14, 0.24, 0.32, 0.3],
+          "radiusDivisor": 12,
+          "localContrast": 0.6
+        }
+      }
+    }
+  }
+}

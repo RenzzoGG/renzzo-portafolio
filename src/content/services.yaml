@@ -1,0 +1,15 @@
+- id: full-stack-web-apps
+  title: "Full-stack web apps"
+  text: "Booking systems, dashboards, client portals and SaaS MVPs, with a Django REST API and a React frontend (or Next.js + Supabase + Stripe), tested and deployed on your domain."
+  stack: [React, TypeScript, Django, PostgreSQL]
+  order: 1
+- id: landing-pages
+  title: "Landing pages"
+  text: "Fast, accessible landing pages with scroll animation that never slows them down, live on your own domain with HTTPS."
+  stack: [HTML, Sass, Tailwind CSS, GSAP]
+  order: 2
+- id: bug-fixes
+  title: "Bug fixes & improvements"
+  text: "Fix bugs, speed up slow pages and polish existing sites and web apps, with the scope agreed in writing before I start."
+  stack: [JavaScript, React, Python, CSS]
+  order: 3

@@ -1,0 +1,349 @@
+---
+import { Picture } from "astro:assets";
+import { getProfile, getProjects } from "../lib/content.ts";
+import CassetteReel from "./CassetteReel.astro";
+import NoBreak from "./NoBreak.astro";
+import ExternalLink from "./ExternalLink.astro";
+
+const { ui } = await getProfile();
+const { more } = await getProjects();
+---
+
+<div class="more">
+  <h3 class="more__title">{ui.headings.more}</h3>
+  <div class="shelf">
+    <ul class="shelf__tapes">
+      {more.map(({ data }) => {
+        const shot = data.screenshots[0];
+        return (
+          <li class="row tape" data-act-item="body">
+            <div class="tape__body">
+              <div class="tape__shell">
+                <div class="tape__label" data-tone="bone">
+                  <h4>{data.title}</h4>
+                  <p class="tape__meta">
+                    {data.year} · {data.type}
+                  </p>
+                  <ul class="stack-list" aria-label={`${data.title} stack`}>
+                    {data.stack.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="tape__window" aria-hidden="true">
+                  <CassetteReel pack={21} />
+                  <CassetteReel pack={14.5} />
+                </div>
+              </div>
+              {shot && (
+                <div class="tape__crt" aria-hidden="true" data-crt>
+                  <Picture
+                    src={shot.src}
+                    alt=""
+                    formats={["avif", "webp"]}
+                    fallbackFormat="webp"
+                    widths={[360, 720]}
+                    sizes="calc(100vw - 2rem)"
+                    quality={62}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="crt-raster" />
+                </div>
+              )}
+              <p class="tape__summary justify">
+                <NoBreak text={data.summary} />
+              </p>
+              <div class="row__links">
+                <ExternalLink href={data.links.live}>
+                  {ui.project.live}
+                  <span class="visually-hidden">: {data.title}</span>
+                </ExternalLink>
+                <ExternalLink href={data.links.source}>
+                  {ui.project.source}
+                  <span class="visually-hidden">: {data.title}</span>
+                </ExternalLink>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+
+    <div class="shelf__monitor" aria-hidden="true">
+      <div class="shelf__screen">
+        <div class="shelf__frames">
+          {more.map(({ data }) => {
+            const shot = data.screenshots[0];
+            return (
+              <div class="shelf__frame">
+                {shot && (
+                  <Picture
+                    src={shot.src}
+                    alt=""
+                    formats={["avif", "webp"]}
+                    fallbackFormat="webp"
+                    widths={[480, 800]}
+                    sizes="36vw"
+                    quality={62}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <span class="crt-raster"></span>
+        <span class="shelf__track"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .more__title {
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+  }
+
+  .shelf {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .shelf__tapes {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tape__body {
+    display: grid;
+    gap: var(--space-3);
+    transition: translate var(--duration-base) var(--ease-out);
+  }
+
+  .tape__shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    box-shadow: 0 10px 18px -12px rgb(0 0 0 / 0.9);
+  }
+
+  .tape__label {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-xs);
+    background: var(--color-bone);
+  }
+
+  h4 {
+    font-size: var(--text-subheading);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .tape__meta {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+  }
+
+  .tape__window {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-height: 4.25rem;
+    border-radius: var(--radius-xs);
+    background: var(--color-ink);
+  }
+
+  .tape__crt {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-ink);
+  }
+
+  .tape__crt :global(img),
+  .shelf__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Scanlines only: a dark vignette would hide the corners of the screenshot. */
+  .tape__crt .crt-raster,
+  .shelf__screen .crt-raster {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(11 10 12 / 0.07) 0 1px,
+      transparent 1px 3px
+    );
+  }
+
+  .tape__summary {
+    max-width: var(--measure-body);
+    color: var(--color-muted);
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .row__links {
+    display: flex;
+    gap: var(--space-4);
+    font-size: var(--text-small);
+  }
+
+  .row__links :global(a) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    text-decoration-line: underline;
+  }
+
+  .shelf__monitor {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .tape__shell {
+      grid-template-columns: minmax(0, 1fr) 9rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .shelf {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+      gap: var(--space-8);
+    }
+
+    .tape__crt {
+      display: none;
+    }
+
+    .shelf__monitor {
+      position: sticky;
+      top: var(--space-8);
+      display: block;
+      padding: var(--space-4);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-xl);
+      background: var(--color-surface-raised);
+      box-shadow: 0 28px 48px -28px rgb(0 0 0 / 0.95);
+    }
+
+    .shelf__screen {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--color-ink);
+    }
+
+    .shelf__frames,
+    .shelf__frame {
+      position: absolute;
+      inset: 0;
+    }
+
+    .shelf__frame {
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    /* Pure CSS, so hover and keyboard focus both work without JavaScript. */
+    .shelf:not(:has(.tape:is(:hover, :focus-within))) .shelf__frame:first-child,
+    .shelf:has(.tape:nth-child(1):is(:hover, :focus-within))
+      .shelf__frame:nth-child(1),
+    .shelf:has(.tape:nth-child(2):is(:hover, :focus-within))
+      .shelf__frame:nth-child(2),
+    .shelf:has(.tape:nth-child(3):is(:hover, :focus-within))
+      .shelf__frame:nth-child(3),
+    .shelf:has(.tape:nth-child(4):is(:hover, :focus-within))
+      .shelf__frame:nth-child(4),
+    .shelf:has(.tape:nth-child(5):is(:hover, :focus-within))
+      .shelf__frame:nth-child(5),
+    .shelf:has(.tape:nth-child(6):is(:hover, :focus-within))
+      .shelf__frame:nth-child(6) {
+      opacity: 1;
+    }
+
+    /* The row stays still under the pointer, so the slide can't cause flicker. */
+    .tape:is(:hover, :focus-within) .tape__body {
+      translate: var(--space-4) 0;
+    }
+
+    .tape:is(:hover, :focus-within) .tape__shell {
+      border-color: var(--color-glow);
+    }
+  }
+
+  .shelf__track {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
+    height: 16%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(242 238 234 / 0.2),
+      transparent
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root:not([data-motion="off"]))
+      .shelf:has(.tape:is(:hover, :focus-within))
+      .shelf__track {
+      opacity: 1;
+      animation: crt-track 2.6s linear infinite;
+    }
+
+    :global(:root:not([data-motion="off"]))
+      .shelf:has(.tape:is(:hover, :focus-within))
+      .shelf__frames {
+      animation: crt-jitter 2.2s steps(1, end) infinite;
+    }
+
+    @media (max-width: 63.99rem) {
+      /* Before it enters, the tube is off. It powers on as it reaches the view. */
+      :global(:root:not([data-motion="off"]))
+        .tape__crt[data-on]
+        :global(picture) {
+        animation: crt-soft 680ms var(--ease-out) both;
+      }
+
+      :global(:root:not([data-motion="off"])) .tape__crt::after {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        z-index: 3;
+        height: 18%;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgb(242 238 234 / 0.16),
+          transparent
+        );
+        animation: crt-track 4.8s linear infinite;
+      }
+    }
+  }
+</style>

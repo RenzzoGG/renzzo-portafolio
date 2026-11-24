@@ -1,0 +1,159 @@
+---
+import { getCertifications, getEducation, getProfile } from "../lib/content.ts";
+import ExternalLink from "./ExternalLink.astro";
+import HudMarks from "./HudMarks.astro";
+import SkillsBoard from "./SkillsBoard.astro";
+
+const { ui, platzi } = await getProfile();
+const education = await getEducation();
+const certifications = await getCertifications();
+---
+
+<section
+  class="section container"
+  id="skills"
+  aria-labelledby="skills-title"
+  data-act
+>
+  <HudMarks index={4} total={6} />
+  <h2
+    class="section-title"
+    id="skills-title"
+    data-reveal
+    data-glitch={ui.headings.skills}
+  >
+    {ui.headings.skills}
+  </h2>
+  <div class="grid">
+    <div class="grid__board" data-act-item="body">
+      <SkillsBoard />
+    </div>
+
+    <div class="log" data-act-item="detail">
+      <div class="log__bar" aria-hidden="true">
+        {ui.sets.logTitle}
+      </div>
+      <div class="log__body" data-log>
+        <div>
+          <h3>{ui.headings.education}</h3>
+          {education.map(({ data }) => (
+            <div class="edu" data-log-line data-prefix={ui.sets.logStudying}>
+              <p class="edu__title">{data.title}</p>
+              {data.titleEs && <p lang="es">{data.titleEs}</p>}
+              <p>
+                {data.organization} · {data.status}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div>
+          <h3>{ui.headings.certifications}</h3>
+          <ul class="certs">
+            {certifications.map(({ data }) => (
+              <li data-log-line data-prefix={ui.sets.logCertified}>
+                {data.title}
+              </li>
+            ))}
+          </ul>
+          <ExternalLink class="platzi" href={platzi.url}>
+            {platzi.label}
+          </ExternalLink>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-7);
+    margin-top: var(--space-6);
+  }
+
+  .grid__board {
+    min-width: 0;
+  }
+
+  .log {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-subtle);
+  }
+
+  .log__bar {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+  }
+
+  .log__body {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    line-height: var(--leading-snug);
+  }
+
+  h3 {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-subheading);
+  }
+
+  [data-prefix]::before {
+    content: attr(data-prefix) " " / "";
+    color: var(--color-glow);
+  }
+
+  .edu {
+    color: var(--color-muted);
+  }
+
+  .edu p {
+    display: block;
+    padding-inline-start: 2ch;
+  }
+
+  .edu__title {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+  }
+
+  .certs {
+    display: grid;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+    padding: 0;
+    list-style: none;
+    color: var(--color-text);
+  }
+
+  .certs li::after {
+    content: " ✓" / "";
+    color: var(--color-glow);
+  }
+
+  .platzi {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-sans);
+    font-size: var(--text-small);
+    text-decoration-line: underline;
+  }
+
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+      gap: var(--space-8);
+    }
+  }
+</style>

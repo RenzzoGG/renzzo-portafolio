@@ -1,0 +1,80 @@
+- {
+    id: frontend-developer,
+    title: Frontend Developer,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/2467-course/diploma/detalle/",
+    onCv: true,
+    order: 1,
+  }
+- {
+    id: javascript-fundamentals,
+    title: JavaScript Fundamentals,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/10266-course/diploma/detalle/",
+    onCv: true,
+    order: 2,
+  }
+- {
+    id: css-architecture,
+    title: CSS Architecture,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/7991-course/diploma/detalle/",
+    onCv: true,
+    order: 3,
+  }
+- {
+    id: professional-css-grid,
+    title: Professional CSS Grid Layout,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/2222-course/diploma/detalle/",
+    onCv: true,
+    order: 4,
+  }
+- {
+    id: css-grid-basics,
+    title: CSS Grid Basics,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/2474-course/diploma/detalle/",
+    onCv: true,
+    order: 5,
+  }
+- {
+    id: web-design-grid-flexbox,
+    title: "Web Design with CSS Grid & Flexbox",
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/2229-course/diploma/detalle/",
+    onCv: true,
+    order: 6,
+  }
+- {
+    id: practical-css-layout,
+    title: Practical CSS Layout,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/1744-course/diploma/detalle/",
+    onCv: true,
+    order: 7,
+  }
+- {
+    id: sass-fundamentals,
+    title: Sass Fundamentals,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/6867-course/diploma/detalle/",
+    onCv: true,
+    order: 8,
+  }
+- {
+    id: design-for-developers,
+    title: Design for Developers,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/1906-course/diploma/detalle/",
+    onCv: true,
+    order: 9,
+  }
+- {
+    id: effective-design-systems,
+    title: Effective Design Systems,
+    issuer: Platzi,
+    url: "https://platzi.com/p/renzzo.gomez07/curso/1420-course/diploma/detalle/",
+    onCv: true,
+    order: 10,
+  }

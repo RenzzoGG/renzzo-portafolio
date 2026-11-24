@@ -1,0 +1,170 @@
+/* Global because this content is also shown in the home page's dialog. */
+.detail {
+  padding-block: var(--space-5) var(--section-gap);
+}
+
+.detail__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-7);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+}
+
+.detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.detail__counter {
+  color: var(--color-muted);
+}
+
+.detail__title {
+  color: var(--color-text);
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.detail__type {
+  margin-top: var(--space-2);
+  color: var(--color-muted);
+}
+
+.detail__line {
+  max-width: var(--measure-body);
+  margin-top: var(--space-4);
+  font-size: var(--text-lead);
+  line-height: var(--leading-snug);
+}
+
+.detail__media {
+  aspect-ratio: 16 / 10;
+  margin-block: var(--space-7);
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.detail__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.detail__grid {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.detail__stats {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.detail__actions {
+  margin-top: var(--space-5);
+}
+
+.detail__study {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.detail__study dt {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+}
+
+.detail__study dd {
+  margin-top: var(--space-1);
+  line-height: var(--leading-snug);
+}
+
+.detail__note {
+  margin-top: var(--space-7);
+  color: var(--color-muted);
+  font-size: var(--text-caption);
+}
+
+.detail-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .detail-dialog[open] {
+    animation: detail-slices 320ms steps(5, end) backwards;
+  }
+}
+
+/* A horizontal-slice glitch that resolves into the full page. */
+@keyframes detail-slices {
+  0% {
+    clip-path: polygon(
+      0 18%,
+      100% 18%,
+      100% 34%,
+      0 34%,
+      0 58%,
+      100% 58%,
+      100% 72%,
+      0 72%
+    );
+    transform: translateX(-1.5%);
+  }
+
+  50% {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 46%,
+      0 46%,
+      0 52%,
+      100% 52%,
+      100% 100%,
+      0 100%
+    );
+    transform: translateX(0.8%);
+  }
+
+  100% {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 50%,
+      0 50%,
+      0 50%,
+      100% 50%,
+      100% 100%,
+      0 100%
+    );
+    transform: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .detail__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-8);
+  }
+}

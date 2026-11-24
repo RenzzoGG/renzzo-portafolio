@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { getProfile } from "../lib/content.ts";
+
+type Props = HTMLAttributes<"a"> & { href: string };
+
+const { href, ...attrs } = Astro.props;
+const { ui } = await getProfile();
+---
+
+<a {href} target="_blank" rel="noopener noreferrer" {...attrs}>
+  <slot />
+  <span class="visually-hidden"> {ui.newTab}</span>
+</a>

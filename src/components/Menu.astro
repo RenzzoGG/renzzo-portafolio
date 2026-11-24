@@ -1,0 +1,151 @@
+---
+import { getProfile } from "../lib/content.ts";
+
+const { ui } = await getProfile();
+---
+
+<button
+  class="menu-open"
+  type="button"
+  aria-haspopup="dialog"
+  aria-expanded="false"
+  data-menu-open
+>
+  {ui.menu.open}
+</button>
+
+<dialog class="menu" aria-label={ui.menu.open} data-menu>
+  <div class="container menu__inner">
+    <button class="menu__close" type="button" data-menu-close>
+      {ui.menu.close}
+    </button>
+    <nav aria-label={ui.menu.open}>
+      <ol class="menu__list">
+        {ui.nav.map((item, index) => (
+          <li>
+            <a class="menu__link" href={item.href}>
+              <span class="menu__number" aria-hidden="true">
+                [{String(index + 1).padStart(2, "0")}]
+              </span>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </div>
+</dialog>
+
+<script>
+  import "../lib/ui/menu.ts";
+</script>
+
+<style>
+  .menu-open,
+  .menu__close {
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  /* Without JS the button can't work, and the plain nav stays instead. */
+  .menu-open {
+    display: none;
+  }
+
+  @media (scripting: enabled) {
+    .menu-open {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  .menu {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .menu[open] {
+    opacity: 1;
+    transition: opacity var(--duration-base) var(--ease-out);
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .menu__inner {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-3) var(--space-7);
+  }
+
+  .menu__close {
+    justify-self: end;
+  }
+
+  .menu__list {
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-border-strong);
+  }
+
+  .menu__list li {
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+
+  .menu__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    font-size: var(--text-title);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu__number {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+    font-weight: var(--weight-regular);
+    letter-spacing: 0.04em;
+  }
+
+  @media (hover: hover) {
+    .menu-open:hover,
+    .menu__close:hover {
+      background: var(--color-surface-hover);
+    }
+
+    .menu__link:hover {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    .menu__link:hover .menu__number {
+      color: var(--color-bg);
+    }
+  }
+</style>

@@ -1,0 +1,301 @@
+---
+import { getImage, Picture } from "astro:assets";
+import {
+  getProfile,
+  shortTitle,
+  type FeaturedProject,
+} from "../lib/content.ts";
+import ExternalLink from "./ExternalLink.astro";
+import NoBreak from "./NoBreak.astro";
+import SegmentDisplay from "./SegmentDisplay.astro";
+
+interface Props {
+  project: FeaturedProject;
+  reverse: boolean;
+  number: number;
+  total: number;
+}
+
+const { project, reverse, number, total } = Astro.props;
+const pad = (value: number) => String(value).padStart(2, "0");
+const { data } = project;
+const { ui } = await getProfile();
+const shot = data.screenshots[0];
+if (!shot) throw new Error(`${project.id} needs a screenshot`);
+const widths = [480, 800, 1120, 1440].filter((w) => w <= shot.src.width);
+// Only the WebGL drum requests this file, as its section approaches.
+const texture = await getImage({
+  src: shot.src,
+  format: "avif",
+  width: Math.min(1120, shot.src.width),
+  quality: 58,
+});
+---
+
+<article
+  class:list={["case", { "case--reverse": reverse }]}
+  id={project.id}
+  data-accent={data.accent}
+  data-project={project.id}
+  data-texture={texture.src}
+>
+  <div class="case__media" data-screen-slot>
+    <Picture
+      src={shot.src}
+      alt={shot.alt}
+      formats={["avif", "webp"]}
+      fallbackFormat="webp"
+      widths={widths}
+      sizes="(min-width: 64rem) 46vw, calc(100vw - 2rem)"
+      quality={72}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="case__body">
+    <p class="case__counter" aria-hidden="true">
+      {pad(number)} / {pad(total)}
+    </p>
+    <h3 data-tune>{shortTitle(data.title)}</h3>
+    <p class="case__type">{data.type}</p>
+    <p class="case__line">
+      <NoBreak text={data.oneLiner} />
+    </p>
+
+    <ul class="case__readouts">
+      {data.readouts.map((readout) => (
+        <li>
+          <SegmentDisplay value={readout.value} unit={readout.unit} />{" "}
+          <span class="case__readout-label">{readout.label}</span>
+        </li>
+      ))}
+    </ul>
+
+    {data.panelNotes.length > 0 && (
+      <ul class="case__stats">
+        {data.panelNotes.map((note) => (
+          <li>
+            <span>
+              <NoBreak text={note} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <ul
+      class="stack-list case__stack"
+      aria-label={`${shortTitle(data.title)} stack`}
+      data-wave
+    >
+      {data.stack.map((item, index) => (
+        <li style={`--i:${index}`}>{item}</li>
+      ))}
+    </ul>
+
+    <details class="case__details">
+      <summary>{ui.project.details}</summary>
+      <dl>
+        {data.caseStudy.map((item) => (
+          <div>
+            <dt>{item.label}</dt>
+            <dd>
+              <NoBreak text={item.text} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </details>
+
+    <div class="actions">
+      <ExternalLink class="btn" href={data.links.live}>
+        {ui.project.live}
+        <span class="visually-hidden">: {shortTitle(data.title)}</span>
+      </ExternalLink>
+      <ExternalLink class="btn btn--ghost" href={data.links.source}>
+        {ui.project.source}
+        <span class="visually-hidden">: {shortTitle(data.title)}</span>
+      </ExternalLink>
+      <a class="btn btn--ghost" href={`/work/${project.id}/`} data-detail-link>
+        {ui.project.caseStudy}
+        <span class="visually-hidden">: {shortTitle(data.title)}</span>
+      </a>
+    </div>
+
+    {data.disclaimer && (
+      <p class="case__note">
+        <NoBreak text={data.disclaimer} />
+      </p>
+    )}
+  </div>
+</article>
+
+<style>
+  .case {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+  }
+
+  .case__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: 0 24px 48px -24px
+      color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .case__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  h3 {
+    color: var(--accent-text);
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    letter-spacing: var(--tracking-title);
+    text-wrap: balance;
+  }
+
+  .case__readouts {
+    --seg-size: 1.375rem;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.5rem), 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .case__readouts li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .case__readout-label {
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .case__readouts li:only-child .case__readout-label {
+    white-space: nowrap;
+  }
+
+  .case__stack {
+    --wave-color: var(--color-signal);
+
+    margin-top: var(--space-4);
+  }
+
+  .case__type {
+    margin-top: var(--space-1);
+    color: var(--color-muted);
+    font-size: var(--text-small);
+  }
+
+  .case__line {
+    max-width: var(--measure-narrow);
+    margin-top: var(--space-4);
+    font-size: var(--text-lead);
+    line-height: var(--leading-snug);
+  }
+
+  .case__stats {
+    display: grid;
+    gap: var(--space-1);
+    margin-block: var(--space-4);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  .case__stats li {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .case__stats li::before {
+    content: "";
+    flex: none;
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-top: 0.4em;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+  }
+
+  .case__details {
+    margin-block: var(--space-4);
+    border-block: 1px solid var(--color-border);
+    font-size: var(--text-small);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+  }
+
+  summary::after {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-inline-end: var(--space-1);
+    border-right: 1.5px solid currentcolor;
+    border-bottom: 1.5px solid currentcolor;
+    transform: translateY(-25%) rotate(45deg);
+  }
+
+  details[open] summary::after {
+    transform: translateY(25%) rotate(-135deg);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
+  }
+
+  dt {
+    color: var(--color-muted);
+    font-size: var(--text-caption);
+  }
+
+  dd {
+    line-height: var(--leading-snug);
+  }
+
+  .case__note {
+    margin-top: var(--space-3);
+    color: var(--color-muted);
+    font-size: var(--text-caption);
+  }
+
+  @media (min-width: 64rem) {
+    .case {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--space-8);
+    }
+
+    .case--reverse {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .case--reverse .case__media {
+      order: 2;
+    }
+  }
+</style>

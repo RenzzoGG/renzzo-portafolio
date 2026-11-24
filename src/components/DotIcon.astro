@@ -1,0 +1,91 @@
+---
+/** An 11×11 LED icon. "#" is always lit, "a" and "b" alternate as two frames. */
+interface Props {
+  name: "code" | "window" | "bug";
+}
+
+const ICONS = {
+  // Braces, with a cursor of dots typing between them.
+  code: [
+    "..##...##..",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    "#..a.b.a..#",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    "..##...##..",
+  ],
+  // A browser: title bar with lights, a headline, text and a button.
+  window: [
+    "###########",
+    "#a.b.a....#",
+    "###########",
+    "#.........#",
+    "#.#####...#",
+    "#.........#",
+    "#.bbbbbbb.#",
+    "#.........#",
+    "#.aaa.....#",
+    "#.........#",
+    "###########",
+  ],
+  // A beetle seen from above. Its legs step in two alternating frames.
+  bug: [
+    "..#.....#..",
+    "...#...#...",
+    "...#####...",
+    "a.#######.b",
+    ".a.##.##.b.",
+    "...##.##...",
+    "bbb##.##aaa",
+    "...##.##...",
+    ".a.##.##.b.",
+    "a..#####..b",
+    "....###....",
+  ],
+};
+
+const { name } = Astro.props;
+const path = (mark: string) =>
+  ICONS[name]
+    .flatMap((row, y) =>
+      [...row].flatMap((cell, x) =>
+        cell === mark ? [`M${x + 0.5} ${y + 0.5}h0`] : [],
+      ),
+    )
+    .join("");
+---
+
+<svg class="dot-icon" viewBox="0 0 11 11" aria-hidden="true">
+  <path class="dot-icon__base" d={path("#")}></path>
+  <path class="dot-icon__a" d={path("a")}></path>
+  <path class="dot-icon__b" d={path("b")}></path>
+</svg>
+
+<style>
+  .dot-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 0.72;
+  }
+
+  .dot-icon__base {
+    stroke: var(--color-signal);
+  }
+
+  .dot-icon__a {
+    stroke: var(--color-glow);
+  }
+
+  /* Lit at rest, so the whole icon reads without animation. */
+  .dot-icon__b {
+    stroke: var(--color-glow);
+  }
+</style>

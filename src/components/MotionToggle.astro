@@ -1,0 +1,100 @@
+---
+import { getProfile } from "../lib/content.ts";
+
+const { ui } = await getProfile();
+---
+
+<button
+  class="motion"
+  type="button"
+  aria-pressed="true"
+  data-motion-toggle
+  data-on={ui.motion.on}
+  data-off={ui.motion.off}
+  hidden
+>
+  {ui.motion.label}: <span data-motion-state>{ui.motion.on}</span>
+</button>
+
+<script is:inline>
+  (() => {
+    const button = document.querySelector("[data-motion-toggle]");
+    if (!button) return;
+    const root = document.documentElement;
+    const state = button.querySelector("[data-motion-state]");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const render = () => {
+      const on = !reduced.matches && root.dataset.motion !== "off";
+      button.setAttribute("aria-pressed", String(on));
+      button.disabled = reduced.matches;
+      state.textContent = on ? button.dataset.on : button.dataset.off;
+    };
+    button.addEventListener("click", () => {
+      const off = root.dataset.motion !== "off";
+      if (off) root.dataset.motion = "off";
+      else delete root.dataset.motion;
+      try {
+        localStorage.setItem("motion", off ? "off" : "on");
+      } catch {
+        /* Storage can be blocked. The toggle still works for this visit. */
+      }
+      render();
+    });
+    reduced.addEventListener("change", render);
+    button.hidden = false;
+    render();
+  })();
+</script>
+
+<style>
+  .motion {
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  /* On and Off share a width, so the nav never shifts on toggle. */
+  .motion span {
+    display: inline-block;
+    min-width: 3ch;
+    text-align: left;
+  }
+
+  .motion:disabled {
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+
+  /* The header is gone during the journey. A tab in the gutter covers no content. */
+  :global(:root[data-motion-pinned]) .motion {
+    position: fixed;
+    bottom: var(--space-4);
+    left: 0;
+    z-index: var(--z-nav);
+    width: 1.75rem;
+    min-height: 0;
+    padding: var(--space-3) 0;
+    border-left: 1px solid var(--color-border-strong);
+    border-right: 0;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    background: var(--color-bg);
+    line-height: 1.75rem;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+  }
+
+  @media (hover: hover) {
+    .motion:hover:not(:disabled),
+    :global(:root[data-motion-pinned]) .motion:hover:not(:disabled) {
+      background: var(--color-surface-hover);
+    }
+  }
+</style>

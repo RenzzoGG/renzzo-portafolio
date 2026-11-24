@@ -26,3 +26,24 @@ node_modules/
 
 # ===== Reportes locales (capturas, Lighthouse) =====
 docs/reports/
+
+# ===== Astro =====
+dist/
+.astro/
+
+# ===== Source photos / depth maps for the LED face (never committed) =====
+assets-src/
+
+# ===== Impeccable state (never committed without approval) =====
+.impeccable/
+
+# ===== Playwright =====
+test-results/
+playwright-report/
+
+# ===== Python =====
+__pycache__/
+.venv/
+
+# ===== Upwork portfolio assets (generated, never committed) =====
+upwork-assets/

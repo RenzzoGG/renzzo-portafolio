@@ -1,0 +1,205 @@
+/*
+ * Shared pieces of the Signal set pieces. The final state is the default, so
+ * every rule here only adds motion where motion is allowed.
+ */
+[data-tune] {
+  position: relative;
+}
+
+.type-word {
+  position: relative;
+  visibility: hidden;
+}
+
+.type-word--on {
+  visibility: visible;
+}
+
+/* Positioned, so the caret never changes where a line breaks. */
+.type-word--caret::before {
+  content: "";
+  position: absolute;
+  top: 0.12em;
+  left: 0;
+  width: 0.55em;
+  height: 1em;
+  background: var(--color-glow);
+  visibility: visible;
+}
+
+/* A CRT raster, shared by the tape preview and the service channels. */
+.crt-raster {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgb(11 10 12 / 0.28) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(ellipse at center, transparent 55%, rgb(11 10 12 / 0.6));
+  pointer-events: none;
+}
+
+@keyframes tag-light {
+  0%,
+  100% {
+    color: inherit;
+  }
+
+  35% {
+    color: var(--wave-color, var(--color-glow));
+  }
+}
+
+@keyframes crt-track {
+  from {
+    transform: translateY(-120%);
+  }
+
+  to {
+    transform: translateY(620%);
+  }
+}
+
+@keyframes crt-jitter {
+  0%,
+  91%,
+  100% {
+    transform: none;
+  }
+
+  93% {
+    transform: translateX(-3px);
+  }
+
+  96% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes crt-on {
+  0% {
+    opacity: 0.9;
+    transform: scale(1, 0.006);
+    filter: brightness(4);
+  }
+
+  38% {
+    opacity: 1;
+    transform: scale(1, 0.012);
+    filter: brightness(4);
+  }
+
+  72% {
+    transform: scale(1, 1.03);
+    filter: brightness(1.6);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* The phone power-on. Brightness only ever falls, so it can't count as a flash. */
+@keyframes crt-soft {
+  0% {
+    opacity: 0.4;
+    transform: scale(1, 0.012);
+    filter: brightness(1.7);
+  }
+
+  34% {
+    opacity: 1;
+    transform: scale(0.72, 0.03);
+    filter: brightness(1.7);
+  }
+
+  68% {
+    transform: scale(1, 1.04);
+    filter: brightness(1.25);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+[data-crt-off] :is(picture, .channel__picture) {
+  opacity: 0;
+}
+
+/* A heading tuning in: the color channels settle onto the text. */
+@keyframes heading-tune {
+  0% {
+    text-shadow:
+      -7px 0 var(--color-glow),
+      7px 0 var(--color-signal);
+    transform: skewX(-5deg);
+  }
+
+  35% {
+    text-shadow:
+      4px 0 var(--color-glow),
+      -4px 0 var(--color-signal);
+    transform: skewX(3deg);
+  }
+
+  70% {
+    text-shadow:
+      -2px 0 var(--color-glow),
+      2px 0 var(--color-signal);
+    transform: skewX(-1deg);
+  }
+
+  100% {
+    text-shadow: none;
+    transform: none;
+  }
+}
+
+@keyframes btn-glitch {
+  0% {
+    text-shadow:
+      -2px 0 var(--color-glow),
+      2px 0 var(--color-signal);
+  }
+
+  40% {
+    text-shadow:
+      2px 0 var(--color-glow),
+      -1px 0 var(--color-signal);
+  }
+
+  75% {
+    text-shadow:
+      -1px 0 var(--color-glow),
+      1px 0 var(--color-signal);
+  }
+
+  100% {
+    text-shadow: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .btn:hover {
+    animation: btn-glitch 220ms steps(1, end);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) [data-tuning] {
+    animation: heading-tune 700ms steps(7, end) both;
+  }
+
+  :root:not([data-motion="off"]) [data-waving] > li {
+    animation: tag-light 420ms var(--ease-out) both;
+    animation-delay: min(calc(var(--i, 0) * 26ms), 280ms);
+  }
+}

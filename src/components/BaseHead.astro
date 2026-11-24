@@ -1,0 +1,81 @@
+---
+import geistUrl from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
+import { getEducation, getProfile } from "../lib/content.ts";
+import "../styles/fonts.css";
+import "../styles/tokens.css";
+import "../styles/base.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const profile = await getProfile();
+const education = await getEducation();
+
+const site = Astro.site ?? new URL(`https://${profile.domain}`);
+const canonical = new URL(Astro.url.pathname, site).href;
+// Bump ?v= whenever public/og-image.png changes (it has a fixed URL).
+const ogImage = new URL("/og-image.png?v=3", site).href;
+const socialDescription = profile.meta.ogDescription;
+
+const [locality, region] = profile.location.split(", ");
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: profile.role,
+  url: new URL("/", site).href,
+  image: ogImage,
+  description: profile.meta.ogDescription,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: locality,
+    addressRegion: region,
+    addressCountry: "MX",
+  },
+  affiliation: education.map(({ data }) => ({
+    "@type": "CollegeOrUniversity",
+    name: data.organization,
+  })),
+  knowsLanguage: ["es", "en"],
+  sameAs: profile.contact.links
+    .filter((link) => link.href.startsWith("https://"))
+    .map((link) => link.href),
+};
+const jsonLd = JSON.stringify(person).replace(/</g, "\\u003c");
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0B0A0C" />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+{description && <meta name="description" content={description} />}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="preload" href={geistUrl} as="font" type="font/woff2" crossorigin />
+<title>{title}</title>
+{!noindex && (
+  <>
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={socialDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={profile.meta.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={socialDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={profile.meta.ogImageAlt} />
+    <script type="application/ld+json" set:html={jsonLd} />
+  </>
+)}

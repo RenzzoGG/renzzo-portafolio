@@ -1,0 +1,231 @@
+/*
+ * Signal design tokens: the single source of truth for visual values.
+ * Contrast of every text and UI pairing is enforced by `npm run check:contrast`.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Core palette */
+  --color-bg: #0b0a0c;
+  --color-surface: #151317;
+  --color-text: #f2eeea;
+  --color-muted: #8a8389;
+  --color-signal: #c21d3a; /* Large text, UI and fills only: 3.32:1 on bg. */
+  --color-glow: #ff3b5c; /* Use this when text must read as "signal". */
+
+  /* Bone-white sections. Glow is 3.02:1 here, so it's never text on bone. */
+  --color-bone: #f2eeea;
+  --color-ink: #0b0a0c;
+  --color-muted-on-bone: #5f585e;
+  --color-panel-floor: #191819; /* The ink panel at its lightest, over bone. */
+
+  /* Surfaces and states */
+  --color-surface-subtle: #100f12;
+  --color-surface-raised: #1e1b21;
+  --color-surface-hover: #201c23;
+  --color-border: #2a262d; /* Decorative hairline, carries no meaning. */
+  --color-border-strong: #736c72; /* Meaningful UI boundary, at least 3:1. */
+  --color-signal-hover: #a81732;
+  --color-on-signal: var(--color-text);
+  --color-focus-ring: var(--color-glow);
+  --color-selection: #5c1524;
+  --color-led-off: #2b1218; /* Unlit LED segments. Decorative, carries no text. */
+
+  /*
+   * Project accents.
+   * --accent-<name>        brand color, for fills and decoration
+   * --accent-<name>-text   always at least 4.5:1 on bg and surface
+   * --accent-<name>-on     text placed on top of the brand fill
+   */
+  --accent-clearline: #4cb3a5;
+  --accent-clearline-text: #4cb3a5;
+  --accent-clearline-on: var(--color-bg);
+  --accent-pulse: #c6f432;
+  --accent-pulse-text: #c6f432;
+  --accent-pulse-on: var(--color-bg);
+  --accent-fernwick: #fbbf24;
+  --accent-fernwick-text: #fbbf24;
+  --accent-fernwick-on: var(--color-bg);
+  --accent-stocktill: #4f46e5; /* Fill only: 2.94:1 on surface. */
+  --accent-stocktill-text: #818cf8;
+  --accent-stocktill-on: var(--color-text);
+
+  /* Active accent: defaults to Signal, switched with [data-accent]. */
+  --accent: var(--color-signal);
+  --accent-text: var(--color-glow);
+  --accent-on: var(--color-on-signal);
+
+  /* Font families */
+  --font-sans:
+    "Geist Variable", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    "Geist Mono Variable", "Geist Mono Fallback", ui-monospace, monospace;
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Fluid type scale: 360px to 1440px viewports */
+  --text-caption: 0.8125rem;
+  --text-small: 0.875rem;
+  --text-body: clamp(1rem, 0.979rem + 0.093vw, 1.0625rem);
+  --text-lead: clamp(1.125rem, 1.083rem + 0.185vw, 1.25rem);
+  --text-subheading: clamp(1.25rem, 1.167rem + 0.37vw, 1.5rem);
+  --text-heading: clamp(1.5rem, 1.333rem + 0.741vw, 2rem);
+  --text-title: clamp(2rem, 1.583rem + 1.852vw, 3.25rem);
+  --text-display: clamp(2.75rem, 1.667rem + 4.815vw, 6rem);
+
+  /* Line heights */
+  --leading-display: 1;
+  --leading-title: 1.08;
+  --leading-heading: 1.2;
+  --leading-snug: 1.4;
+  --leading-body: 1.65; /* Slightly open for light text on dark. */
+
+  /* Letter spacing */
+  --tracking-display: -0.04em;
+  --tracking-title: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-body: 0.003em;
+  --tracking-caption: 0.01em;
+
+  /* Reading measure */
+  --measure-body: 56ch;
+  --measure-narrow: 48ch;
+
+  /* Spacing: 4px base */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Layout */
+  --gutter: clamp(1rem, 0.5rem + 2.222vw, 2.5rem);
+  --section-gap: clamp(4rem, 2.667rem + 5.926vw, 8rem);
+  --container-max: 80rem;
+
+  /* Radii */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 999px;
+
+  /* Z-index layers */
+  --z-behind: -1;
+  --z-base: 0;
+  --z-canvas: 10;
+  --z-content: 20;
+  --z-sticky: 100;
+  --z-nav: 200;
+  --z-overlay: 300;
+  --z-toast: 400;
+  --z-skip-link: 500;
+
+  /*
+   * Breakpoints, as reference values. CSS @media cannot read custom
+   * properties, so media queries repeat these literals. JS can read them.
+   */
+  --bp-sm: 30rem;
+  --bp-md: 48rem;
+  --bp-lg: 64rem; /* Also the minimum width for the 3D scene. */
+  --bp-xl: 90rem;
+
+  /* Motion durations */
+  --duration-instant: 100ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 400ms;
+  --duration-slower: 700ms;
+  --duration-scene: 1200ms;
+
+  /* Motion easings */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-glitch: steps(4, end);
+}
+
+[data-accent="clearline"] {
+  --accent: var(--accent-clearline);
+  --accent-text: var(--accent-clearline-text);
+  --accent-on: var(--accent-clearline-on);
+}
+
+[data-accent="pulse"] {
+  --accent: var(--accent-pulse);
+  --accent-text: var(--accent-pulse-text);
+  --accent-on: var(--accent-pulse-on);
+}
+
+[data-accent="fernwick"] {
+  --accent: var(--accent-fernwick);
+  --accent-text: var(--accent-fernwick-text);
+  --accent-on: var(--accent-fernwick-on);
+}
+
+[data-accent="stocktill"] {
+  --accent: var(--accent-stocktill);
+  --accent-text: var(--accent-stocktill-text);
+  --accent-on: var(--accent-stocktill-on);
+}
+
+/* Bone surface: every color inside is remapped to pass AA on bone. */
+[data-tone="bone"],
+[data-tone="bone"] [data-accent] {
+  --color-text: var(--color-ink);
+  --color-muted: var(--color-muted-on-bone);
+  --color-border: color-mix(in srgb, var(--color-ink) 14%, var(--color-bone));
+  --color-surface-hover: color-mix(
+    in srgb,
+    var(--color-ink) 8%,
+    var(--color-bone)
+  );
+  --color-focus-ring: var(--color-signal);
+  --accent-text: var(--color-ink);
+}
+
+[data-tone="bone"] {
+  /* LED readouts are drawn on the surface: signal is 5.15:1 on bone. */
+  --seg-lit: var(--color-signal);
+  --seg-off: color-mix(in srgb, var(--color-ink) 7%, var(--color-bone));
+  --seg-ground: transparent;
+  --seg-border: color-mix(in srgb, var(--color-ink) 12%, var(--color-bone));
+  --seg-shadow: none;
+
+  color: var(--color-ink);
+}
+
+[data-tone="bone"] ::selection {
+  background: var(--color-signal);
+  color: var(--color-bone);
+}
+
+/* Near-zero rather than 0 so transitionend and animationend still fire. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0.01ms;
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-slower: 0.01ms;
+    --duration-scene: 0.01ms;
+  }
+}
+
+:root[data-motion="off"] {
+  --duration-instant: 0.01ms;
+  --duration-fast: 0.01ms;
+  --duration-base: 0.01ms;
+  --duration-slow: 0.01ms;
+  --duration-slower: 0.01ms;
+  --duration-scene: 0.01ms;
+}

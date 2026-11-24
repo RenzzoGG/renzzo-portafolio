@@ -1,0 +1,12 @@
+dist/
+.astro/
+node_modules/
+package-lock.json
+public/
+.mcp.json
+.claude/skills/
+.claude/agents/
+.claude/settings.local.json
+test-results/
+playwright-report/
+docs/reports/

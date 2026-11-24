@@ -1,0 +1,94 @@
+---
+import { Picture } from "astro:assets";
+import {
+  getProfile,
+  shortTitle,
+  type FeaturedProject,
+} from "../lib/content.ts";
+import "../styles/detail.css";
+import NoBreak from "./NoBreak.astro";
+import ExternalLink from "./ExternalLink.astro";
+
+interface Props {
+  project: FeaturedProject;
+  number: number;
+  total: number;
+}
+
+const { project, number, total } = Astro.props;
+const { data } = project;
+const { ui } = await getProfile();
+const shot = data.screenshots[0];
+if (!shot) throw new Error(`${project.id} needs a screenshot`);
+const name = shortTitle(data.title);
+const pad = (value: number) => String(value).padStart(2, "0");
+---
+
+<article class="detail container" data-detail data-accent={data.accent}>
+  <div class="detail__bar">
+    <a class="detail__back" href={`/#${project.id}`} data-detail-back>
+      {ui.project.back}
+    </a>
+    <span class="detail__counter" aria-hidden="true">
+      {pad(number)} / {pad(total)}
+    </span>
+  </div>
+  <h1 class="detail__title">{name}</h1>
+  <p class="detail__type">{data.type}</p>
+  <p class="detail__line justify">
+    <NoBreak text={data.oneLiner} />
+  </p>
+  <div class="detail__media">
+    <Picture
+      src={shot.src}
+      alt={shot.alt}
+      formats={["avif", "webp"]}
+      fallbackFormat="webp"
+      widths={[480, 800, 1120].filter((w) => w <= shot.src.width)}
+      sizes="(min-width: 80rem) 76rem, calc(100vw - 2rem)"
+      quality={72}
+      decoding="async"
+    />
+  </div>
+  <div class="detail__grid">
+    <div>
+      <ul class="detail__stats">
+        {data.stats.map((stat) => (
+          <li>
+            <NoBreak text={stat} />
+          </li>
+        ))}
+      </ul>
+      <ul class="stack-list" aria-label={`${name} stack`}>
+        {data.stack.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      <div class="actions detail__actions">
+        <ExternalLink class="btn" href={data.links.live}>
+          {ui.project.live}
+          <span class="visually-hidden">: {name}</span>
+        </ExternalLink>
+        <ExternalLink class="btn btn--ghost" href={data.links.source}>
+          {ui.project.source}
+          <span class="visually-hidden">: {name}</span>
+        </ExternalLink>
+      </div>
+    </div>
+    <dl class="detail__study">
+      {data.caseStudy.map((item) => (
+        <div>
+          <dt>{item.label}</dt>
+          <dd class="justify">
+            <NoBreak text={item.text} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+  {data.disclaimer && (
+    <p class="detail__note justify">
+      <NoBreak text={data.disclaimer} />
+    </p>
+  )}
+</article>

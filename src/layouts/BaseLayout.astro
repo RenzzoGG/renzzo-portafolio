@@ -1,0 +1,42 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { getProfile } from "../lib/content.ts";
+import "../styles/site.css";
+import "../styles/motion.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const { ui } = await getProfile();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead {title} {description} />
+    <script is:inline>
+      try {
+        if (localStorage.getItem("motion") === "off") {
+          document.documentElement.dataset.motion = "off";
+        }
+      } catch {
+        /* Storage can be blocked. Motion then follows the system setting. */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-print-hide>
+      {ui.skipLink}
+    </a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

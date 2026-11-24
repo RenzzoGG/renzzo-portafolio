@@ -1,0 +1,191 @@
+/* Text and UI motion. Every rule leaves the page final when motion is off. */
+:where([data-decode]) {
+  position: relative;
+}
+
+[data-signal-busy],
+[data-signal-armed] {
+  color: transparent !important;
+}
+
+.motion-ghost {
+  position: absolute;
+  inset: 0;
+  white-space: inherit;
+  pointer-events: none;
+  user-select: none;
+}
+
+.reveal-line-mask {
+  margin-block: -0.12em;
+  padding-block: 0.12em;
+}
+
+html:has(dialog[open]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+:root[data-world-live] footer {
+  position: relative;
+  background: var(--color-bg);
+}
+
+.hud {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  margin-bottom: var(--space-6);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1;
+}
+
+.hud__line {
+  flex: 1;
+  height: 1px;
+  background: currentcolor;
+  opacity: 0.45;
+  transform-origin: left;
+}
+
+.case__counter {
+  margin-bottom: var(--space-3);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+}
+
+/* Link underlines sweep in from the left and leave to the right. */
+@media (hover: hover) and (pointer: fine) {
+  .header__nav a,
+  .row__links a,
+  .platzi,
+  .detail__back {
+    position: relative;
+  }
+
+  .header__nav a::after,
+  .row__links a::after,
+  .platzi::after,
+  .detail__back::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: calc(50% - 0.85em);
+    left: 0;
+    height: 1px;
+    background: var(--color-glow);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .header__nav a:hover::after,
+  .row__links a:hover::after,
+  .platzi:hover::after,
+  .detail__back:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* A short slice-and-chroma glitch on section headings. Desktop pointers only. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) [data-glitch] {
+    position: relative;
+    width: fit-content;
+  }
+
+  :root:not([data-motion="off"]) [data-glitching]::before,
+  :root:not([data-motion="off"]) [data-glitching]::after {
+    content: attr(data-glitch) / "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    animation-duration: 260ms;
+    animation-timing-function: steps(1, end);
+    animation-fill-mode: both;
+  }
+
+  :root:not([data-motion="off"]) [data-glitching]::before {
+    color: var(--color-glow);
+    animation-name: glitch-top;
+  }
+
+  :root:not([data-motion="off"]) [data-glitching]::after {
+    color: var(--color-signal);
+    animation-name: glitch-bottom;
+  }
+
+  :root:not([data-motion="off"]) .contact [data-glitching]::before,
+  :root:not([data-motion="off"]) .contact [data-glitching]::after {
+    color: var(--color-bg);
+  }
+}
+
+@keyframes glitch-top {
+  0% {
+    clip-path: inset(8% 0 62% 0);
+    transform: translateX(-5px);
+  }
+
+  35% {
+    clip-path: inset(46% 0 30% 0);
+    transform: translateX(4px);
+  }
+
+  70% {
+    clip-path: inset(70% 0 8% 0);
+    transform: translateX(-2px);
+  }
+
+  100% {
+    clip-path: inset(50% 0);
+    transform: none;
+  }
+}
+
+@keyframes glitch-bottom {
+  0% {
+    clip-path: inset(58% 0 16% 0);
+    transform: translateX(5px);
+  }
+
+  35% {
+    clip-path: inset(14% 0 66% 0);
+    transform: translateX(-4px);
+  }
+
+  70% {
+    clip-path: inset(34% 0 44% 0);
+    transform: translateX(2px);
+  }
+
+  100% {
+    clip-path: inset(50% 0);
+    transform: none;
+  }
+}
+
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+  }
+
+  [data-signal-armed] {
+    color: inherit !important;
+  }
+
+  [data-act-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .seam {
+    display: none;
+  }
+}

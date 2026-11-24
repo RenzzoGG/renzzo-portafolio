@@ -1,0 +1,244 @@
+---
+/*
+ * Stage for the LED face. The fixed ratio means the canvas can replace the
+ * poster with zero layout shift. The poster is a CSS mask, so it works without
+ * JS and can't become the LCP element, which must stay the hero heading.
+ */
+import posterUrl from "../assets/face/poster.webp?url";
+
+const style = `--poster: url("${posterUrl}")`;
+---
+
+<div class="led-slot" data-led-slot aria-hidden="true" {style}>
+  <div class="led-slot__panel"></div>
+  <div class="led-slot__glow">
+    <div class="led-slot__poster"></div>
+  </div>
+  <div class="led-slot__live" data-face-layers></div>
+</div>
+
+<script>
+  import "../lib/face/start.ts";
+</script>
+
+<style>
+  .led-slot {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .led-slot__panel,
+  .led-slot__glow,
+  .led-slot__poster,
+  .led-slot__live,
+  .led-slot__live :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .led-slot__panel {
+    border: 1px solid var(--color-border);
+    border-radius: inherit;
+    background-color: var(--color-surface-subtle);
+    /* Unlit LEDs, aligned to the face's 90×112 grid. */
+    background-image: radial-gradient(
+      circle,
+      var(--color-border) 0 20%,
+      transparent 27%
+    );
+    background-size: calc(100% / 90) calc(100% / 112);
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+
+  .led-slot__glow {
+    filter: drop-shadow(0 0 3px rgb(194 29 58 / 0.6));
+    transition: opacity var(--duration-slower) var(--ease-out);
+  }
+
+  .led-slot__poster {
+    background: var(--color-glow);
+    -webkit-mask: var(--poster) center / 100% 100% no-repeat;
+    mask: var(--poster) center / 100% 100% no-repeat;
+  }
+
+  .led-slot__live {
+    visibility: hidden;
+  }
+
+  .led-slot__live :global(canvas[data-layer="glow"]) {
+    opacity: 0.4;
+  }
+
+  .led-slot[data-face="live"] .led-slot__glow {
+    opacity: 0;
+  }
+
+  /* The WebGL face takes over: the panel and poster fade as its frame fades in. */
+  .led-slot[data-world="live"] .led-slot__panel,
+  .led-slot[data-world="live"] .led-slot__glow {
+    opacity: 0;
+    transition-duration: var(--duration-base);
+    /* The frame is opaque first, so brightness never dips in the crossfade. */
+    transition-delay: calc(var(--duration-fast) * 0.75);
+  }
+
+  /*
+   * Baked canvases on the compositor. Each property has one job, so they can
+   * overlap: `translate` is the tilt parallax, `scale` the assemble, and
+   * `transform` the idle drift. Layers 0 to 2 are depth, far to near.
+   */
+  .led-slot__live :global(canvas) {
+    --depth: 0.35;
+    --drift: 2px;
+
+    translate: calc(var(--face-x, 0px) * var(--depth))
+      calc(var(--face-y, 0px) * var(--depth));
+  }
+
+  .led-slot__live :global(canvas[data-layer="glow"]) {
+    --depth: -0.2;
+  }
+
+  .led-slot__live :global(canvas[data-layer="0"]) {
+    --depth: -0.45;
+    --drift: -2px;
+  }
+
+  .led-slot__live :global(canvas[data-layer="2"]) {
+    --depth: 1;
+    --drift: 4px;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live {
+    visibility: visible;
+    animation: led-assemble var(--duration-scene) var(--ease-out-expo) both;
+  }
+
+  .led-slot[data-face="live"][data-face-glitch] .led-slot__live {
+    animation:
+      led-assemble var(--duration-scene) var(--ease-out-expo) both,
+      face-glitch 180ms steps(1, end);
+  }
+
+  /* A slow scan band, so the face is visibly alive with the phone held still. */
+  .led-slot[data-face="live"] .led-slot__live::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 18%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(255 59 92 / 0.2),
+      transparent
+    );
+    animation: led-scan 5.2s linear infinite;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas) {
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) both,
+      led-drift 5.6s ease-in-out 1100ms infinite alternate;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="1"]) {
+    animation-delay: 90ms, 1100ms;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="2"]) {
+    animation-delay: 180ms, 1100ms;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="3"]) {
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) 240ms both,
+      led-shimmer 2.7s ease-in-out infinite;
+  }
+
+  .led-slot[data-face="live"] .led-slot__live :global(canvas[data-layer="4"]) {
+    animation:
+      led-layer-in 1100ms var(--ease-out-expo) 300ms both,
+      led-shimmer 3.5s ease-in-out -1.4s infinite;
+  }
+
+  .led-slot__live[data-paused] :global(canvas),
+  .led-slot__live[data-paused]::after {
+    animation-play-state: paused !important;
+  }
+
+  @keyframes led-assemble {
+    from {
+      clip-path: circle(0% at 50% 42%);
+    }
+
+    to {
+      clip-path: circle(115% at 50% 42%);
+    }
+  }
+
+  @keyframes led-layer-in {
+    from {
+      scale: 1.22;
+    }
+
+    to {
+      scale: 1;
+    }
+  }
+
+  @keyframes led-drift {
+    from {
+      transform: translateY(calc(var(--drift) * -1));
+    }
+
+    to {
+      transform: translateY(var(--drift));
+    }
+  }
+
+  @keyframes led-shimmer {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.28;
+    }
+  }
+
+  @keyframes led-scan {
+    from {
+      transform: translateY(-110%);
+    }
+
+    to {
+      transform: translateY(620%);
+    }
+  }
+
+  /* Position only: a fast tilt tears the picture without changing brightness. */
+  @keyframes face-glitch {
+    0% {
+      translate: -7px 0;
+    }
+
+    33% {
+      translate: 6px 1px;
+    }
+
+    66% {
+      translate: -3px -1px;
+    }
+
+    100% {
+      translate: 0 0;
+    }
+  }
+</style>

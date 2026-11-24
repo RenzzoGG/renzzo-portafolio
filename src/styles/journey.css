@@ -1,0 +1,223 @@
+/*
+ * Section continuity. Seams are the static base: a gradient between two section
+ * colors that works without JS, WebGL or motion. Over the live world they clear,
+ * and text blocks sit on ink panels so contrast never depends on the canvas.
+ */
+.seam {
+  position: relative;
+  height: clamp(3rem, 10vh, 6rem);
+  overflow: clip;
+  background: linear-gradient(to bottom, var(--seam-from), var(--seam-to));
+}
+
+.seam--strong {
+  height: clamp(6rem, 18vh, 10rem);
+}
+
+.seam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(194 29 58 / 0.6) 0 1px,
+    transparent 1px 4px,
+    rgb(242 238 234 / 0.28) 4px 5px,
+    transparent 5px 9px
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Phones: a taller band, so the CRT wipe between sections has room to read. */
+@media (max-width: 63.99rem) {
+  .seam {
+    height: 6.5rem;
+  }
+
+  .seam--strong {
+    height: 9rem;
+  }
+}
+
+.seam::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 3px;
+  background: var(--color-glow);
+  box-shadow: 0 0 18px 4px rgb(255 59 92 / 0.55);
+  opacity: 0;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"], [data-world-live]) .seam[data-on]::after {
+    animation: seam-burst 620ms steps(1, end) both;
+  }
+
+  :root:not([data-motion="off"], [data-world-live]) .seam[data-on]::before {
+    animation: seam-wipe 620ms var(--ease-out) both;
+  }
+}
+
+/* One line opens across the tube and fades: a single, one-way change. */
+@keyframes seam-wipe {
+  0% {
+    opacity: 0.95;
+    transform: scaleX(0);
+  }
+
+  45% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(1) scaleY(0.4);
+  }
+}
+
+/* Brightness only ever falls, so a burst can never count as a flash. */
+@keyframes seam-burst {
+  0% {
+    opacity: 0.7;
+    transform: translateX(-6%);
+  }
+
+  25% {
+    opacity: 0.52;
+    transform: translateX(5%);
+  }
+
+  50% {
+    opacity: 0.34;
+    transform: translateX(-3%);
+  }
+
+  75% {
+    opacity: 0.16;
+    transform: translateX(2%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+:root[data-world-live] {
+  --panel: rgb(11 10 12 / 0.94);
+}
+
+:root[data-world-live] .seam {
+  background: transparent;
+}
+
+:root[data-world-live] .seam--closing {
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+}
+
+/*
+ * The fills stay solid for contrast. A layer just under full opacity stops the
+ * compositor from culling the canvas below it, which on the main-thread renderer
+ * cut a dark block out of the scene.
+ */
+:root[data-world-live] :is(.work__rail, footer) {
+  opacity: 0.999;
+}
+
+:root[data-world-live] .services {
+  background: transparent;
+}
+
+/* A box-shadow ring adds padding without moving the layout or the glitch layers. */
+:root[data-world-live]
+  :is(
+    .more__title,
+    #about-title,
+    #services-title,
+    #skills-title,
+    #cv-title,
+    .hud > span:not(.hud__line, #contact span),
+    .tape__body,
+    .channel,
+    .grid__board,
+    #cv .actions
+  ) {
+  border-radius: var(--radius-xs);
+  background: var(--panel);
+  box-shadow: 0 0 0 var(--space-2) var(--panel);
+}
+
+:root[data-world-live] :is(.more__title, .section-title:not(.work__title)) {
+  width: fit-content;
+}
+
+:root[data-world-live] #about-title {
+  align-self: start;
+}
+
+:root[data-world-live] .services__head .btn--ghost:not(:hover) {
+  background: var(--panel);
+}
+
+/*
+ * Pinned content leaves with its section. The keyframes are scrubbed by scroll
+ * (paused, with a negative delay), so both directions play the same short glitch.
+ * Opacity only ever falls, and focus always brings the content back.
+ */
+@keyframes section-release {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    clip-path: inset(0);
+  }
+
+  30% {
+    opacity: 0.72;
+    translate: -3px 0;
+    clip-path: inset(0 0 8% 0);
+  }
+
+  55% {
+    opacity: 0.42;
+    translate: 4px -0.5rem;
+    clip-path: inset(6% 0 22% 0);
+  }
+
+  80% {
+    opacity: 0.14;
+    translate: -2px -1rem;
+    clip-path: inset(18% 0 38% 0);
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -1.25rem;
+    clip-path: inset(50% 0);
+  }
+}
+
+:root[data-world-live][data-work-leaving]
+  :is(.work__rail, .case[data-active] .case__body):not(:focus-within) {
+  transition: none;
+  pointer-events: none;
+  animation: section-release 1s linear paused both;
+  animation-delay: calc(var(--work-exit, 0) * -1s);
+}
+
+:root[data-world-live][data-shelf-leaving] .shelf__monitor {
+  animation: section-release 1s linear paused both;
+  animation-delay: calc(var(--shelf-exit, 0) * -1s);
+}
+
+:root[data-world-live][data-work-leaving] .case:focus-within .case__body {
+  opacity: 1;
+  translate: none;
+}

@@ -1,82 +1,108 @@
 # CLAUDE.md
 
-Reglas de trabajo para este repositorio.
+Working rules for this repository.
 
-## Sobre el proyecto
+## Project
 
-- Portafolio / CV personal de Renzzo.
-- Desplegado en **Railway** en **renzzogg.com** desde la rama `main`.
-- **Cada push a `main` se publica en vivo** en renzzogg.com vía Railway.
-- Railway (Railpack) detecta la carpeta `public/` y la sirve como sitio estático. **Solo lo que está en `public/` es público.**
+- Personal portfolio and CV of Renzzo Gracia Gomez, presented as a **Full-Stack Developer**. English content.
+- Live at **renzzogg.com** on Railway (Cloudflare in front), deployed from `main`. **Every push to `main` goes live.**
+- We're rebuilding the site ("Signal" redesign). See `docs/PLAN.md` for phases, budgets and dependencies, `docs/CONTENT.md` for all copy and project data, and `docs/INVENTORY.md` for what the old site had.
 
-## Estructura del repo
+## Branches and git
 
-```
-public/                          # Sitio publicado
-├── index.html                   # Página del portafolio
-├── css/styles.css
-├── js/main.js
-├── favicon.svg
-├── og-image.png                 # Imagen Open Graph 1200×630 (generada desde og/)
-└── renzzo-gracia-gomez-cv.pdf   # CV descargable (exportado desde cv/)
-cv/                              # Fuente HTML/CSS del CV (no se publica)
-├── index.html
-└── cv.css
-og/                              # Plantilla de la imagen Open Graph (no se publica)
-└── og-image.html
-.gitignore
-README.md
-CLAUDE.md
-```
+- All redesign work happens on **`redesign`**. **`main` must stay untouched** until the launch phase (Phase 8). Don't create other branches unless asked.
+- Make **local commits only**, with clear messages in **English** (e.g. `feat(hero): …`, `chore: …`, `docs: …`).
+- **Never `git push`** or run anything that uploads to a remote. Renzzo pushes.
 
-- El sitio viejo (`index.html`, `style.css`, `script.js` y `assets/` en la raíz) **ya no existe**; se borró en la fase de limpieza.
+## Safety
 
-## Proyectos (repos separados)
+- **Never read `.env`, `.env.*` or any secrets/credentials file.**
+- **Never use `rm` with globs.** Delete files by explicit path (prefer `git rm <path>` / `git mv`).
+- `assets-src/` holds the source photo and depth maps. It's gitignored and **never committed**. Only derived point data ships.
+- Don't install skills, MCP servers, hooks or global tools without explicit approval (see `docs/SKILLS-REVIEW.md`).
+- Sibling project repos in `~/proyectos/` are **read-only** references. Never modify them.
 
-Cada proyecto vive en su propio repo y subdominio; este repo solo enlaza a ellos desde la sección Projects de `public/index.html` y desde `cv/index.html`. Si cambia un enlace, actualízalo en ambos.
+## Tooling rules
 
-| Proyecto | Live | Source |
-| --- | --- | --- |
-| Stocktill (proyecto destacado) | https://stocktill.renzzogg.com | https://github.com/RenzzoGG/retail-pos-saas |
-| Fernwick Platform | https://fernwick-admin.renzzogg.com | https://github.com/RenzzoGG/fernwick-platform |
-| Pulse Theory | https://pulse.renzzogg.com | https://github.com/RenzzoGG/fitness-coach-landing |
-| Fernwick Home Cleaning (landing de Fernwick Platform; comparte tarjeta con ella) | https://fernwick.renzzogg.com | https://github.com/RenzzoGG/fernwick-home-cleaning |
-| Inventory & Sales Dashboard | https://inventory.renzzogg.com | https://github.com/RenzzoGG/inventory-sales-dashboard |
-| UIFlow Admin Dashboard | https://uiflow.renzzogg.com/dashboard.html | https://github.com/RenzzoGG/uiflow |
-| UIFlow Landing Page | https://uiflow.renzzogg.com | https://github.com/RenzzoGG/uiflow |
+**Installed skills** (project scope, `.claude/skills/`, committed, byte-identical to the pinned source, excluded from Prettier):
 
-- Los enlaces Live de las tarjetas abren en nueva pestaña (`target="_blank" rel="noopener noreferrer"`).
-- El build de Tailwind de Fernwick y sus reglas de npm viven en el repo `fernwick-home-cleaning`, no aquí.
-- El CV se edita en `cv/`, se exporta a PDF con Chrome (Carta, una sola página) y se reemplaza `public/renzzo-gracia-gomez-cv.pdf`.
-- La imagen Open Graph se edita en `og/og-image.html` y se captura con Chrome headless a `public/og-image.png` (comando en README.md).
-- **Cada vez que se actualice el PDF del CV, incrementa el número de `?v=`** en el enlace "Resume (PDF)" de la sección Contact de `public/index.html` (por ejemplo `?v=2` → `?v=3`). Así navegadores y Cloudflare descargan la versión nueva en lugar de una copia en caché.
-- **Lo mismo con el CSS y el JS:** cada vez que cambie `public/css/styles.css` o `public/js/main.js`, incrementa el `?v=` de su enlace en el `<head>` de `public/index.html` (`/css/styles.css?v=2` → `?v=3`, `/js/main.js?v=2` → `?v=3`). Cada archivo lleva su propio número; solo sube el del archivo que cambió.
-- **Skills solo incluye tecnologías usadas en un proyecto publicado en el portafolio.** Al terminar un proyecto con una tecnología nueva, se agrega a Skills tanto en la página (`public/index.html`) como en el CV (`cv/index.html`).
+- **Emil Kowalski** (`emilkowalski/skills` @ `64eb3de`, MIT): `emil-design-eng`, `animate`, `choreograph`, `animation-performance`, `review-animations`, `remove-animations`, `mobile-native`, `apple-design`. Copied by hand. Never use the `npx skills` installer.
+- **Impeccable** (`pbakaus/impeccable` @ `b49177d`, v4.10.0, Apache-2.0): **Markdown only.** `SKILL.md` + `reference/`, plus the `impeccable-finish-reviewer` and `impeccable-motion-reviewer` agents in `.claude/agents/`. See `.claude/skills/impeccable/PINNED.md`.
+  - **Not installed, and must never be installed:** hooks, the engine binary, the launcher (`scripts/`), other agents, anything via `npx impeccable`.
+  - **Never use** live mode, `generate`, `generate-image`, or any sub-command or step that calls `scripts/impeccable <verb>` (context, detect, shot, font-fetch, concept-seed, comp-*, …) or needs network. If a task needs one, **skip it and tell Renzzo**. Use SKILL.md's "Launcher unavailable" path (read project docs directly).
+  - Telemetry is off: there's no engine to send it, and `DO_NOT_TRACK=1` is set in `.claude/settings.json` `env`.
+  - **Don't create `PRODUCT.md`, `DESIGN.md` or `.impeccable/`** without Renzzo's approval. `.impeccable/` is gitignored as a safety net.
+- Use Impeccable for visual design, critique and audit, and Emil's skills for motion implementation and review.
 
-## Forma de trabajo
+**Deny rules** (`.claude/settings.json`, verified to block): `git push` (all forms), `rm -rf`-style deletes, reading `.env` / `.env.*`, `npx impeccable*`, `impeccable*`, `*/scripts/impeccable *`, `claude --permission-mode bypassPermissions*`, `claude --dangerously-skip-permissions*`, `codex*`. The user-level settings also deny `.env` reads. **No hooks** are registered in any settings file. Keep it that way unless Renzzo approves one.
 
-- Soy estudiante de Ingeniería en Sistemas de la Información y Redes Digitales y quiero aprender: **explica las decisiones importantes antes de implementarlas** (qué opciones hay, cuál recomiendas y por qué).
-
-## Git
-
-- Trabajamos directo en la rama `main`, **sin crear ramas nuevas**.
-- Haz commits **locales** con mensajes claros en español.
-- **NUNCA** hagas `git push` ni ningún otro comando que suba cambios al remoto. El push lo hago yo.
+**MCP:** Playwright MCP at project scope (`.mcp.json`, committed), pinned to `@playwright/mcp@0.0.86`. Use it for visual checks once there's UI. Don't add other MCP servers without approval.
 
 ## Stack
 
-- HTML, CSS y JavaScript puro.
-- Sin frameworks, sin build y sin dependencias de npm, salvo que yo lo apruebe explícitamente. No agregues un `package.json` en este repo (Railpack podría tratar el sitio como app de Node).
-- El sitio **no usa Firebase**.
-- El portafolio no carga librerías desde CDN (sí puede usar Google Fonts).
-- Vista previa local: `python3 -m http.server 8000 -d public` → `http://localhost:8000`.
+- Astro (static output) + TypeScript (strict). Three.js (desktop only, lazy-loaded after first paint) and GSAP (deferred chunk), each added in its own phase.
+- Fonts: Geist + Geist Mono, self-hosted. No CDN scripts and no third-party font requests.
+- **New dependencies must be justified in `docs/PLAN.md` (Dependencies table) before they're added**, with exact pinned versions.
+- Scripts: `npm run dev`, `build`, `preview`, `lint`, `format`, `format:check`, `typecheck`, and `check` (all of them).
 
-## Reporte al terminar cada tarea
+## Identity ("Signal")
 
-Al terminar cada tarea, entrega un **REPORTE** con:
+| Token   | Value     |
+| ------- | --------- |
+| bg      | `#0B0A0C` |
+| surface | `#151317` |
+| text    | `#F2EEEA` |
+| muted   | `#8A8389` |
+| signal  | `#C21D3A` |
+| glow    | `#FF3B5C` |
 
-1. Qué hiciste.
-2. Archivos creados / modificados / borrados.
-3. Commits hechos (hash y mensaje).
-4. Problemas o dudas.
-5. Siguientes pasos sugeridos.
+## Budgets and accessibility (non-negotiable)
+
+- Critical JS ≤ 20 KB min. LED face data ≤ 60 KB. The Three.js chunk loads only on desktop after first paint.
+- The LCP element is text. Lighthouse mobile target is 100.
+- `prefers-reduced-motion` is respected, and the on-page **Motion** toggle turns all motion off.
+- Everything is usable without 3D and without JS.
+
+## Content rules
+
+- `docs/CONTENT.md` is the source of truth for copy. Reuse it, don't rewrite it. Change wording there first.
+- Keep the official degree name: **Information Systems and Digital Networks Engineering** (Ingeniería en Sistemas de la Información y Redes Digitales).
+- **Skills only lists technologies used in a published project.** When one is added, update it on the page and in the CV.
+- Project links must match in the page and the CV. External links use `target="_blank" rel="noopener noreferrer"`, except Contact channels, which open in the same tab, with `rel="me"` on profiles.
+
+| Project                                 | Live                                       | Source                                                |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Clearline Dental (featured)             | https://clearline.renzzogg.com             | https://github.com/RenzzoGG/clearline-dental          |
+| Pulse Theory (featured)                 | https://pulse.renzzogg.com                 | https://github.com/RenzzoGG/fitness-coach-landing     |
+| Fernwick Platform (featured)            | https://fernwick-admin.renzzogg.com        | https://github.com/RenzzoGG/fernwick-platform         |
+| Stocktill (featured)                    | https://stocktill.renzzogg.com             | https://github.com/RenzzoGG/retail-pos-saas           |
+| Fernwick Home Cleaning (more work)      | https://fernwick.renzzogg.com              | https://github.com/RenzzoGG/fernwick-home-cleaning    |
+| UIFlow Landing Page (more work)         | https://uiflow.renzzogg.com                | https://github.com/RenzzoGG/uiflow                    |
+| UIFlow Admin Dashboard (more work)      | https://uiflow.renzzogg.com/dashboard.html | https://github.com/RenzzoGG/uiflow                    |
+| Inventory & Sales Dashboard (more work) | https://inventory.renzzogg.com             | https://github.com/RenzzoGG/inventory-sales-dashboard |
+
+- When the CV PDF changes, bump the `?v=` on its download link so browsers and Cloudflare fetch the new file. The same applies to any non-hashed static asset referenced by a fixed URL.
+
+## How to work
+
+- Renzzo is an Information Systems and Digital Networks Engineering student and wants to learn: **explain important decisions before implementing them** (the options, your recommendation, and why).
+- **Verify every phase yourself before reporting:** `npm run check` (lint, format, typecheck, build), plus visual checks (Playwright screenshots at desktop and mobile widths) once there's UI, plus the phase's acceptance checks in `docs/PLAN.md`. Renzzo only reviews the summary and pushes.
+- Local preview: `npm run dev` (or `npm run build && npm run preview`).
+
+## Report at the end of every task
+
+1. What you did.
+2. Files created / modified / deleted.
+3. Commits made (hash and message).
+4. Problems or open questions.
+5. Suggested next steps.
+
+## Session handoff
+
+Keep `docs/HANDOFF.md` current. **Rewrite it at the end of every phase or work session, and whenever Renzzo says "handoff"**, then commit it locally (never push). It must contain:
+
+- The current phase and its status (done / in progress / blocked).
+- What was just finished, with commit hashes.
+- The exact next step: what to do or what prompt is pending.
+- Open questions or decisions waiting for Renzzo.
+- Anything that is **not in git** and must be copied by hand to another machine (e.g. `assets-src/face.webp`).

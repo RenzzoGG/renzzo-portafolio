@@ -1,0 +1,38 @@
+---
+import { getCvLink, getProfile } from "../lib/content.ts";
+import HudMarks from "./HudMarks.astro";
+
+const profile = await getProfile();
+const { ui } = profile;
+const cv = getCvLink(profile);
+---
+
+<section
+  class="section container cv-block"
+  id="cv"
+  aria-labelledby="cv-title"
+  data-act
+>
+  <HudMarks index={5} total={6} />
+  <h2 class="section-title" id="cv-title" data-glitch={ui.headings.cv}>
+    {ui.headings.cv}
+  </h2>
+  <div class="actions" data-act-item="detail">
+    <a class="btn" href={cv.href} download>
+      {ui.cvActions.download}
+    </a>
+    <a class="btn btn--ghost" href="/cv/">
+      {ui.cvActions.view}
+    </a>
+  </div>
+</section>
+
+<style>
+  .cv-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+</style>

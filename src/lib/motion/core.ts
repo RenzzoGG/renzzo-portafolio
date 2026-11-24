@@ -1,0 +1,636 @@
+/**
+ * Text motion for every device. The real text is never rewritten: decode and
+ * count-up play in an aria-hidden overlay, and line splits are reverted.
+ * Only elements still below the viewport are armed, so nothing visible jumps.
+ */
+import gsap from "gsap";
+import { SplitText } from "gsap/SplitText";
+import { startCarousel } from "./carousel.ts";
+
+gsap.registerPlugin(SplitText);
+
+const GLYPHS = "#%&*+/<=>\\_01";
+const KEEP = new Set([" ", "[", "]", "/"]);
+const DECODE_STEPS = 8;
+const DECODE_S = 0.32;
+const TUNE_S = 0.62;
+const COUNT_S = 0.9;
+const TYPE_S = 2.4;
+const WAVE_MS = 760;
+const SCROLL_CALM_MS = 240;
+const BAND_DELAY_MS = 180;
+const DESKTOP = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+const ACT_RISE = 14;
+const ACT_S = 0.46;
+const ACT_DELAY = { body: 0.12, detail: 0.24 };
+const ACT_STAGGER = 0.07;
+/**
+ * Phones scroll about 300 px during a short entrance, so a small one is never
+ * seen. Here entrances wait until the element is well on screen and move more.
+ */
+const TOUCH = {
+  /** Share of the viewport, from the bottom, an element must clear to play. */
+  line: 22,
+  /** Plays anyway after this, so text near the page end never rests hidden. */
+  waitMs: 650,
+  rise: 44,
+  slide: 72,
+  actS: 0.78,
+  revealS: 0.9,
+  tuneS: 0.95,
+  countS: 1.6,
+  tuningMs: 720,
+};
+
+const glyph = () =>
+  GLYPHS[Math.floor(Math.random() * GLYPHS.length)] ?? GLYPHS.charAt(0);
+
+function decodeFrames(text: string) {
+  const chars = [...text];
+  let step = -1;
+  let frame = text;
+  return (progress: number) => {
+    const next = Math.floor(progress * DECODE_STEPS);
+    if (next !== step) {
+      step = next;
+      const settled = Math.floor(progress * chars.length);
+      frame = chars
+        .map((char, index) =>
+          index < settled || KEEP.has(char) ? char : glyph(),
+        )
+        .join("");
+    }
+    return frame;
+  };
+}
+
+/** Groups LED digits into numbers, so "20/20" counts as two values. */
+function segmentRuns(display: HTMLElement) {
+  const runs: { cells: SVGElement[]; target: number }[] = [];
+  let run: (typeof runs)[number] | null = null;
+  for (const cell of display.querySelectorAll<SVGElement>("svg")) {
+    const digit = cell.dataset.d;
+    if (digit === undefined) {
+      run = null;
+      continue;
+    }
+    if (!run) {
+      run = { cells: [], target: 0 };
+      runs.push(run);
+    }
+    run.cells.push(cell);
+    run.target = run.target * 10 + Number(digit);
+  }
+  return (progress: number) => {
+    for (const { cells, target } of runs) {
+      const text = String(Math.round(target * progress)).padStart(
+        cells.length,
+        "0",
+      );
+      cells.forEach((cell, index) => {
+        cell.dataset.d = text[index] ?? "0";
+      });
+    }
+  };
+}
+
+/** Survives a Motion toggle, so text already seen never replays. */
+const played = new WeakSet<Element>();
+
+export function startMotion() {
+  const cleanups = new Set<() => void>();
+  cleanups.add(startCarousel());
+  let stopped = false;
+  const desktop = matchMedia(DESKTOP).matches;
+
+  /** Runs `play` once per element, when it enters the viewport. */
+  const onEnter = (
+    selector: string,
+    marginPercent: number,
+    play: (element: HTMLElement) => void,
+    arm?: (element: HTMLElement) => void,
+  ) => {
+    const timers = new Map<Element, number>();
+    const items = [...document.querySelectorAll<HTMLElement>(selector)].filter(
+      (item) => {
+        const box = item.getBoundingClientRect();
+        return (
+          !played.has(item) && box.width > 1 && box.top > window.innerHeight
+        );
+      },
+    );
+    const percent = desktop
+      ? marginPercent
+      : Math.max(marginPercent, TOUCH.line);
+    // Per effect: a card can have several, such as a rise and a CRT power-on.
+    const fired = new WeakSet<Element>();
+    const fire = (element: HTMLElement) => {
+      if (fired.has(element)) return;
+      fired.add(element);
+      played.add(element);
+      observer.unobserve(element);
+      lineObserver?.unobserve(element);
+      clearTimeout(timers.get(element));
+      timers.delete(element);
+      play(element);
+    };
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target as HTMLElement;
+        // Past the trigger line it plays now. In the bottom band it plays
+        // shortly after, so text can never rest invisible on screen.
+        const line = window.innerHeight * (1 - percent / 100);
+        if (entry.boundingClientRect.top <= line) {
+          fire(element);
+        } else if (!timers.has(element)) {
+          timers.set(
+            element,
+            window.setTimeout(
+              () => {
+                fire(element);
+              },
+              desktop ? BAND_DELAY_MS : TOUCH.waitMs,
+            ),
+          );
+        }
+      }
+    });
+    // On phones, crossing the line during the wait starts it right away.
+    const lineObserver = desktop
+      ? null
+      : new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) fire(entry.target as HTMLElement);
+            }
+          },
+          { rootMargin: `0px 0px -${percent}% 0px` },
+        );
+    for (const item of items) {
+      arm?.(item);
+      observer.observe(item);
+      lineObserver?.observe(item);
+    }
+    cleanups.add(() => {
+      observer.disconnect();
+      lineObserver?.disconnect();
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    });
+  };
+
+  const overlay = (
+    element: HTMLElement,
+    duration: number,
+    frame: (progress: number) => string,
+  ) => {
+    delete element.dataset.signalArmed;
+    const ghost = document.createElement("span");
+    ghost.className = "motion-ghost";
+    ghost.setAttribute("aria-hidden", "true");
+    ghost.style.color = getComputedStyle(element).color;
+    ghost.textContent = frame(0);
+    element.dataset.signalBusy = "";
+    element.append(ghost);
+    const finish = () => {
+      ghost.remove();
+      delete element.dataset.signalBusy;
+      cleanups.delete(stop);
+    };
+    const tween = gsap.to(
+      { value: 0 },
+      {
+        value: 1,
+        duration,
+        ease: "none",
+        onUpdate: () => {
+          ghost.textContent = frame(tween.progress());
+        },
+        onComplete: finish,
+      },
+    );
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    cleanups.add(stop);
+  };
+
+  const reveal = (element: HTMLElement) => {
+    element.style.removeProperty("opacity");
+    const split = SplitText.create(element, {
+      type: "lines",
+      mask: "lines",
+      linesClass: "reveal-line",
+      aria: "auto",
+    });
+    // Phones add a short signal tune on the heading as its lines rise.
+    if (!desktop) element.dataset.tuning = "";
+    const tuned = window.setTimeout(() => {
+      delete element.dataset.tuning;
+    }, TOUCH.tuningMs);
+    const finish = () => {
+      clearTimeout(tuned);
+      delete element.dataset.tuning;
+      split.revert();
+      cleanups.delete(stop);
+    };
+    const tween = gsap.from(split.lines, {
+      yPercent: 108,
+      // Contact is the closing beat, so it keeps the longest entrance.
+      duration: desktop
+        ? element.closest(".contact")
+          ? 0.8
+          : 0.6
+        : TOUCH.revealS,
+      stagger: 0.09,
+      ease: "expo.out",
+      onComplete: finish,
+    });
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    cleanups.add(stop);
+  };
+
+  onEnter("[data-reveal]", 10, reveal, (element) => {
+    // Opacity, not visibility, so screen readers can still reach it.
+    element.style.opacity = "0";
+    cleanups.add(() => {
+      element.style.removeProperty("opacity");
+    });
+  });
+  // Armed below the viewport, so text a reader has seen never flips back.
+  const armText = (element: HTMLElement) => {
+    element.dataset.signalArmed = "";
+    cleanups.add(() => {
+      delete element.dataset.signalArmed;
+    });
+  };
+  onEnter(
+    "[data-decode]",
+    6,
+    (element) => {
+      overlay(element, DECODE_S, decodeFrames(element.textContent));
+    },
+    armText,
+  );
+
+  /** In the drum and the carousel, a panel plays once its project is active. */
+  const whenShown = (element: HTMLElement, play: () => void) => {
+    const host = element.closest<HTMLElement>(".case");
+    if (
+      !host ||
+      (document.documentElement.dataset.worldLive === undefined &&
+        !host.parentElement?.hasAttribute("data-carousel")) ||
+      host.hasAttribute("data-active") ||
+      host.contains(document.activeElement)
+    ) {
+      play();
+      return;
+    }
+    const release = () => {
+      watcher.disconnect();
+      host.removeEventListener("focusin", go);
+      cleanups.delete(release);
+    };
+    const go = () => {
+      release();
+      play();
+    };
+    const watcher = new MutationObserver(() => {
+      if (host.hasAttribute("data-active")) go();
+    });
+    watcher.observe(host, {
+      attributes: true,
+      attributeFilter: ["data-active"],
+    });
+    host.addEventListener("focusin", go);
+    cleanups.add(release);
+  };
+
+  onEnter(
+    "[data-tune]",
+    6,
+    (element) => {
+      whenShown(element, () => {
+        overlay(
+          element,
+          desktop ? TUNE_S : TOUCH.tuneS,
+          decodeFrames(element.textContent),
+        );
+      });
+    },
+    armText,
+  );
+
+  const countUp = (display: HTMLElement) => {
+    delete display.dataset.signalArmed;
+    const paint = segmentRuns(display);
+    const state = { value: 0 };
+    paint(0);
+    const finish = () => {
+      paint(1);
+      cleanups.delete(stop);
+    };
+    const tween = gsap.to(state, {
+      value: 1,
+      duration: desktop ? COUNT_S : TOUCH.countS,
+      ease: "power3.out",
+      onUpdate: () => {
+        paint(state.value);
+      },
+      onComplete: finish,
+    });
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    cleanups.add(stop);
+  };
+  onEnter(
+    "[data-seg]",
+    8,
+    (element) => {
+      whenShown(element, () => {
+        countUp(element);
+      });
+    },
+    armText,
+  );
+
+  onEnter("[data-wave]", 8, (element) => {
+    whenShown(element, () => {
+      element.dataset.waving = "";
+      const finish = () => {
+        clearTimeout(timer);
+        delete element.dataset.waving;
+        cleanups.delete(finish);
+      };
+      const timer = window.setTimeout(finish, WAVE_MS);
+      cleanups.add(finish);
+    });
+  });
+
+  /** Types whole words, so the bio is readable in about two seconds. */
+  const typeIn = (block: HTMLElement) => {
+    const lines = [...block.querySelectorAll<HTMLElement>("[data-type-line]")];
+    const parts = lines.map((line) => {
+      const words = line.textContent.trim().split(/\s+/);
+      delete line.dataset.signalArmed;
+      const ghost = document.createElement("span");
+      ghost.className = "motion-ghost";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.style.color = getComputedStyle(line).color;
+      // Every word is laid out from the start, so justified lines never reflow.
+      const spans = words.map((word, index) => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.className = word.includes("-") ? "type-word nb" : "type-word";
+        ghost.append(span, index < words.length - 1 ? " " : "");
+        return span;
+      });
+      line.dataset.signalBusy = "";
+      line.append(ghost);
+      return { spans };
+    });
+    const all = parts.flatMap((part) => part.spans);
+    const total = all.length;
+    const state = { value: 0 };
+    const paint = () => {
+      const shown = Math.floor(state.value * total);
+      all.forEach((span, index) => {
+        span.classList.toggle("type-word--on", index < shown);
+        span.classList.toggle("type-word--caret", index === shown);
+      });
+    };
+    const finish = () => {
+      removeEventListener("pointerdown", skip);
+      removeEventListener("keydown", skip);
+      for (const line of lines) {
+        line.querySelector(":scope > .motion-ghost")?.remove();
+        delete line.dataset.signalBusy;
+      }
+      cleanups.delete(stop);
+    };
+    const tween = gsap.to(state, {
+      value: 1,
+      duration: TYPE_S,
+      ease: "none",
+      onUpdate: paint,
+      onComplete: finish,
+    });
+    const stop = () => {
+      tween.kill();
+      finish();
+    };
+    const skip = stop;
+    addEventListener("pointerdown", skip);
+    addEventListener("keydown", skip);
+    paint();
+    cleanups.add(stop);
+  };
+  onEnter("[data-type]", 12, typeIn, (block) => {
+    for (const line of block.querySelectorAll<HTMLElement>(
+      "[data-type-line]",
+    )) {
+      armText(line);
+    }
+  });
+
+  /** One quick pass down the log. Delays shrink, so it reads as a wave. */
+  const logLines = (block: HTMLElement) => [
+    ...block.querySelectorAll<HTMLElement>("[data-log-line]"),
+  ];
+  onEnter(
+    "[data-log]",
+    8,
+    (block) => {
+      const lines = logLines(block);
+      const finish = () => {
+        gsap.set(lines, { clearProps: "opacity,transform" });
+        cleanups.delete(stop);
+      };
+      const tween = gsap.fromTo(
+        lines,
+        { opacity: 0, x: -6 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.24,
+          ease: "power2.out",
+          stagger: { amount: 0.44, ease: "power2.out" },
+          onComplete: finish,
+        },
+      );
+      const stop = () => {
+        tween.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (block) => {
+      const lines = logLines(block);
+      for (const line of lines) line.style.opacity = "0";
+      cleanups.add(() => {
+        for (const line of lines) line.style.removeProperty("opacity");
+      });
+    },
+  );
+
+  // Section entrances: the HUD draws in, then the heading, body and details.
+  const hudParts = (hud: HTMLElement) => ({
+    marks: [
+      ...hud.querySelectorAll<HTMLElement>(
+        ":scope > span:not(.hud__label, .hud__line)",
+      ),
+    ],
+    // On desktop, ScrollTrigger already draws this line with the scroll.
+    line: desktop ? null : hud.querySelector<HTMLElement>(".hud__line"),
+  });
+  onEnter(
+    ".hud",
+    6,
+    (hud) => {
+      const { marks, line } = hudParts(hud);
+      const finish = () => {
+        gsap.set([...marks, line].filter(Boolean), { clearProps: "transform" });
+        cleanups.delete(stop);
+      };
+      const timeline = gsap.timeline({ onComplete: finish });
+      timeline.to(marks, {
+        scale: 1,
+        rotate: 0,
+        duration: 0.36,
+        ease: "power3.out",
+        stagger: 0.08,
+      });
+      if (line) {
+        timeline.to(line, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 0);
+      }
+      const stop = () => {
+        timeline.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (hud) => {
+      const { marks, line } = hudParts(hud);
+      gsap.set(marks, { scale: 0, rotate: -90 });
+      if (line) gsap.set(line, { scaleX: 0 });
+      cleanups.add(() => {
+        gsap.set([...marks, line].filter(Boolean), { clearProps: "transform" });
+      });
+    },
+  );
+  /** Cassettes slide in from alternating sides, and the rest rise further. */
+  const actStart = (item: HTMLElement) => {
+    if (desktop) return { opacity: 0, y: ACT_RISE };
+    if (!item.classList.contains("tape")) {
+      return { opacity: 0, y: TOUCH.rise, scale: 0.96 };
+    }
+    const index = [...(item.parentElement?.children ?? [])].indexOf(item);
+    const side = index % 2 === 0 ? -1 : 1;
+    return {
+      opacity: 0,
+      x: side * TOUCH.slide,
+      rotate: side * -2.5,
+    };
+  };
+  onEnter(
+    "[data-act-item]",
+    8,
+    (item) => {
+      const siblings = [...(item.parentElement?.children ?? [])];
+      const order = siblings.indexOf(item) % 3;
+      const base =
+        item.dataset.actItem === "detail" ? ACT_DELAY.detail : ACT_DELAY.body;
+      const finish = () => {
+        gsap.set(item, { clearProps: "opacity,transform" });
+        cleanups.delete(stop);
+      };
+      const tween = gsap.to(item, {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 1,
+        duration: desktop ? ACT_S : TOUCH.actS,
+        delay: base + order * ACT_STAGGER,
+        ease: desktop ? "power3.out" : "expo.out",
+        onComplete: finish,
+      });
+      const stop = () => {
+        tween.kill();
+        finish();
+      };
+      cleanups.add(stop);
+    },
+    (item) => {
+      gsap.set(item, actStart(item));
+      cleanups.add(() => {
+        gsap.set(item, { clearProps: "opacity,transform" });
+      });
+    },
+  );
+  // Without the world, each seam plays one short burst of static.
+  onEnter("[data-seam]", 42, (seam) => {
+    seam.dataset.on = "";
+    cleanups.add(() => {
+      delete seam.dataset.on;
+    });
+  });
+
+  // Touch has no hover, so each channel powers on once as it enters view.
+  if (matchMedia("(hover: none)").matches) {
+    onEnter(
+      "[data-channel], [data-crt]",
+      30,
+      (element) => {
+        delete element.dataset.crtOff;
+        element.dataset.on = "";
+        cleanups.add(() => {
+          delete element.dataset.on;
+        });
+      },
+      (element) => {
+        // The tube is dark until it enters, so the power-on has somewhere to go.
+        element.dataset.crtOff = "";
+        cleanups.add(() => {
+          delete element.dataset.crtOff;
+        });
+      },
+    );
+  }
+
+  if (desktop) {
+    // ScrollTrigger's setup can interrupt a native smooth scroll, so wait for calm.
+    let timer = 0;
+    const load = () => {
+      removeEventListener("scroll", wait);
+      void import("./desktop.ts")
+        .then(({ startDesktop }) => {
+          if (!stopped) cleanups.add(startDesktop());
+        })
+        .catch(() => undefined);
+    };
+    const wait = () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(load, SCROLL_CALM_MS);
+    };
+    addEventListener("scroll", wait, { passive: true });
+    wait();
+    cleanups.add(() => {
+      clearTimeout(timer);
+      removeEventListener("scroll", wait);
+    });
+  }
+
+  return () => {
+    stopped = true;
+    for (const cleanup of [...cleanups]) cleanup();
+    cleanups.clear();
+  };
+}
