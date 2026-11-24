@@ -6,7 +6,7 @@ import HudMarks from "./HudMarks.astro";
 
 const { ui, servicesLink } = await getProfile();
 const services = await getServices();
-const ICONS = ["rack", "page", "fix"] as const;
+const ICONS = ["code", "window", "bug"] as const;
 const pad = (value: number) => String(value).padStart(2, "0");
 ---
 
@@ -38,7 +38,7 @@ const pad = (value: number) => String(value).padStart(2, "0");
             <div class="channel__screen">
               <div class="channel__picture">
                 <span class="channel__icon">
-                  <DotIcon name={ICONS[index] ?? "rack"} />
+                  <DotIcon name={ICONS[index] ?? "code"} />
                 </span>
               </div>
               <span class="crt-raster" />

@@ -1,48 +1,51 @@
 ---
 /** An 11×11 LED icon. "#" is always lit, "a" and "b" alternate as two frames. */
 interface Props {
-  name: "rack" | "page" | "fix";
+  name: "code" | "window" | "bug";
 }
 
 const ICONS = {
-  rack: [
-    "###########",
-    "#a.......##",
-    "###########",
-    "...........",
-    "###########",
-    "#b.......##",
-    "###########",
-    "...........",
-    "###########",
-    "#a.......##",
-    "###########",
+  // Braces, with a cursor of dots typing between them.
+  code: [
+    "..##...##..",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    "#..a.b.a..#",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    ".#.......#.",
+    "..##...##..",
   ],
-  page: [
+  // A browser: title bar with lights, a headline, text and a button.
+  window: [
     "###########",
-    "#.#.#.....#",
+    "#a.b.a....#",
     "###########",
     "#.........#",
-    "#.aaaaaaa.#",
+    "#.#####...#",
     "#.........#",
     "#.bbbbbbb.#",
     "#.........#",
-    "#.aaaa....#",
+    "#.aaa.....#",
     "#.........#",
     "###########",
   ],
-  fix: [
-    "..#######..",
-    ".#.......#.",
-    "#.........#",
-    "#..a...ab.#",
-    "#...a.ab..#",
-    "#.b..ab...#",
-    "#..baba...#",
-    "#..ab..a..#",
-    "#.........#",
-    ".#.......#.",
-    "..#######..",
+  // A beetle seen from above. Its legs step in two alternating frames.
+  bug: [
+    "..#.....#..",
+    "...#...#...",
+    "...#####...",
+    "a.#######.b",
+    ".a.##.##.b.",
+    "...##.##...",
+    "bbb##.##aaa",
+    "...##.##...",
+    ".a.##.##.b.",
+    "a..#####..b",
+    "....###....",
   ],
 };
 
@@ -81,7 +84,8 @@ const path = (mark: string) =>
     stroke: var(--color-glow);
   }
 
+  /* Lit at rest, so the whole icon reads without animation. */
   .dot-icon__b {
-    stroke: var(--color-led-off);
+    stroke: var(--color-glow);
   }
 </style>
