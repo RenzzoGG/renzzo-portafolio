@@ -88,7 +88,7 @@ Es necesario: el sitio anterior dejó el PDF, la imagen OG y `robots.txt` con ca
 ### 9. Dominios, canonical, sitemap, PDF y OG
 
 ```bash
-for u in https://renzzogg.com/ https://www.renzzogg.com/ https://renzzogg.com/cv/ https://renzzogg.com/work/stocktill/ "https://renzzogg.com/renzzo-gracia-gomez-cv.pdf" "https://renzzogg.com/renzzo-gracia-gomez-cv.pdf?v=14" "https://renzzogg.com/og-image.png?v=3" https://renzzogg.com/sitemap.xml https://renzzogg.com/robots.txt; do
+for u in https://renzzogg.com/ https://www.renzzogg.com/ https://renzzogg.com/cv/ https://renzzogg.com/work/stocktill/ "https://renzzogg.com/renzzo-gracia-gomez-cv.pdf" "https://renzzogg.com/renzzo-gracia-gomez-cv.pdf?v=15" "https://renzzogg.com/og-image.png?v=3" https://renzzogg.com/sitemap.xml https://renzzogg.com/robots.txt; do
   curl -s -o /dev/null -w "%{http_code} %{content_type} $u\n" "$u"
 done
 curl -sI http://renzzogg.com/ | head -3

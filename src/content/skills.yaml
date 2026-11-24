@@ -13,7 +13,9 @@
       TypeScript,
       React,
       Next.js,
+      Astro,
       SVG,
+      GLSL shaders,
       Responsive Design,
     ]
 - id: back-end
@@ -57,7 +59,7 @@
   group: Libraries
   tab: Libraries
   order: 5
-  items: [GSAP, Motion, Chart.js, jsPDF, SheetJS]
+  items: [GSAP, Three.js (WebGL), Motion, Chart.js, jsPDF, SheetJS]
 - id: tools
   group: Tools & workflow
   tab: Tools

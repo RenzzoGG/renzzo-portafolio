@@ -40,18 +40,18 @@ The about card (`renzzo.json`) has three entries: location, remote and languages
 
 | Group               | Items                                                                                                                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Front-end           | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS v4, Bootstrap, JavaScript, TypeScript, React, Next.js, SVG, Responsive Design                          |
+| Front-end           | HTML5, CSS3 (Grid, Flexbox), Sass, Tailwind CSS v4, Bootstrap, JavaScript, TypeScript, React, Next.js, Astro, SVG, GLSL shaders, Responsive Design     |
 | Back-end            | Node.js, Python, FastAPI, Django, Django REST Framework (DRF), PostgreSQL, Supabase, Drizzle ORM, SQL, Row-Level Security, REST APIs, JWT auth, Stripe |
 | Testing             | Vitest, Playwright, pytest, pgTAP                                                                                                                      |
 | DevOps & deployment | Docker, GitHub Actions (CI), Railway, Cloudflare (DNS, SSL), Custom domains                                                                            |
-| Libraries           | GSAP, Motion, Chart.js, jsPDF, SheetJS                                                                                                                 |
+| Libraries           | GSAP, Three.js (WebGL), Motion, Chart.js, jsPDF, SheetJS                                                                                               |
 | Tools & workflow    | Git, GitHub, Vite, Linux (WSL)                                                                                                                         |
 
 Rule: Skills only lists technologies used in a published project.
 
 **Added 2026-11-22 (approved):** Django, Django REST Framework, Vite, Tailwind CSS v4 (Clearline Dental; Fernwick and Stocktill also use Tailwind 4), Motion (Clearline), GSAP (Pulse Theory's live motion redesign and the Stocktill landing). The page and CV pick these up when they're rebuilt from this file (Phase 1/2); `cv/index.html` and the current PDF are unchanged until then.
 
-The portfolio itself will add Astro and Three.js once it's live.
+**Added 2026-11-23 (approved):** Astro, Three.js (WebGL) and GLSL shaders, all used by this portfolio. Its WebGL world runs on hand-written GLSL shaders in `src/lib/world/`.
 
 **Decided 2026-11-22:** Drizzle ORM is added to Skills (Stocktill). PDFKit and Resend stay only in Stocktill's project stack and are not listed in Skills.
 
@@ -102,7 +102,7 @@ Section link: "Let's talk →" (to #contact).
 | Email                 | renzzo.gomez07@gmail.com       | `mailto:renzzo.gomez07@gmail.com`             |
 | GitHub                | github.com/RenzzoGG            | https://github.com/RenzzoGG                   |
 | Platzi                | platzi.com/p/renzzo.gomez07    | https://platzi.com/p/renzzo.gomez07/          |
-| Resume (PDF)          | renzzo-gracia-gomez-cv.pdf     | `/renzzo-gracia-gomez-cv.pdf?v=14` (download) |
+| Resume (PDF)          | renzzo-gracia-gomez-cv.pdf     | `/renzzo-gracia-gomez-cv.pdf?v=15` (download) |
 
 - **Footer:** © {year} Renzzo Gracia Gomez · renzzogg.com
 
