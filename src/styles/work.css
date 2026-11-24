@@ -223,6 +223,7 @@
     --card: min(84vw, 34rem);
     --card-edge: calc((100vw - var(--card)) / 2);
 
+    position: relative;
     display: flex;
     gap: var(--space-3);
     align-items: stretch;

@@ -122,8 +122,11 @@ export function startMotion() {
     const percent = desktop
       ? marginPercent
       : Math.max(marginPercent, TOUCH.line);
+    // Per effect: a card can have several, such as a rise and a CRT power-on.
+    const fired = new WeakSet<Element>();
     const fire = (element: HTMLElement) => {
-      if (played.has(element)) return;
+      if (fired.has(element)) return;
+      fired.add(element);
       played.add(element);
       observer.unobserve(element);
       lineObserver?.unobserve(element);

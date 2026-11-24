@@ -24,9 +24,13 @@ const clamp = (value: number) =>
 
 /** Beta and gamma trade places when the phone is held sideways. */
 function readAxes(beta: number, gamma: number) {
-  const angle = screen.orientation?.angle ?? 0;
+  // Only trusted in landscape: some browsers report an angle while upright.
+  const legacy = (window as unknown as { orientation?: number }).orientation;
+  const angle = matchMedia("(orientation: landscape)").matches
+    ? (screen.orientation?.angle ?? legacy ?? 0)
+    : 0;
   if (angle === 90) return { pitch: -gamma, roll: beta };
-  if (angle === 270) return { pitch: gamma, roll: -beta };
+  if (angle === 270 || angle === -90) return { pitch: gamma, roll: -beta };
   return { pitch: beta, roll: gamma };
 }
 

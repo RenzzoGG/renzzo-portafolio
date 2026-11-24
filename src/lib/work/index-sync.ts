@@ -28,15 +28,15 @@ const track = cases[0]?.parentElement ?? null;
 const isCarousel = () =>
   Boolean(track) && getComputedStyle(track as Element).overflowX === "auto";
 
+/** Layout offsets, because a card's 3D transform would skew its measured box. */
 const centeredCard = () => {
-  const box = (track as HTMLElement).getBoundingClientRect();
-  const middle = box.left + box.width / 2;
+  const view = track as HTMLElement;
+  const middle = view.scrollLeft + view.clientWidth / 2;
   let best = 0;
   let distance = Infinity;
   cases.forEach((item, index) => {
     if (!item) return;
-    const card = item.getBoundingClientRect();
-    const away = Math.abs(card.left + card.width / 2 - middle);
+    const away = Math.abs(item.offsetLeft + item.offsetWidth / 2 - middle);
     if (away < distance) {
       distance = away;
       best = index;
@@ -79,7 +79,10 @@ if (links.length > 0) {
   track?.addEventListener("scroll", schedule, { passive: true });
   addEventListener("resize", measure);
   // Motion on or off switches between the carousel and stacked cards.
-  new MutationObserver(measure).observe(document.documentElement, {
+  // Only that switch: a full re-measure here would race the drum's teardown.
+  new MutationObserver(() => {
+    if (isCarousel() !== carousel) measure();
+  }).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["data-motion"],
   });
@@ -94,9 +97,8 @@ if (links.length > 0) {
       event.preventDefault();
       history.pushState(null, "", link.hash);
       const box = track.getBoundingClientRect();
-      const card = item.getBoundingClientRect();
-      track.scrollBy({
-        left: card.left + card.width / 2 - (box.left + box.width / 2),
+      track.scrollTo({
+        left: item.offsetLeft - (track.clientWidth - item.offsetWidth) / 2,
         behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
           ? "instant"
           : "smooth",

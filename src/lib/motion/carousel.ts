@@ -19,12 +19,10 @@ export function startCarousel() {
 
   const paint = () => {
     frame = 0;
-    const box = track.getBoundingClientRect();
-    const middle = box.left + box.width / 2;
+    const middle = track.scrollLeft + track.clientWidth / 2;
     for (const card of cards) {
       // Layout position, because the card's own transform would skew the reading.
-      const center =
-        box.left + card.offsetLeft - track.scrollLeft + card.offsetWidth / 2;
+      const center = card.offsetLeft + card.offsetWidth / 2;
       const away = Math.max(
         -1,
         Math.min(1, (center - middle) / card.offsetWidth),

@@ -274,7 +274,7 @@ test.describe("fallbacks", () => {
       hasTouch: pixel.hasTouch,
     });
 
-    test("shows index and stacked VHS cards, with no WebGL", async ({
+    test("shows the index and VHS card carousel, with no WebGL", async ({
       page,
     }) => {
       const webgl: string[] = [];
@@ -283,8 +283,11 @@ test.describe("fallbacks", () => {
       });
       const seen = trackTextures(page);
       await page.goto("/");
-      await page.waitForTimeout(1500);
-      await expectIndexSync(page);
+      await expect(page.locator("[data-carousel]")).toHaveCount(1, {
+        timeout: 15_000,
+      });
+      await page.waitForTimeout(500);
+      await expect(page.locator("[data-index-link]")).toHaveCount(4);
 
       expect(webgl).toEqual([]);
       expect(seen).toEqual([]);

@@ -333,6 +333,77 @@ test.describe("mobile", () => {
     record("mobile seam bursts (per pixel)", result, count);
   });
 
+  test("phone effects at a normal scroll, per pixel", async ({ page }) => {
+    await page.clock.install();
+    await page.goto("/");
+    await pauseClock(page);
+    await page.clock.runFor(3000);
+    // Only what animates: seams, CRT pictures and the heading tune are kept.
+    await page.addStyleTag({
+      content: `body *:not(.seam, [data-crt], [data-crt] *, .channel__picture, .channel__picture *) { visibility: hidden !important; }
+        .seam, [data-crt], [data-crt] *, .channel__picture, .channel__picture * { visibility: visible !important; }`,
+    });
+    const end = await page.evaluate(
+      () => document.documentElement.scrollHeight - innerHeight,
+    );
+    const frames = 420;
+    const speed = Math.min(end / frames, 700 / FPS);
+    const { result, count } = await capture(
+      page,
+      frames,
+      (frame) => 3200 + frame * speed,
+      "pixel",
+    );
+    record("phone effects at normal scroll (per pixel)", result, count);
+  });
+
+  test("a hard shake of the tilting face", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.assign(DeviceOrientationEvent, {
+        requestPermission: () => Promise.resolve("granted"),
+      });
+    });
+    await page.clock.install();
+    await page.goto("/");
+    await page.locator('[data-led-slot][data-face="live"]').waitFor();
+    await page.locator("[data-tilt-toggle]").click();
+    const orient = (beta: number, gamma: number) =>
+      page.evaluate(
+        ([b, g]) => {
+          dispatchEvent(
+            Object.assign(new Event("deviceorientation"), {
+              alpha: 0,
+              beta: b,
+              gamma: g,
+            }),
+          );
+        },
+        [beta, gamma],
+      );
+    await orient(45, 0);
+    await expect(page.locator("[data-tilt-state]")).toHaveText("On");
+    await pauseClock(page);
+    await page.clock.runFor(2000);
+    await page.addStyleTag({
+      content: `body *:not(.led-slot, .led-slot *) { visibility: hidden !important; }
+        .led-slot, .led-slot * { visibility: visible; }`,
+    });
+    const frames: Uint8Array[] = [];
+    let width = 0;
+    let height = 0;
+    for (let frame = 0; frame < 150; frame += 1) {
+      // Three swings a second, about as fast as a hand shakes a phone.
+      await orient(45, Math.sin((frame / FPS) * Math.PI * 6) * 18);
+      await stepFrame(page);
+      const image = await grab(page);
+      frames.push(image.data);
+      width = image.width;
+      height = image.height;
+    }
+    const result = analyzeFlashes({ width, height, frames, fps: FPS });
+    record("phone face under a hard shake", result, frames.length);
+  });
+
   test("a fast scroll: full page, for the report", async ({ page }) => {
     await page.clock.install();
     await page.goto("/");
