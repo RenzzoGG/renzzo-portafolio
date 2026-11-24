@@ -7,7 +7,9 @@ const DEPTH_LAYERS = 3;
 const LAYERS = DEPTH_LAYERS + 2;
 const TWINKLE_SHARE = 0.24;
 const GLOW_SCALE = 3;
-const MAX_DPR = 1.5;
+// Dots are about 3 CSS px, so a lower ratio is upscaled into a dim blur on phones.
+const MAX_DPR = 3;
+const MAX_LAYER_WIDTH = 900;
 const RESIZE_TOLERANCE = 0.08;
 const DOTS_PER_FRAME = 140; // Keeps each baking task short on slow phones.
 const TAU = Math.PI * 2;
@@ -71,7 +73,11 @@ export function createCanvasRenderer(
 
   const measure = () => {
     const box = host.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const dpr = Math.min(
+      window.devicePixelRatio || 1,
+      MAX_DPR,
+      MAX_LAYER_WIDTH / Math.max(box.width, 1),
+    );
     return {
       w: Math.max(1, Math.round(box.width * dpr)),
       h: Math.max(1, Math.round(box.height * dpr)),
@@ -143,6 +149,13 @@ export function createCanvasRenderer(
       await nextFrame();
       if (id !== build) return false;
       host.append(layer);
+      // WebKit can composite a canvas drawn while detached with a stale buffer,
+      // leaving only the glow on screen. One transparent draw republishes it.
+      const context = layer.getContext("2d");
+      if (context) {
+        context.fillStyle = "rgb(0 0 0 / 0)";
+        context.fillRect(0, 0, 1, 1);
+      }
     }
     return true;
   }

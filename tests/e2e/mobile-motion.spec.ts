@@ -1,4 +1,9 @@
-import { expect, test, type Page } from "@playwright/test";
+import { execFileSync } from "node:child_process";
+import { readdirSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { devices, expect, test, type Page } from "@playwright/test";
+import sharp from "sharp";
 
 const FACE = '[data-led-slot][data-face="live"]';
 
@@ -183,6 +188,78 @@ test.describe("the LED face", () => {
     await expect(page.locator("[data-tilt-state]")).toHaveText("Off");
     await page.waitForTimeout(1800);
     await expect(page.locator("[data-tilt-state]")).toHaveText("Off");
+  });
+});
+
+test.describe("the composited face", () => {
+  // A screenshot repaints the page, so only recorded frames show this failure.
+  test("its bright dot layers reach the screen", async ({
+    browser,
+    browserName,
+    baseURL,
+  }, testInfo) => {
+    test.skip(browserName !== "webkit", "A WebKit compositing regression");
+    const context = await browser.newContext({
+      ...devices["iPhone 14"],
+      baseURL,
+      recordVideo: {
+        dir: testInfo.outputDir,
+        size: { width: 780, height: 1328 },
+      },
+    });
+    const page = await context.newPage();
+    await page.goto("/");
+    await page.locator(FACE).waitFor({ timeout: 15_000 });
+    await page.addStyleTag({
+      content: ".led-slot { transform: scale(3); z-index: 9; }",
+    });
+    await page.waitForTimeout(2500);
+    const box = await page.locator("[data-led-slot]").boundingBox();
+    const view = page.viewportSize();
+    const video = page.video();
+    if (!box || !view || !video) throw new Error("Missing capture data");
+    const startX = Math.max(0, box.x);
+    const startY = Math.max(0, box.y);
+    const endX = Math.min(view.width, box.x + box.width);
+    const endY = Math.min(view.height, box.y + box.height);
+    await context.close();
+    const cache = join(homedir(), ".cache", "ms-playwright");
+    const folder = readdirSync(cache)
+      .filter((name) => name.startsWith("ffmpeg"))
+      .at(-1);
+    if (!folder) throw new Error("Playwright ffmpeg is missing");
+    const frame = testInfo.outputPath("face-frame.png");
+    execFileSync(join(cache, folder, "ffmpeg-linux"), [
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-y",
+      "-sseof",
+      "-0.3",
+      "-i",
+      await video.path(),
+      "-frames:v",
+      "1",
+      frame,
+    ]);
+    const { width = 0 } = await sharp(frame).metadata();
+    const scale = width / view.width;
+    const { data } = await sharp(frame)
+      .extract({
+        left: Math.round(startX * scale),
+        top: Math.round(startY * scale),
+        width: Math.floor((endX - startX) * scale),
+        height: Math.floor((endY - startY) * scale),
+      })
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    let brightest = 0;
+    for (let at = 0; at < data.length; at += 3) {
+      brightest = Math.max(brightest, data[at] ?? 0);
+    }
+    // The glow alone peaks near 105. The real dots are #FF3B5C.
+    expect(brightest).toBeGreaterThan(200);
   });
 });
 

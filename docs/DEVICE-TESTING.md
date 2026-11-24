@@ -58,11 +58,16 @@ Test on **iOS Safari** and **Android Chrome**. Note the phone model and what you
 | Gyroscope      | Allow: the face follows the phone smoothly                              | ☐   | n/a     |
 | Gyroscope      | Deny (reset site data first): the face stays alive and nothing breaks   | ☐   | n/a     |
 | Gyroscope      | Android: tilt works after tapping the control                           | n/a | ☐       |
+| Gyroscope      | The face is bright and sharp, and its dot layers separate on tilt       | ☐   | ☐       |
+| Gyroscope      | Shaking the phone calms the face instead of strobing it                 | ☐   | ☐       |
 | Scrolling      | Hero to Contact feels smooth, with no jumps as the address bar hides    | ☐   | ☐       |
 | Scrolling      | A hard fling up and down never leaves a blank screen                    | ☐   | ☐       |
 | Transitions    | Seam bursts between sections are short and comfortable                  | ☐   | ☐       |
 | Transitions    | **Nothing feels like strobing, even on a fast fling**                   | ☐   | ☐       |
 | Work index     | The sticky index marks the project on screen, in both directions        | ☐   | ☐       |
+| Carousel       | Swiping Featured work turns the 3D cards, and [01]–[04] follows         | ☐   | ☐       |
+| Carousel       | Vertical scrolling over a card still scrolls the page normally          | ☐   | ☐       |
+| Entrances      | Headings tune in, LEDs count, cassettes slide and CRTs power on         | ☐   | ☐       |
 | Work index     | It leaves with Featured Work and doesn't cover More work                | ☐   | ☐       |
 | Menu           | Opens, closes with its button, and each link lands on its section       | ☐   | ☐       |
 | Menu           | The page behind doesn't scroll while it's open                          | ☐   | ☐       |
